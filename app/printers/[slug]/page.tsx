@@ -73,10 +73,9 @@ export default function MainView({ params }: PrinterPageProps) {
                 </svg>
               </button>
             </a>
-            <label className="text-2xl content-center">{printer.name} ⋅ {printer.model}</label>
             <label className="m-2 text-med content-center">{printer.status}</label>
           </div>
-          <div className="bg-gray-800 rounded-md flex flex-col justify-center items-center h-[60%] m-2 cursor-pointer hover:bg-gray-700"
+          <div className="bg-gray-800 rounded-md flex flex-col justify-center items-center h-[60%] m-[0.5%] cursor-pointer hover:bg-gray-700"
             onClick={() => setActiveView('files')}>
             <img src="/file.svg" className="w-80" alt="Print Files" />
             <label className="mt-5 text-2xl">Print Files</label>
@@ -84,7 +83,7 @@ export default function MainView({ params }: PrinterPageProps) {
 
           <div className="flex flex-wrap mt-4 h-[30%]">
             {['Settings', 'Filament', 'Control', 'Assistant'].map((label) => (
-              <div key={label} onClick={() => setActiveView(`${label.toLowerCase()}`)} className="bg-gray-800 rounded-md flex flex-col justify-center items-center w-[24%] m-2 cursor-pointer hover:bg-gray-700">
+              <div key={label} onClick={() => setActiveView(`${label.toLowerCase()}`)} className="bg-gray-800 rounded-md flex flex-col justify-center items-center w-[24%] m-[0.5%] cursor-pointer hover:bg-gray-700">
                 <img src={`/${label.toLowerCase()}.png`} alt={label} className="w-[40%]" />
                 <label className="mt-2 text-xl">{label}</label>
               </div>
@@ -95,7 +94,8 @@ export default function MainView({ params }: PrinterPageProps) {
 
       {activeView === 'files' && (
         <div className="view" id="files-page">
-          <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
+          <div className="flex flex-row">
+            <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
             <svg width="24" height="24" viewBox="0 0 24 24">
               <polyline
                 points="16,4 8,12 16,20"
@@ -106,7 +106,9 @@ export default function MainView({ params }: PrinterPageProps) {
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+            </button>
+            <label className="text-2xl content-center">{printer.name}'s Print Files</label>
+          </div>
         </div>
       )}
 
