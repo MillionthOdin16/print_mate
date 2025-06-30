@@ -5,5 +5,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   const filePath = path.join(process.cwd(), 'data/printers.json');
   const content = await fs.readFile(filePath, 'utf-8');
-  return NextResponse.json(JSON.parse(content));
+  let data = JSON.parse(content);
+  
+  return NextResponse.json(data);
 }

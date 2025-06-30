@@ -3,6 +3,12 @@
 import React, { Usable } from 'react';
 import Link from 'next'
 import { useState, useEffect } from 'react';
+import FileGrid from '@/app/components/FileGrid';
+import ControlView from '@/app/components/ControlView';
+import FilesView from '@/app/components/FilesView';
+import FilamentView from '@/app/components/FilamentView';
+import HMSView from '@/app/components/HMSView';
+import SettingsView from '@/app/components/SettingsView';
 
 interface PrinterPageProps {
   params: {
@@ -36,15 +42,7 @@ export default function MainView({ params }: PrinterPageProps) {
 
   const { slug } = React.use(params);
   const printer = printers.find((p) => p.slug === slug);
-  const [activeView, setActiveView] = useState<'main' | 'files' | 'settings' | 'filament' | 'control' | 'assistant' | any>('main');
-
-  const iconMap = {
-    Settings: '/icons/settings.png',
-    Filament: '/icons/filament.png',
-    Control: '/icons/control.png',
-    Assistant: '/icons/assistant.png',
-  };
-  
+  const [activeView, setActiveView] = useState<'main' | 'files' | 'settings' | 'filament' | 'control' | 'hms' | any>('main');
 
   if (!printer) {
     return (
@@ -73,7 +71,8 @@ export default function MainView({ params }: PrinterPageProps) {
                 </svg>
               </button>
             </a>
-            <label className="m-2 text-med content-center">{printer.status}</label>
+            <label className="text-2xl content-center">{printer.name} · {printer.model}</label>
+            <label className="text-lg content-center m-2">{printer.status}</label>
           </div>
           <div className="bg-gray-800 rounded-md flex flex-col justify-center items-center h-[60%] m-[0.5%] cursor-pointer hover:bg-gray-700"
             onClick={() => setActiveView('files')}>
@@ -82,7 +81,7 @@ export default function MainView({ params }: PrinterPageProps) {
           </div>
 
           <div className="flex flex-wrap mt-4 h-[30%]">
-            {['Settings', 'Filament', 'Control', 'Assistant'].map((label) => (
+            {['Settings', 'Filament', 'Control', 'HMS'].map((label) => (
               <div key={label} onClick={() => setActiveView(`${label.toLowerCase()}`)} className="bg-gray-800 rounded-md flex flex-col justify-center items-center w-[24%] m-[0.5%] cursor-pointer hover:bg-gray-700">
                 <img src={`/${label.toLowerCase()}.png`} alt={label} className="w-[40%]" />
                 <label className="mt-2 text-xl">{label}</label>
@@ -93,91 +92,23 @@ export default function MainView({ params }: PrinterPageProps) {
       )}
 
       {activeView === 'files' && (
-        <div className="view" id="files-page">
-          <div className="flex flex-row">
-            <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <polyline
-                points="16,4 8,12 16,20"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            </button>
-            <label className="text-2xl content-center">{printer.name}'s Print Files</label>
-          </div>
-        </div>
+        <FilesView onBack={() => setActiveView('main')} slug={slug} />
       )}
 
       {activeView === 'settings' && (
-        <div className="view" id="settings-page">
-          <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <polyline
-                points="16,4 8,12 16,20"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
+        <SettingsView onBack={() => setActiveView('main')} />
       )}
 
       {activeView === 'filament' && (
-        <div className="view" id="filament-page">
-          <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <polyline
-                points="16,4 8,12 16,20"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
+        <FilamentView onBack={() => setActiveView('main')} />
       )}
 
       {activeView === 'control' && (
-        <div className="view" id="control-page">
-          <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <polyline
-                points="16,4 8,12 16,20"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
+        <ControlView onBack={() => setActiveView('main')} />
       )}
 
-      {activeView === 'assistant' && (
-        <div className="view" id="assistant-page">
-          <button onClick={() => setActiveView('main')} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
-            <svg width="24" height="24" viewBox="0 0 24 24">
-              <polyline
-                points="16,4 8,12 16,20"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
+      {activeView === 'hms' && (
+        <HMSView onBack={() => setActiveView('main')} slug={slug} />
       )}
     </>
   );

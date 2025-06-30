@@ -16,7 +16,7 @@ export default function PrinterGrid() {
   
     useEffect(() => {
       async function fetchPrinters() {
-        const res = await fetch('/api/printers');
+        const res = await fetch('/api/printers/');
         if (!res.ok) {
           console.error('Failed to fetch printers');
           return;
