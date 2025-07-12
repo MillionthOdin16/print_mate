@@ -92,19 +92,19 @@ export default function MainView({ params }: PrinterPageProps) {
       )}
 
       {activeView === 'files' && (
-        <FilesView onBack={() => setActiveView('main')} slug={slug} />
+        <FilesView onBack={() => setActiveView('main')} slug={slug}/>
       )}
 
       {activeView === 'settings' && (
-        <SettingsView onBack={() => setActiveView('main')} />
+        <SettingsView onBack={() => setActiveView('main')} slug={slug} model="A1"/>
       )}
 
       {activeView === 'filament' && (
-        <FilamentView onBack={() => setActiveView('main')} />
+        <FilamentView onBack={() => setActiveView('main')} slug={slug} model="A1"/>
       )}
 
       {activeView === 'control' && (
-        <ControlView onBack={() => setActiveView('main')} />
+        <ControlView onBack={() => setActiveView('main')} slug={slug} model="A1"/>
       )}
 
       {activeView === 'hms' && (

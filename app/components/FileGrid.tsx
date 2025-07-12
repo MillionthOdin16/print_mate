@@ -52,16 +52,21 @@ export default function FileGrid({printer}: FileGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {files.map((file: any) => (
-          <Link key={file.filename} href={`/printers/files/${file.filename}`} className='block'>
-            <FileCard
-            key={file.filename}
-            filename={file.filename}
-            thumbnail={file.thumbnail}
-            />
-          </Link>
-      ))}
+    <div>
+      <div className="flex justify-center">
+        <label>Scanning files, please wait...</label>
+      </div>
+      <div className="grid grid-cols-4 gap-4">
+        {files.map((file: any) => (
+            <Link key={file.filename} href={`/printers/files/${file.filename}`} className='block'>
+              <FileCard
+              key={file.filename}
+              filename={file.filename}
+              thumbnail={file.thumbnail}
+              />
+            </Link>
+        ))}
+      </div>
     </div>
   );
 }
