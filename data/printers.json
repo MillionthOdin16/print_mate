@@ -1,5 +1,26 @@
 [
-    { "slug": "a-printer", "name": "A Printer", "model": "A1" },
-    { "slug": "a-fat-printer", "name": "A Fat Printer", "model": "H2D" }
+  {
+    "slug": "a-fat-printer",
+    "name": "A Fat Printer",
+    "model": "H2D",
+    "ip": "192.168.0.78",
+    "password": "87654321",
+    "serial": ""
+  },
+  {
+    "slug": "yaey",
+    "name": "yaey",
+    "model": "A1",
+    "ip": "192.168.0.77",
+    "password": "2938429374",
+    "serial": "293852938525"
+  },
+  {
+    "slug": "a-printer",
+    "name": "A Printer",
+    "model": "A1",
+    "ip": "192.168.0.79",
+    "password": "12345678",
+    "serial": "039285923235983295"
+  }
 ]
-  

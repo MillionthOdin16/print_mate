@@ -2,29 +2,41 @@
 import FileGrid from "./FileGrid";
 
 interface Props {
-  onBack: () => void;
   slug: string;
+  files: File[];
+  setFiles: (files: File[]) => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  error: string | null;
+  setError: (error: string | null) => void;
 }
 
-export default function FilesView({ onBack, slug }: Props) {
+export default function FilesView({ slug, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
   return (
     <div className="view" id="files-page">
-      <div className="flex flex-row">
-        <button onClick={onBack} className="bg-gray-700 hover:bg-gray-600 rounded-full w-8 h-8 flex items-center justify-center border-0 m-4">
-          <svg width="24" height="24" viewBox="0 0 24 24">
-            <polyline
-              points="16,4 8,12 16,20"
+      <div className="flex flex-row justify-between">
+        <label className="text-2xl content-center">Print Files</label>
+        <div className="flex content-center justify-center">
+          <span className="text-xl text-white m-2">{slug}</span>
+          <button onClick={() => {window.location.reload()}}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
               fill="none"
-              stroke="#fff"
-              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-5 w-5 text-gray-600 hover:text-blue-500 transition-colors"
+            >
+            <path
               strokeLinecap="round"
               strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
-          </svg>
-        </button>
-        <label className="text-2xl content-center">Print Files</label>
+            </svg>
+          </button>
+        </div>
       </div>
-      <FileGrid printer={slug}/>
+      <FileGrid printer={slug} files={files} setFiles={setFiles} isLoading={isLoading} setIsLoading={setIsLoading} error={error} setError={setError}/>
     </div>
   );
 }

@@ -1,0 +1,268 @@
+[
+  {
+    "id": "pla-basic",
+    "brand": "Bambu Lab",
+    "material": "PLA Basic",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-matte",
+    "brand": "Bambu Lab",
+    "material": "PLA Matte",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "petg-hf",
+    "brand": "Bambu Lab",
+    "material": "PETG HF",
+    "minTemp": 220,
+    "maxTemp": 260
+  },
+  {
+    "id": "pla-silk",
+    "brand": "Bambu Lab",
+    "material": "PLA Silk",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "petg-basic",
+    "brand": "Bambu Lab",
+    "material": "PETG Basic",
+    "minTemp": 220,
+    "maxTemp": 260
+  },
+  {
+    "id": "pla-cf",
+    "brand": "Bambu Lab",
+    "material": "PLA-CF",
+    "minTemp": 210,
+    "maxTemp": 230
+  },
+  {
+    "id": "abs",
+    "brand": "Bambu Lab",
+    "material": "ABS",
+    "minTemp": 240,
+    "maxTemp": 280
+  },
+  {
+    "id": "asa",
+    "brand": "Bambu Lab",
+    "material": "ASA",
+    "minTemp": 240,
+    "maxTemp": 280
+  },
+  {
+    "id": "tpu-ams",
+    "brand": "Bambu Lab",
+    "material": "TPU for AMS",
+    "minTemp": 220,
+    "maxTemp": 240
+  },
+  {
+    "id": "pla-wood",
+    "brand": "Bambu Lab",
+    "material": "PLA Wood",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-sparkle",
+    "brand": "Bambu Lab",
+    "material": "PLA Sparkle",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-marble",
+    "brand": "Bambu Lab",
+    "material": "PLA Marble",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-glow",
+    "brand": "Bambu Lab",
+    "material": "PLA Glow",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-translucent",
+    "brand": "Bambu Lab",
+    "material": "PLA Translucent",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-silk-plus",
+    "brand": "Bambu Lab",
+    "material": "PLA Silk+",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "petg-cf",
+    "brand": "Bambu Lab",
+    "material": "PETG-CF",
+    "minTemp": 220,
+    "maxTemp": 260
+  },
+  {
+    "id": "abs-gf",
+    "brand": "Bambu Lab",
+    "material": "ABS-GF",
+    "minTemp": 240,
+    "maxTemp": 280
+  },
+  {
+    "id": "asa-cf",
+    "brand": "Bambu Lab",
+    "material": "ASA-CF",
+    "minTemp": 250,
+    "maxTemp": 290
+  },
+  {
+    "id": "pc",
+    "brand": "Bambu Lab",
+    "material": "PC",
+    "minTemp": 250,
+    "maxTemp": 270
+  },
+  {
+    "id": "paht-cf",
+    "brand": "Bambu Lab",
+    "material": "PAHT-CF",
+    "minTemp": 260,
+    "maxTemp": 290
+  },
+  {
+    "id": "pa6-cf",
+    "brand": "Bambu Lab",
+    "material": "PA6-CF",
+    "minTemp": 260,
+    "maxTemp": 290
+  },
+  {
+    "id": "pa6-gf",
+    "brand": "Bambu Lab",
+    "material": "PA6-GF",
+    "minTemp": 260,
+    "maxTemp": 290
+  },
+  {
+    "id": "pet-cf",
+    "brand": "Bambu Lab",
+    "material": "PET-CF",
+    "minTemp": 260,
+    "maxTemp": 290
+  },
+  {
+    "id": "ppa-cf",
+    "brand": "Bambu Lab",
+    "material": "PPA-CF",
+    "minTemp": 280,
+    "maxTemp": 310
+  },
+  {
+    "id": "pps-cf",
+    "brand": "Bambu Lab",
+    "material": "PPS-CF",
+    "minTemp": 310,
+    "maxTemp": 340
+  },
+  {
+    "id": "support-pla-petg",
+    "brand": "Bambu Lab",
+    "material": "Support for PLA/PETG",
+    "minTemp": 190,
+    "maxTemp": 220
+  },
+  {
+    "id": "support-abs",
+    "brand": "Bambu Lab",
+    "material": "Support for ABS",
+    "minTemp": 240,
+    "maxTemp": 270
+  },
+  {
+    "id": "support-pa-pet",
+    "brand": "Bambu Lab",
+    "material": "Support for PA/PET",
+    "minTemp": 280,
+    "maxTemp": 300
+  },
+  {
+    "id": "pva",
+    "brand": "Bambu Lab",
+    "material": "PVA",
+    "minTemp": 220,
+    "maxTemp": 250
+  },
+  {
+    "id": "pla-metal",
+    "brand": "Bambu Lab",
+    "material": "PLA Metal",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-aero",
+    "brand": "Bambu Lab",
+    "material": "PLA Aero",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "pla-galaxy",
+    "brand": "Bambu Lab",
+    "material": "PLA Galaxy",
+    "minTemp": 190,
+    "maxTemp": 230
+  },
+  {
+    "id": "asa-aero",
+    "brand": "Bambu Lab",
+    "material": "ASA Aero",
+    "minTemp": 240,
+    "maxTemp": 280
+  },
+  {
+    "id": "tpu-95a-hf",
+    "brand": "Bambu Lab",
+    "material": "TPU 95A HF",
+    "minTemp": 220,
+    "maxTemp": 240
+  },
+  {
+    "id": "tpu-90a",
+    "brand": "Bambu Lab",
+    "material": "TPU 90A",
+    "minTemp": 220,
+    "maxTemp": 240
+  },
+  {
+    "id": "tpu-85a",
+    "brand": "Bambu Lab",
+    "material": "TPU 85A",
+    "minTemp": 220,
+    "maxTemp": 240
+  },
+  {
+    "id": "pc-fr",
+    "brand": "Bambu Lab",
+    "material": "PC FR",
+    "minTemp": 260,
+    "maxTemp": 280
+  },
+  {
+    "id": "support-pla",
+    "brand": "Bambu Lab",
+    "material": "Support for PLA",
+    "minTemp": 220,
+    "maxTemp": 230
+  }
+]

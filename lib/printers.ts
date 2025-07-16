@@ -1,9 +1,29 @@
-import path from 'path';
-import fs from 'fs/promises'
-
 export async function getPrinters() {
-  const filePath = path.join(process.cwd(), 'data/printers.json');
-  const fileContent = JSON.parse(await fs.readFile(filePath, 'utf-8'));
-  fileContent['status'] = "Idle";
-  return fileContent;
+  const res = await fetch('/api/printers');
+  return await res.json();
+}
+
+export async function addPrinter(printerData: {
+  slug: string;
+  name: string;
+  model: string;
+  ip: string;
+  password: string;
+  serial: string;
+}) {
+  const res = await fetch('/api/printers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(printerData)
+  });
+  return await res.json();
+}
+
+export async function removePrinter(slug: string) {
+  const res = await fetch('/api/printers', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug })
+  });
+  return await res.json();
 }

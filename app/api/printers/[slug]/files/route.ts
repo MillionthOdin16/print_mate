@@ -1,12 +1,12 @@
 import { Client } from 'basic-ftp';
 
 export async function GET() {
-  const client = new Client(10000);
+  const client = new Client(20000);
   client.ftp.verbose = true;
 
   try {
     await client.access({
-      host: '192.168.0.78',
+      host: '192.168.0.77',
       port: 990,
       user: 'bblp',
       password: '15577925',
@@ -18,13 +18,18 @@ export async function GET() {
 
     const rootList = await client.list('/');
     const cacheList = await client.list('/cache');
+    
+    const exclude = [ 'logger', 'recorder', 'image', 'ipcam', 'cache', 'model', 'timelapse', 'verify_job' ]
 
     const mapped = [
-      ...rootList.map((item) => ({
+      ...rootList
+      .filter(item => !exclude.includes(item.name))
+      .map((item) => ({
         filename: `${item.name}`,
         thumbnail: 'nonexistant.png',
       })),
-      ...cacheList.map((item) => ({
+      ...cacheList
+      .map((item) => ({
         filename: `${item.name}`,
         thumbnail: 'nonexistant.png',
       }))
