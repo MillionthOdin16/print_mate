@@ -27,3 +27,19 @@ export async function removePrinter(slug: string) {
   });
   return await res.json();
 }
+
+export async function editPrinter(printerData: {
+  slug: string;
+  name: string;
+  model: string;
+  ip: string;
+  password: string;
+  serial: string;
+}) {
+  const res = await fetch('/api/printers', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(printerData)
+  });
+  return await res.json();
+}
