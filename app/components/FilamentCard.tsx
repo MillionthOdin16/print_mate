@@ -19,13 +19,11 @@ interface Filament {
 export default function FilamentCard({ name, model }: FilamentCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [activeView, setActiveView] = useState('ext');
-  const [activeAms, setActiveAms] = useState(0);
-  const [activeAmsFilament, setActiveAmsFilament] = useState(0);
-  const [amsFilaments] = useState<string[][]>();
   const [activeAction, setActiveAction] = useState(''); // TODO: retrieve from printer
   const [selectedBrand, setSelectedBrand] = useState(''); // TODO: retrieve from printer
-  const [selectedFilament, setSelectedFilament] = useState(''); // TODO: retrieve from printer
-  // TODO: add colour of filament
+  const [selectedFilament, setSelectedFilament] = useState('PLA Basic'); // TODO: retrieve from printer
+  const [amsFilaments, setAmsFilaments] = useState<String[]>([]); // TODO: retrieve from printer
+  // TODO: FILAMENT COLOURS
   const [loadingFilament, setLoadingFilament] = useState(false);
   const [unloadingFilament, setUnloadingFilament] = useState(false);
   const [filaments, setFilaments] = useState<Filament[]>([]);
@@ -64,12 +62,14 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
         >
         <label className="text-lg">External Spool</label>
         </div>
+        {/* TODO: [BEGIN] REPLACE WITH REAL AMS AVAILABILITY DATA */}
         <div 
           className={((activeView == 'ams')? 'bg-blue-600' : 'bg-gray-800') + " transition m-2 p-2 hover:bg-gray-700 rounded-md"} 
           onClick={() => setActiveView('ams')}
         >
-          <label className="text-lg">AMS</label>
+          <label className="text-lg">AMS #0</label>
         </div>
+        {/* TODO: [END] REPLACE WITH REAL AMS AVAILABILITY DATA */}
       </div>
       {activeView == "ext" && (
         <div className="flex flex-row">
@@ -95,7 +95,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
           </div>
         </div>
       )}
-      {/* TODO: DISABLE AMS UI (NOT HIDE) IF PRINTER IS WITHOUT AMS */}
+      {/* TODO:  */}
       {activeView == "ams" && (
         <div className="flex flex-col">
           <div className="flex flex-row">
