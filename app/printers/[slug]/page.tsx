@@ -99,7 +99,8 @@ export default function MainView({ params }: PrinterPageProps) {
       if (!data.ip.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)) throw new Error("Invalid IP address")
 
       await editPrinter({
-        slug: data.name.toLowerCase().replace(' ', '-'),
+        oldSlug: slug,
+        slug: data.name.toLowerCase().replaceAll(' ', '-'),
         name: data.name, 
         model: data.model, 
         ip: data.ip, 

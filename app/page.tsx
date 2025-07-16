@@ -22,23 +22,21 @@ export default function Home() {
         serial: (document.getElementById('in-sn') as HTMLInputElement).value
       };
 
-      if (!data.name || !data.ip) {
-        throw new Error('Name and IP are required');
-      }
+      if (!data.ip.match(/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)) throw new Error("Invalid IP address")
 
       await addPrinter({
-        slug: data.name.toLowerCase().replace(' ', '-'),
+        slug: data.name.toLowerCase().replaceAll(' ', '-'),
         name: data.name, 
         model: data.model, 
         ip: data.ip, 
         password: data.pwd, 
         serial: data.serial});
       setAddOpen(false);
+      location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add printer');
     } finally {
       setIsSubmitting(false);
-      location.reload();
     }
   };
 
@@ -113,12 +111,14 @@ export default function Home() {
                   id="in-pwd" 
                   className="m-1 bg-gray-700 rounded-sm p-2" 
                   placeholder="LAN Access Code"
+                  required
                 />
                 <input 
                   type="text" 
                   id="in-sn" 
                   className="m-1 bg-gray-700 rounded-sm p-2" 
                   placeholder="Serial Number"
+                  required
                 />
               </div>
               {error && <p className="text-red-500 text-sm mb-2">{error}</p>}

@@ -29,6 +29,7 @@ export async function removePrinter(slug: string) {
 }
 
 export async function editPrinter(printerData: {
+  oldSlug: string;
   slug: string;
   name: string;
   model: string;
