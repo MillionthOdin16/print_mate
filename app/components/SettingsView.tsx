@@ -31,7 +31,7 @@ export default function SettingsView({ slug, model }: Props) {
         <h2 className="text-xl text-white ml-4">Settings</h2>
         <span className="text-xl text-white m-2">{slug}</span>
       </header>
-      <SettingsCard name={slug} model='fat'/>
+      <SettingsCard name={slug} model={model}/>
     </div>
   );
 }

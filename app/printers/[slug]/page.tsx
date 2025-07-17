@@ -65,13 +65,13 @@ export default function MainView({ params }: PrinterPageProps) {
       case 'files':
         return <FilesView slug={slug} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
       case 'settings':
-        return <SettingsView slug={slug} model="A1"/>; // TODO: CHANGE THE HARDCODED VALUE
+        return <SettingsView slug={slug} model={printer.model}/>;
       case 'filament':
-        return <FilamentView slug={slug} model="A1"/>; //TODO: CHANGE THE HARDCODED VALUE
+        return <FilamentView slug={slug} model={printer.model}/>;
       case 'control':
-        return <ControlView slug={slug} model="A1"/>; //TODO: UNHARDCODE
+        return <ControlView slug={slug} model={printer.model}/>;
       case 'hms':
-        return <HMSView slug={slug} model="A1"/>; //TODO: UNHARDCODE
+        return <HMSView slug={slug} model={printer.model}/>;
       default:
         return <FilesView slug={slug} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
     }
