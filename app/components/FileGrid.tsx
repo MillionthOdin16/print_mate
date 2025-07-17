@@ -10,6 +10,7 @@ interface File {
 
 interface FileGridProps {
   printer: string;
+  model: string;
   files: File[];
   setFiles: (files: File[]) => void;
   isLoading: boolean;
@@ -20,6 +21,7 @@ interface FileGridProps {
 
 export default function FileGrid({
   printer,
+  model,
   files,
   setFiles,
   isLoading,
@@ -80,7 +82,7 @@ export default function FileGrid({
     <div>
       <div className="grid grid-cols-3 gap-4">
         {files.map((file) => (
-          <Link key={file.filename} href={`/printers/${printer}/files/${file.filename}`} className='block'>
+          <Link key={file.filename} href={`/printers/${printer}/files/${file.filename}?model=${model}`} className='block'>
             <FileCard
               filename={file.filename}
               thumbnail={file.thumbnail}

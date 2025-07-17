@@ -63,7 +63,7 @@ export default function MainView({ params }: PrinterPageProps) {
   const renderView = () => {
     switch (activeView) {
       case 'files':
-        return <FilesView slug={slug} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
+        return <FilesView slug={slug} model={printer.model} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
       case 'settings':
         return <SettingsView slug={slug} model={printer.model}/>;
       case 'filament':
@@ -73,7 +73,7 @@ export default function MainView({ params }: PrinterPageProps) {
       case 'hms':
         return <HMSView slug={slug} model={printer.model}/>;
       default:
-        return <FilesView slug={slug} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
+        return <FilesView slug={slug} model={printer.model} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
     }
   };
 

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 interface FilePageProps {
   params: {
@@ -8,12 +9,9 @@ interface FilePageProps {
   };
 }
 
-interface File {
-
-}
-
 export default function MainView({ params }: FilePageProps) {
   const { file } = React.use(params);
+  const model = useSearchParams().get('model');
   const [ams, setAms] = useState(false);
   const [leveling, setLeveling] = useState(true);
   const [flowcali, setFlowcali] = useState(true);
@@ -41,37 +39,37 @@ export default function MainView({ params }: FilePageProps) {
         <img src="nonexistent.png" className="w-[40%]"/>
         <div className="flex flex-col m-4">
           <div onClick={() => setAms(!ams)}
-            className="flex m-2 p-2 transition rounded-md justify-center"
+            className="flex m-1 p-2 transition rounded-md justify-center"
             style={{backgroundColor: `var(--color-gray-${ams? '700' : '800'})`}}
           >
             <label>Use AMS</label>
           </div>
           <div onClick={() => setLeveling(!leveling)}
-            className="flex m-2 p-2 transition rounded-md justify-center"
+            className="flex m-1 p-2 transition rounded-md justify-center"
             style={{backgroundColor: `var(--color-gray-${leveling? '700' : '800'})`}}
           >
             <label>Bed Leveling</label>
           </div>
           <div onClick={() => setFlowcali(!flowcali)}
-            className="flex m-2 p-2 transition rounded-md justify-center"
+            className="flex m-1 p-2 transition rounded-md justify-center"
             style={{backgroundColor: `var(--color-gray-${flowcali? '700' : '800'})`}}
           >
             <label>Dynamic Flow Calibration</label>
           </div>
           <div onClick={() => setLayerins(!layerins)} 
-            className="flex m-2 p-2 transition rounded-md justify-center"
+            className={((model == "X1" || model == "X1C" || model == "X1E" || model == "H2D")? "" : "hidden ") + "flex m-1 p-2 transition rounded-md justify-center"}
             style={{backgroundColor: `var(--color-gray-${layerins? '700' : '800'})`}}
           >
             <label>Layer Inspect</label>
           </div>
           <div onClick={() => setTimelapse(!timelapse)} 
-            className="flex m-2 p-2 transition rounded-md justify-center"
+            className="flex m-1 p-2 transition rounded-md justify-center"
             style={{backgroundColor: `var(--color-gray-${timelapse? '700' : '800'})`}}
           >
             <label>Timelapse</label>
           </div>
           <div className="h-[50%]"/>
-          <button className="bg-gray-800 m-2 p-2 hover:bg-gray-700 transition rounded-md" onClick={() => {
+          <button className="bg-gray-800 m-1 p-2 hover:bg-gray-700 transition rounded-md" onClick={() => {
             alert('sending print');
             location.href = location.href.replace(/(.*\/).*\/.*$/, '$1');
           }}>

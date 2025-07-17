@@ -3,6 +3,7 @@ import FileGrid from "./FileGrid";
 
 interface Props {
   slug: string;
+  model: string;
   files: File[];
   setFiles: (files: File[]) => void;
   isLoading: boolean;
@@ -11,7 +12,7 @@ interface Props {
   setError: (error: string | null) => void;
 }
 
-export default function FilesView({ slug, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
+export default function FilesView({ slug, model, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
   return (
     <div className="view" id="files-page">
       <div className="flex flex-row justify-between">
@@ -36,7 +37,7 @@ export default function FilesView({ slug, files, setFiles, isLoading, setIsLoadi
           </button>
         </div>
       </div>
-      <FileGrid printer={slug} files={files} setFiles={setFiles} isLoading={isLoading} setIsLoading={setIsLoading} error={error} setError={setError}/>
+      <FileGrid printer={slug} model={model} files={files} setFiles={setFiles} isLoading={isLoading} setIsLoading={setIsLoading} error={error} setError={setError}/>
     </div>
   );
 }
