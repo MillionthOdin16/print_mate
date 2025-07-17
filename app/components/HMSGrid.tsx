@@ -8,9 +8,13 @@ interface HMSGridProps {
 }
 
 export default function HMSGrid({ name, model }: HMSGridProps) {
+  const [messages, setMessages] = useState<String[]>(["The build plate is not placed properly.", "some message"]);
+  const [codes, setCodes] = useState<String[]>(["HMS_0300-0D00-0001-0003", "HMS_1234-1234-1234-1234"])
   return (
     <div className="bg-gray-900 grid grid-cols-1 gap-2">
-      <HMSCard message="some random message goes here"/>
+      {messages.map((message, index) => (
+        <HMSCard message={message} code={codes[index]}/>
+      ))}
     </div>
   );
 }
