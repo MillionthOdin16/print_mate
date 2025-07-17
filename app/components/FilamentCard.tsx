@@ -23,9 +23,9 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
   const [selectedBrand, setSelectedBrand] = useState(''); // TODO: retrieve from printer
   const [selectedFilament, setSelectedFilament] = useState('PLA Basic'); // TODO: retrieve from printer
   const [amsUnits, setAmsUnits] = useState(2); // TODO: retrieve from printer
-  const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF']); // TODO: retrieve from printer
-  const [selectedColour, setSelectedColour] = useState('000000'); // TODO: retrieve from printer
-  const [amsColours, setAmsColours] = useState<String[]>(['000000', 'ffffff', 'abcdef', '0fab9c']) // TODO: retrieve from printer
+  const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF', 'PC FR', 'Support for PLA/PETG', 'PLA-CF', 'PLA-CF']); // TODO: retrieve from printer
+  const [selectedColour, setSelectedColour] = useState('#000000'); // TODO: retrieve from printer
+  const [amsColours, setAmsColours] = useState<String[]>(['#000000', '#ffffff', '#abcdef', '#0fab9c', '#000000', '#333333', '#f9a2b8', '#fafafa', '#aaaaaa']) // TODO: retrieve from printer
   
   const updateAmsFilament = (index: number, newValue: string) => {
     setAmsFilaments(prev => {
@@ -96,7 +96,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             <div className="flex flex-col items-center">
               <img src="/filament.png" className="w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2 bg-[#000000]"></section>
+                <section className="w-8 h-8 m-2" style={{backgroundColor: `${selectedColour}`}}></section>
                 <label className="text-3xl">{selectedFilament}</label>
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
           <div className="flex flex-row">
             <div className="flex flex-col w-[40%]">
               {Array.from({ length: amsUnits }).map((_, i) => (
-                <div 
+                <div key={i}
                   className={((selectedAms == i)? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700") + " p-2 m-1 rounded-md"}
                   onClick={() => setSelectedAms(i)}
                 >
@@ -133,7 +133,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >
               <img src="/filament.png" className="w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2 bg-[#000000]"></section>
+                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 4]}`}}></section>
                 <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-4]}</label>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >              
             <img src="/filament.png" className="w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2 bg-[#000000]"></section>
+                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 3]}`}}></section>
                 <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-3]}</label>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >              
               <img src="/filament.png" className="w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2 bg-[#000000]"></section>
+                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 2]}`}}></section>
                 <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-2]}</label>
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >              
               <img src="/filament.png" className="w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2 bg-[#000000]"></section>
+                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 1]}`}}></section>
                 <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-1]}</label>
               </div>
             </div>
@@ -269,6 +269,12 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
                 <input
                   type="color"
                   className="w-full h-10 bg-gray-700 rounded cursor-pointer"
+                  id="edit-colour"
+                  onChange={() => {
+                    let colour = (document.getElementById("edit-colour") as HTMLInputElement).value;
+                    if (activeView == 'ext') setSelectedColour(colour);
+                    else if (activeView == 'ams') updateAmsColour((((selectedAms + 1) * 4) - (4 - selectedSlot)), colour);
+                  }}
                 />
               </div>
             </div>
