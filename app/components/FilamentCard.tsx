@@ -22,10 +22,29 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
   const [activeAction, setActiveAction] = useState(''); // TODO: retrieve from printer
   const [selectedBrand, setSelectedBrand] = useState(''); // TODO: retrieve from printer
   const [selectedFilament, setSelectedFilament] = useState('PLA Basic'); // TODO: retrieve from printer
+  const [amsUnits, setAmsUnits] = useState(2); // TODO: retrieve from printer
+  const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF']); // TODO: retrieve from printer
+  const [selectedColour, setSelectedColour] = useState('000000'); // TODO: retrieve from printer
+  const [amsColours, setAmsColours] = useState<String[]>(['000000', 'ffffff', 'abcdef', '0fab9c']) // TODO: retrieve from printer
+  
+  const updateAmsFilament = (index: number, newValue: string) => {
+    setAmsFilaments(prev => {
+      const newArray = [...prev];
+      newArray[index] = newValue;
+      return newArray;
+    });
+  };
+
+  const updateAmsColour = (index: number, newValue: string) => {
+    setAmsColours(prev => {
+      const newArray = [...prev];
+      newArray[index] = newValue;
+      return newArray;
+    });
+  };
+
   const [selectedAms, setSelectedAms] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState(0);
-  const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF']); // TODO: retrieve from printer
-  // TODO: FILAMENT COLOURS
   const [loadingFilament, setLoadingFilament] = useState(false);
   const [unloadingFilament, setUnloadingFilament] = useState(false);
   const [filaments, setFilaments] = useState<Filament[]>([]);
@@ -56,7 +75,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
   const filteredFilaments = filaments.filter(f => f.brand === selectedBrand);
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4 flex flex-col">
+    <div className="bg-gray-900 rounded-lg p-4 flex flex-col items-start justify-start">
       <div className="flex flex-row">
         <div 
           className={((activeView == 'ext')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-2 p-2 rounded-md"} 
@@ -65,7 +84,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
         <label className="text-lg">External Spool</label>
         </div>
         <div 
-          className={((activeView == 'ams')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-2 p-2 rounded-md"} 
+          className={((activeView == 'ams')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-2 p-2 rounded-md" + ((amsUnits >= 1)? "" : " hidden")} 
           onClick={() => setActiveView('ams')}
         >
           <label className="text-lg">AMS</label>
@@ -95,10 +114,19 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
           </div>
         </div>
       )}
-      {activeView == "ams" && (
+      {(activeView == "ams") && (
         <div className="flex flex-col">
-          {/* TODO: multiple ams units navigation */}
           <div className="flex flex-row">
+            <div className="flex flex-col w-[40%]">
+              {Array.from({ length: amsUnits }).map((_, i) => (
+                <div 
+                  className={((selectedAms == i)? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700") + " p-2 m-1 rounded-md"}
+                  onClick={() => setSelectedAms(i)}
+                >
+                  <label>AMS {i}</label>
+                </div>
+              ))}
+            </div>
             <div 
               className={"flex flex-col items-center rounded-lg m-2 transition " + ((selectedSlot == 0)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(0)}
@@ -209,22 +237,22 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
                         else if (activeView == 'ams') {
                           switch (selectedSlot) {
                             case 0:
-                              setAmsFilaments([filament.material, amsFilaments[1], amsFilaments[2], amsFilaments[3]]);
+                              updateAmsFilament((((selectedAms + 1) * 4) - 4), filament.material)
                               break;
                             case 1:
-                              setAmsFilaments([amsFilaments[0], filament.material, amsFilaments[2], amsFilaments[3]]);
+                              updateAmsFilament((((selectedAms + 1) * 4) - 3), filament.material)
                               break;
                             case 2:
-                              setAmsFilaments([amsFilaments[0], amsFilaments[1], filament.material, amsFilaments[3]]);
+                              updateAmsFilament((((selectedAms + 1) * 4) - 2), filament.material)
                               break;
                             case 3:
-                              setAmsFilaments([amsFilaments[0], amsFilaments[1], amsFilaments[2], filament.material]);
+                              updateAmsFilament((((selectedAms + 1) * 4) - 1), filament.material)
                               break;
                           }
                         }
                       }}
                       style={{backgroundColor:
-                        `var(--color-gray-${(((activeView == 'ams')? amsFilaments[selectedSlot] : selectedFilament) == filament.material)? '700' : '800'})`}}
+                        `var(--color-gray-${(((activeView == 'ams')? amsFilaments[((selectedAms + 1) * 4) - (4 - selectedSlot)] : selectedFilament) == filament.material)? '700' : '800'})`}}
                     >
                       <div className="font-medium">{filament.material}</div>
                     </div>
