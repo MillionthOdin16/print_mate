@@ -148,7 +148,7 @@ export default function ControlCard({ name, model }: ControlCardProps) {
       )}
       {skipOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-[100%] max-w-5xl relative border border-gray-700">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-[100%] max-w-xl relative border border-gray-700">
             <button
               onClick={() => setSkipOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -195,33 +195,6 @@ export default function ControlCard({ name, model }: ControlCardProps) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-      {lightOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md relative border border-gray-700">
-            <button
-              onClick={() => setLightOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <h2 className="text-xl mb-4 text-white">Light {chamberLight? 'On' : 'Off'}</h2>
-            {/* TODO: CHECK AND COMPLETE THIS */}
           </div>
         </div>
       )}

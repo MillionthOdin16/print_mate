@@ -109,7 +109,7 @@ export default function SettingsCard({ name, model }: SettingsCardProps) {
       )}
       {activeView == 'device' && (
         <div>
-          <div className="flex flex-row content-center">
+          <div className="flex flex-row items-center">
             <button 
               className="flex bg-gray-800 p-2 rounded-[50%] hover:bg-gray-700 items-center justify-center m-2"
               onClick={() => setActiveView('main')}
@@ -137,12 +137,11 @@ export default function SettingsCard({ name, model }: SettingsCardProps) {
               <label>Perform the printer calibration</label> {/* TODO: add function */}
             </div>
           </div>
-          {/* TODO: xcam features */}
         </div>
       )}
       {activeView == 'network' && (
         <div>
-          <div className="flex flex-row content-center">
+          <div className="flex flex-row items-center">
             <button 
               className="flex bg-gray-800 p-2 rounded-[50%] hover:bg-gray-700 items-center justify-center m-2"
               onClick={() => setActiveView('main')}
@@ -167,7 +166,7 @@ export default function SettingsCard({ name, model }: SettingsCardProps) {
       )}
       {activeView == 'firmware' && (
         <div>
-          <div className="flex flex-row content-center">
+          <div className="flex flex-row items-center">
             <button 
               className="flex bg-gray-800 p-2 rounded-[50%] hover:bg-gray-700 items-center justify-center m-2"
               onClick={() => setActiveView('main')}
@@ -193,7 +192,7 @@ export default function SettingsCard({ name, model }: SettingsCardProps) {
       )}
       {activeView == 'ams' && (
         <div>
-          <div className="flex flex-row content-center">
+          <div className="flex flex-row items-center">
             <button 
               className="flex bg-gray-800 p-2 rounded-[50%] hover:bg-gray-700 items-center justify-center m-2"
               onClick={() => setActiveView('main')}

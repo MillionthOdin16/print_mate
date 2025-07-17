@@ -13,7 +13,7 @@ export default function HMSGrid({ name, model }: HMSGridProps) {
   return (
     <div className="bg-gray-900 grid grid-cols-1 gap-2">
       {messages.map((message, index) => (
-        <HMSCard message={message} code={codes[index]}/>
+        <HMSCard key={index} message={message} code={codes[index]}/>
       ))}
     </div>
   );

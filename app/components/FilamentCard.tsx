@@ -24,8 +24,8 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
   const [selectedFilament, setSelectedFilament] = useState('PLA Basic'); // TODO: retrieve from printer
   const [amsUnits, setAmsUnits] = useState(2); // TODO: retrieve from printer
   const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF', 'PC FR', 'Support for PLA/PETG', 'PLA-CF', 'PLA-CF']); // TODO: retrieve from printer
-  const [selectedColour, setSelectedColour] = useState('#000000'); // TODO: retrieve from printer
-  const [amsColours, setAmsColours] = useState<String[]>(['#000000', '#ffffff', '#abcdef', '#0fab9c', '#000000', '#333333', '#f9a2b8', '#fafafa', '#aaaaaa']) // TODO: retrieve from printer
+  const [selectedColour, setSelectedColour] = useState<string>('#ffaaaa'); // TODO: retrieve from printer
+  const [amsColours, setAmsColours] = useState<string[]>(['#000000', '#ffffff', '#abcdef', '#0fab9c', '#000000', '#333333', '#f9a2b8', '#fafafa', '#aaaaaa']) // TODO: retrieve from printer
   
   const updateAmsFilament = (index: number, newValue: string) => {
     setAmsFilaments(prev => {
@@ -75,7 +75,25 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
   const filteredFilaments = filaments.filter(f => f.brand === selectedBrand);
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4 flex flex-col items-start justify-start">
+    <div className="bg-gray-900 rounded-lg p-4 flex flex-col items-center">
+          <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-16 h-16 text-gray-800"
+    >
+      {/* Outer nozzle cone */}
+      <polygon points="32,4 20,28 44,28" className="fill-current text-gray-800" />
+
+      {/* Heater block */}
+      <rect x="24" y="28" width="16" height="10" rx="2" className="fill-current text-gray-700" />
+
+      {/* Heatbreak stub */}
+      <rect x="30" y="38" width="4" height="6" className="fill-current text-gray-600" />
+
+      {/* Tip of nozzle */}
+      <circle cx="32" cy="47" r="3" className="fill-current text-gray-900" />
+    </svg>
       <div className="flex flex-row">
         <div 
           className={((activeView == 'ext')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-2 p-2 rounded-md"} 
@@ -270,6 +288,9 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
                   type="color"
                   className="w-full h-10 bg-gray-700 rounded cursor-pointer"
                   id="edit-colour"
+                  defaultValue={
+                    ((activeView == 'ams')? amsColours[((selectedAms + 1) * 4) - (4 - selectedSlot)] : selectedColour)
+                  }
                   onChange={() => {
                     let colour = (document.getElementById("edit-colour") as HTMLInputElement).value;
                     if (activeView == 'ext') setSelectedColour(colour);
