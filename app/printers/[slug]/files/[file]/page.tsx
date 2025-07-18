@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 interface FilePageProps {
   params: {
@@ -21,7 +21,7 @@ export default function MainView({ params }: FilePageProps) {
   return (
     <div className="view bg-gray-900">
       <header className="flex flex-row items-center m-2">
-        <Link href={location.href.replace(/(.*\/).*\/.*$/, '$1')} className="flex items-center gap-2 text-white hover:text-gray-300 m-2">
+        <Link href={usePathname().split('/').slice(0, -2).join('/')} className="flex items-center gap-2 text-white hover:text-gray-300 m-2">
           <svg width="24" height="24" viewBox="0 0 24 24">
             <polyline
               points="16,4 8,12 16,20"
@@ -71,7 +71,7 @@ export default function MainView({ params }: FilePageProps) {
           <div className="h-[50%]"/>
           <button className="bg-gray-800 m-1 p-2 hover:bg-gray-700 transition rounded-md" onClick={() => {
             alert('sending print');
-            location.href = location.href.replace(/(.*\/).*\/.*$/, '$1');
+            location.href = location.href.split('/').slice(0, -2).join('/')
           }}>
             Start Print
           </button>

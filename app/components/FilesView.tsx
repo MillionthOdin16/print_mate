@@ -15,17 +15,17 @@ interface Props {
 export default function FilesView({ slug, model, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
   return (
     <div className="view" id="files-page">
-      <div className="flex flex-row justify-between">
-        <label className="text-2xl content-center">Print Files</label>
-        <div className="flex content-center justify-center">
-          <span className="text-xl text-white m-2">{slug}</span>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+        <label className="text-lg sm:text-2xl content-center">Print Files</label>
+        <div className="flex content-center justify-center items-center">
+          <span className="text-sm sm:text-xl text-white m-1 sm:m-2">{slug}</span>
           <button onClick={() => {window.location.reload()}}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              className="h-5 w-5 text-gray-600 hover:text-blue-500 transition-colors"
+              className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600 hover:text-blue-500 transition-colors"
             >
             <path
               strokeLinecap="round"

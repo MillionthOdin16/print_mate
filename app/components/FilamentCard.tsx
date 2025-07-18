@@ -76,125 +76,103 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
 
   return (
     <div className="bg-gray-900 rounded-lg p-4 flex flex-col items-center">
-          <svg
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-16 h-16 text-gray-800"
-    >
-      {/* Outer nozzle cone */}
-      <polygon points="32,4 20,28 44,28" className="fill-current text-gray-800" />
-
-      {/* Heater block */}
-      <rect x="24" y="28" width="16" height="10" rx="2" className="fill-current text-gray-700" />
-
-      {/* Heatbreak stub */}
-      <rect x="30" y="38" width="4" height="6" className="fill-current text-gray-600" />
-
-      {/* Tip of nozzle */}
-      <circle cx="32" cy="47" r="3" className="fill-current text-gray-900" />
-    </svg>
-      <div className="flex flex-row">
+      <div className="flex flex-col sm:flex-row">
         <div 
-          className={((activeView == 'ext')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-2 p-2 rounded-md"} 
+          className={((activeView == 'ext')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-1 sm:m-2 p-1 sm:p-2 rounded-md"} 
           onClick={() => setActiveView('ext')}
         >
-        <label className="text-lg">External Spool</label>
+        <label className="text-sm sm:text-lg">External Spool</label>
         </div>
         <div 
-          className={((activeView == 'ams')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-2 p-2 rounded-md" + ((amsUnits >= 1)? "" : " hidden")} 
+          className={((activeView == 'ams')? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700') + " transition m-1 sm:m-2 p-1 sm:p-2 rounded-md" + ((amsUnits >= 1)? "" : " hidden")} 
           onClick={() => setActiveView('ams')}
         >
-          <label className="text-lg">AMS</label>
+          <label className="text-sm sm:text-lg">AMS</label>
         </div>
       </div>
       {activeView == "ext" && (
-        <div className="flex flex-row">
-          <div className="flex flex-col">
+        <div className="flex flex-col sm:flex-row w-full">
+          <div className="flex flex-col w-full sm:w-auto">
             <div className="flex flex-col items-center">
-              <img src="/filament.png" className="w-[50%]"/>
+              <img src="/filament.png" className="w-[60%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2" style={{backgroundColor: `${selectedColour}`}}></section>
-                <label className="text-3xl">{selectedFilament}</label>
+                <section className="w-6 h-6 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${selectedColour}`}}></section>
+                <label className="text-lg sm:text-3xl">{selectedFilament}</label>
               </div>
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center">
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-3xl p-8 m-2 h-[20%] items-center justify-center w-[100%] " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('loading filament');setLoadingFilament(true);}}>
+          <div className="flex flex-col justify-center items-center w-full sm:w-auto">
+            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%] " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('loading filament');setLoadingFilament(true);}}>
               Load
             </button>
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-3xl p-8 m-2 h-[20%] items-center justify-center w-[100%] " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('unloading filament');setUnloadingFilament(true);}}>
+            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%] " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('unloading filament');setUnloadingFilament(true);}}>
               Unload
             </button>
-            <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-3xl p-8 m-2 h-[20%] items-center justify-center w-[100%]"} onClick={() => handleButtonClick('Edit')}>
+            <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]"} onClick={() => handleButtonClick('Edit')}>
               Edit
             </button>
           </div>
         </div>
       )}
       {(activeView == "ams") && (
-        <div className="flex flex-col">
-          <div className="flex flex-row">
-            <div className="flex flex-col w-[40%]">
+        <div className="flex flex-col w-full">
+          <div className="flex flex-col sm:flex-row w-full">
+            <div className="flex flex-col w-full sm:w-[40%]">
               {Array.from({ length: amsUnits }).map((_, i) => (
                 <div key={i}
-                  className={((selectedAms == i)? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700") + " p-2 m-1 rounded-md"}
+                  className={((selectedAms == i)? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700") + " p-1 sm:p-2 m-1 rounded-md"}
                   onClick={() => setSelectedAms(i)}
                 >
-                  <label>AMS {i}</label>
+                  <label className="text-sm sm:text-base">AMS {i}</label>
                 </div>
               ))}
             </div>
-            <div 
-              className={"flex flex-col items-center rounded-lg m-2 transition " + ((selectedSlot == 0)? "bg-gray-700" : "bg-gray-800")}
+            <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 0)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(0)}
             >
-              <img src="/filament.png" className="w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 4]}`}}></section>
-                <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-4]}</label>
+                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 4]}`}}></section>
+                <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-4]}</label>
               </div>
             </div>
-            <div 
-              className={"flex flex-col items-center rounded-lg m-2 transition " + ((selectedSlot == 1)? "bg-gray-700" : "bg-gray-800")}
+            <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 1)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(1)}
             >              
-            <img src="/filament.png" className="w-[50%]"/>
+            <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 3]}`}}></section>
-                <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-3]}</label>
+                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 3]}`}}></section>
+                <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-3]}</label>
               </div>
             </div>
-            <div 
-              className={"flex flex-col items-center rounded-lg m-2 transition " + ((selectedSlot == 2)? "bg-gray-700" : "bg-gray-800")}
+            <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 2)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(2)}
             >              
-              <img src="/filament.png" className="w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 2]}`}}></section>
-                <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-2]}</label>
+                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 2]}`}}></section>
+                <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-2]}</label>
               </div>
             </div>
-            <div 
-              className={"flex flex-col items-center rounded-lg m-2 transition " + ((selectedSlot == 3)? "bg-gray-700" : "bg-gray-800")}
+            <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 3)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(3)}
             >              
-              <img src="/filament.png" className="w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-8 h-8 m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 1]}`}}></section>
-                <label className="text-3xl">{amsFilaments[(selectedAms+1)*4-1]}</label>
+                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 1]}`}}></section>
+                <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-1]}</label>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-row justify-center items-center">
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-3xl p-8 m-2 h-[20%] items-center justify-center " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('loading filament');setLoadingFilament(true);}}>
+          <div className="flex flex-col sm:flex-row justify-center items-center w-full">
+            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('loading filament');setLoadingFilament(true);}}>
               Load
             </button>
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-3xl p-8 m-2 h-[20%] items-center justify-center " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('unloading filament');setUnloadingFilament(true);}}>
+            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('unloading filament');setUnloadingFilament(true);}}>
               Unload
             </button>
-            <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-3xl p-8 m-2 h-[20%] items-center justify-center "} onClick={() => handleButtonClick('Edit')}>
+            <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "} onClick={() => handleButtonClick('Edit')}>
               Edit
             </button>
           </div>
