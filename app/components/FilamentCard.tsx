@@ -49,6 +49,7 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
   const [unloadingFilament, setUnloadingFilament] = useState(false);
   const [filaments, setFilaments] = useState<Filament[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchFilaments = async () => {
@@ -72,7 +73,10 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
     setEditOpen(true);
   };
 
-  const filteredFilaments = filaments.filter(f => f.brand === selectedBrand);
+  const filteredFilaments = filaments.filter(f => 
+    f.brand === selectedBrand && 
+    f.material.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="bg-gray-900 rounded-lg p-4 flex flex-col items-center">
@@ -222,8 +226,16 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
               </div>
 
               <div className="max-h-60 overflow-y-auto border border-gray-700 rounded">
+                <input 
+                  type="text" 
+                  className="bg-gray-700 w-max p-2 m-2 rounded-md" 
+                  placeholder='Search...'
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                  }}
+                />
                 {filteredFilaments.length > 0 ? (
-                  filteredFilaments.map((filament) => (
+                  filteredFilaments.filter(f => f.material.toLowerCase().includes(searchTerm.toLowerCase())).map((filament) => (
                     <div 
                       key={filament.id}
                       className="p-2 transition"
