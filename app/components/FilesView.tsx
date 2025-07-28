@@ -1,18 +1,26 @@
 'use client';
 import FileGrid from "./FileGrid";
 
+interface PrinterFile {
+  filename: string;
+  thumbnail: string;
+}
+
 interface Props {
   slug: string;
   model: string;
-  files: File[];
-  setFiles: (files: File[]) => void;
+  host: string;
+  port: number;
+  password: string;
+  files: PrinterFile[];
+  setFiles: (files: PrinterFile[]) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   error: string | null;
   setError: (error: string | null) => void;
 }
 
-export default function FilesView({ slug, model, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
+export default function FilesView({ slug, model, host, port, password, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
   return (
     <div className="view" id="files-page">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
@@ -37,7 +45,19 @@ export default function FilesView({ slug, model, files, setFiles, isLoading, set
           </button>
         </div>
       </div>
-      <FileGrid printer={slug} model={model} files={files} setFiles={setFiles} isLoading={isLoading} setIsLoading={setIsLoading} error={error} setError={setError}/>
+      <FileGrid 
+        printer={slug} 
+        model={model} 
+        host={host}
+        port={port}
+        password={password}
+        files={files} 
+        setFiles={setFiles} 
+        isLoading={isLoading} 
+        setIsLoading={setIsLoading} 
+        error={error} 
+        setError={setError}
+      />
     </div>
   );
 }

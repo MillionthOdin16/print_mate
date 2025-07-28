@@ -3,7 +3,7 @@ import Link from 'next/link';
 import FileCard from './FileCard';
 import { useEffect } from 'react';
 
-interface File {
+interface PrinterFile {
   filename: string;
   thumbnail: string;
 }
@@ -11,8 +11,11 @@ interface File {
 interface FileGridProps {
   printer: string;
   model: string;
-  files: File[];
-  setFiles: (files: File[]) => void;
+  host: string;
+  port: number;
+  password: string;
+  files: PrinterFile[];
+  setFiles: (files: PrinterFile[]) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   error: string | null;
@@ -22,6 +25,9 @@ interface FileGridProps {
 export default function FileGrid({
   printer,
   model,
+  host,
+  port,
+  password,
   files,
   setFiles,
   isLoading,
@@ -34,7 +40,17 @@ export default function FileGrid({
       if (files.length === 0) {
         try {
           setIsLoading(true);
-          const res = await fetch(`/api/printers/${printer}/files`);
+          const res = await fetch(`/api/printers/${printer}/files`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              host,
+              port,
+              password
+            })
+          });
           if (!res.ok) {
             const errData = await res.json();
             setError(errData.detail || 'Unknown error');
@@ -51,7 +67,7 @@ export default function FileGrid({
     }
 
     fetchFiles();
-  }, [printer, files.length, setFiles, setIsLoading, setError]);
+  }, [printer, host, port, password, files.length, setFiles, setIsLoading, setError]);
 
   if (isLoading) {
     return (
