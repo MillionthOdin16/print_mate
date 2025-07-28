@@ -8,12 +8,12 @@ export async function POST(req: NextRequest) {
   
   if (filename) { 
     // file retrieval request
-    const { host, port, password } = await req.json();
-    const printerKey = `${host}:${port}`;
+    const { host, port, password, serial } = await req.json();
+    const printerKey = `${host}:${serial}`;
 
-    if (!host || !port || !password) {
+    if (!host || !port || !password || !serial) {
       return new Response(JSON.stringify({ 
-        error: 'Missing required parameters: host, port, password' 
+        error: 'Missing required parameters: host, port, password, serial' 
       }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json' }

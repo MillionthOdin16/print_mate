@@ -28,7 +28,7 @@ interface Printer {
   password: string;
   serial: string;
   status: string;
-  port?: number; // FTP port, defaults to 990
+  port?: number;
 }
 
 export default function MainView({ params }: PrinterPageProps) {
@@ -42,7 +42,6 @@ export default function MainView({ params }: PrinterPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Add printer state and subscription management
   const [printerState, setPrinterState] = useState<any>({ print: {} });
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [online, setOnline] = useState(false);
@@ -51,12 +50,10 @@ export default function MainView({ params }: PrinterPageProps) {
   const { slug } = React.use(params);
   const printer = printers.find((p) => p.slug === slug);
 
-  // Subscription logic moved from ControlCard
   const connectToStream = async () => {
     if (!printer) return null;
 
     try {
-      // Connect directly to the stream via POST with credentials
       const response = await fetch(`/api/printers/${printer.name}/mqtt/stream`, {
         method: 'POST',
         headers: {
@@ -74,7 +71,6 @@ export default function MainView({ params }: PrinterPageProps) {
         throw new Error(`Failed to establish stream: ${response.status}`);
       }
 
-      // Response is the stream itself, not a token
       const reader = response.body?.getReader();
       if (!reader) {
         throw new Error('No response body available');
@@ -97,14 +93,13 @@ export default function MainView({ params }: PrinterPageProps) {
 
             buffer += decoder.decode(value, { stream: true });
             
-            // Process complete messages (separated by \n\n)
             const lines = buffer.split('\n\n');
-            buffer = lines.pop() || ''; // Keep incomplete message in buffer
+            buffer = lines.pop() || '';
             
             for (const line of lines) {
               if (line.startsWith('data: ')) {
                 try {
-                  const data = JSON.parse(line.slice(6)); // Remove 'data: ' prefix
+                  const data = JSON.parse(line.slice(6));
                   
                   switch (data.type) {
                     case 'initial':
@@ -116,7 +111,7 @@ export default function MainView({ params }: PrinterPageProps) {
                     case 'connected':
                       setOnline(data.connected);
                       setIsSubscribed(true);
-                      // Send pushall command when connected
+
                       fetch(`/api/printers/${printer.name}/mqtt/command`, {
                         method: 'POST',
                         headers: {
@@ -157,7 +152,6 @@ export default function MainView({ params }: PrinterPageProps) {
 
       processStream();
 
-      // Return cleanup function
       return () => {
         reader.cancel();
       };
@@ -183,22 +177,33 @@ export default function MainView({ params }: PrinterPageProps) {
     fetchPrinters();
   }, []);
 
-  // Initialize subscription when printer is available
   useEffect(() => {
     if (!printer) return;
 
+    let cleanup: (() => void) | null = null;
+
     const initializePrinter = async () => {
-      const eventSource = await connectToStream();
-      
-      return () => {
-        eventSource?.close();
-      };
+      cleanup = await connectToStream();
     };
 
-    const cleanup = initializePrinter();
+    initializePrinter();
+    
+    const handleBeforeUnload = () => {
+      if (cleanup) {
+        cleanup();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handleBeforeUnload);
     
     return () => {
-      cleanup.then(cleanupFn => cleanupFn?.());
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handleBeforeUnload);
+      
+      if (cleanup) {
+        cleanup();
+      }
     };
   }, [printer?.ip, printer?.password, printer?.serial, printer?.name]);
 
@@ -219,6 +224,7 @@ export default function MainView({ params }: PrinterPageProps) {
           host={printer.ip}
           port={printer.port || 990}
           password={printer.password}
+          serial={printer.serial}
           files={files} 
           setFiles={setFiles} 
           isLoading={filesLoading} 

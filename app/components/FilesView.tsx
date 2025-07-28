@@ -12,6 +12,7 @@ interface Props {
   host: string;
   port: number;
   password: string;
+  serial: string;
   files: PrinterFile[];
   setFiles: (files: PrinterFile[]) => void;
   isLoading: boolean;
@@ -20,7 +21,7 @@ interface Props {
   setError: (error: string | null) => void;
 }
 
-export default function FilesView({ slug, model, host, port, password, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
+export default function FilesView({ slug, model, host, port, password, serial, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
   return (
     <div className="view" id="files-page">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
@@ -51,6 +52,7 @@ export default function FilesView({ slug, model, host, port, password, files, se
         host={host}
         port={port}
         password={password}
+        serial={serial}
         files={files} 
         setFiles={setFiles} 
         isLoading={isLoading} 

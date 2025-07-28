@@ -87,7 +87,8 @@ export default function ControlCard({ name, ip, password, serial, model, online,
         body: JSON.stringify({
           host: ip,
           port: '990',
-          password: password
+          password: password,
+          serial: serial
         })
       });
 
