@@ -1,18 +1,21 @@
 'use client';
 import Link from 'next/link';
 import FileCard from './FileCard';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-interface File {
+interface PrinterFile {
   filename: string;
-  thumbnail: string;
 }
 
 interface FileGridProps {
   printer: string;
   model: string;
-  files: File[];
-  setFiles: (files: File[]) => void;
+  host: string;
+  port: number;
+  password: string;
+  serial: string;
+  files: PrinterFile[];
+  setFiles: (files: PrinterFile[]) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   error: string | null;
@@ -22,6 +25,10 @@ interface FileGridProps {
 export default function FileGrid({
   printer,
   model,
+  host,
+  port,
+  password,
+  serial,
   files,
   setFiles,
   isLoading,
@@ -29,12 +36,25 @@ export default function FileGrid({
   error,
   setError
 }: FileGridProps) {
+  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+
   useEffect(() => {
     async function fetchFiles() {
       if (files.length === 0) {
         try {
           setIsLoading(true);
-          const res = await fetch(`/api/printers/${printer}/files`);
+          const res = await fetch(`/api/printers/${printer}/files`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              host,
+              port,
+              password,
+              serial: serial
+            })
+          });
           if (!res.ok) {
             const errData = await res.json();
             setError(errData.detail || 'Unknown error');
@@ -51,7 +71,7 @@ export default function FileGrid({
     }
 
     fetchFiles();
-  }, [printer, files.length, setFiles, setIsLoading, setError]);
+  }, [printer, host, port, password, serial, files.length, setFiles, setIsLoading, setError]);
 
   if (isLoading) {
     return (
@@ -69,6 +89,8 @@ export default function FileGrid({
       suggestion = 'File/Directory does not exist. Check the SD card is inserted, or reboot the printer.';
     } else if (error.includes('530')) {
       suggestion = 'Access denied. Check the printer access code.';
+    } else {
+      suggestion = 'Unknown error. Check the printer is online and accessible.';
     }
     return (
       <div className="p-6 text-center text-gray-300">
@@ -80,13 +102,11 @@ export default function FileGrid({
 
   return (
     <div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {files.map((file) => (
           <Link key={file.filename} href={`/printers/${printer}/files/${file.filename}?model=${model}`} className='block'>
             <FileCard
-              filename={file.filename}
-              thumbnail={file.thumbnail}
-            />
+              filename={file.filename}            />
           </Link>
         ))}
       </div>

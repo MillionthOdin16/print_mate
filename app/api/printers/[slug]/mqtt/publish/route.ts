@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await mqttManager.publish(host, serial, password, payload);
+    await mqttManager.publish(host, password, serial, JSON.stringify(payload));
 
     return new Response(JSON.stringify({ success: true }), { 
       status: 200,
