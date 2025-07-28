@@ -111,6 +111,7 @@ export default function MainView({ params }: PrinterPageProps) {
                     case 'connected':
                       setOnline(data.connected);
                       setIsSubscribed(true);
+
                       fetch(`/api/printers/${printer.name}/mqtt/command`, {
                         method: 'POST',
                         headers: {

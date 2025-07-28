@@ -93,16 +93,16 @@ export default function FileGrid({
       suggestion = 'Unknown error. Check the printer is online and accessible.';
     }
     return (
-      <div className="p-6 text-center text-gray-300">
-        <p>Could not load files list from {printer}: {suggestion}</p>
-        <p>Returned error: {error}</p>
+      <div className="p-4 sm:p-6 text-center text-gray-300">
+        <p className="text-sm sm:text-base">Could not load files list from {printer}: {suggestion}</p>
+        <p className="text-xs sm:text-sm mt-2">Returned error: {error}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
         {files.map((file) => (
           <Link key={file.filename} href={`/printers/${printer}/files/${file.filename}?model=${model}`} className='block'>
             <FileCard
