@@ -5,9 +5,10 @@ import { useState } from 'react';
 interface SettingsCardProps {
   name: string;
   model: string;
+  serial: string;
 }
 
-export default function SettingsCard({ name, model }: SettingsCardProps) {
+export default function SettingsCard({ name, model, serial }: SettingsCardProps) {
   const [activeView, setActiveView] = useState<'main' | 'device' | 'network' | 'firmware' | 'ams'>('main');
   const [amsSettings, setAmsSettings] = useState<boolean[]>([false, false]); //TODO: get from printer, set to printer
   const [firmware, setFirmware] = useState('01.04.01.00'); //TODO: get from printer
@@ -129,12 +130,18 @@ export default function SettingsCard({ name, model }: SettingsCardProps) {
           </div>
           <div className="flex flex-col">
             <label>Device ID: {name}</label>
-            <label>Firmware version: {firmware}</label>
             <label>Model: {model}</label>
+            <label>Firmware version: {firmware}</label>
+            <label>Serial number: {serial}</label>
 
             <div className="flex flex-row items-center">
               <button className="bg-gray-800 rounded-md hover:bg-gray-700 p-2 m-2 w-min">Calibration</button>
               <label>Perform the printer calibration</label> {/* TODO: add function */}
+            </div>
+
+            <div className="flex flex-row items-center">
+              <button className="bg-gray-800 rounded-md hover:bg-gray-700 p-2 m-2 w-min">Nozzle</button>
+              <label>Current: 0.4mm Hardened</label> {/* TODO: add function */}
             </div>
           </div>
         </div>
@@ -187,6 +194,13 @@ export default function SettingsCard({ name, model }: SettingsCardProps) {
           <div className="flex flex-col">
             <label>Current firmware version: {firmware}</label>
             <button className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min">Update</button> {/* TODO: add function */}
+          </div>
+          <div className="flex flex-col">
+            <label>Firmware history:</label>
+            <div>
+              {/* TODO */}
+            </div>
+            <button className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min">Get</button> {/* TODO: add function */}
           </div>
         </div>
       )}

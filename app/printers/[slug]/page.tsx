@@ -1,6 +1,6 @@
 'use client';
 import { editPrinter, removePrinter } from '@/lib/printers';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ControlView from '@/app/components/ControlView';
 import FilesView from '@/app/components/FilesView';
@@ -10,9 +10,14 @@ import SettingsView from '@/app/components/SettingsView';
 import React from 'react';
 
 interface PrinterPageProps {
-  params: {
-    printer: string;
-  };
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+interface PrinterFile {
+  filename: string;
+  thumbnail: string;
 }
 
 interface Printer {
@@ -23,18 +28,147 @@ interface Printer {
   password: string;
   serial: string;
   status: string;
+  port?: number; // FTP port, defaults to 990
 }
 
 export default function MainView({ params }: PrinterPageProps) {
   const [printers, setPrinters] = useState<Printer[]>([]);
-  const [activeView, setActiveView] = useState<'files' | 'settings' | 'filament' | 'control' | 'hms'>('files');
-  const [files, setFiles] = useState<File[]>([]);
+  const [activeView, setActiveView] = useState<'files' | 'settings' | 'filament' | 'control' | 'hms'>('control');
+  const [files, setFiles] = useState<PrinterFile[]>([]);
   const [filesLoading, setFilesLoading] = useState(true);
   const [filesError, setFilesError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Add printer state and subscription management
+  const [printerState, setPrinterState] = useState<any>({ print: {} });
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [online, setOnline] = useState(false);
+  const subscriberId = useRef(`printer-page-${Date.now()}`);
+
+  const { slug } = React.use(params);
+  const printer = printers.find((p) => p.slug === slug);
+
+  // Subscription logic moved from ControlCard
+  const connectToStream = async () => {
+    if (!printer) return null;
+
+    try {
+      // Connect directly to the stream via POST with credentials
+      const response = await fetch(`/api/printers/${printer.name}/mqtt/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          host: printer.ip,
+          password: printer.password,
+          serial: printer.serial,
+          subscriberId: subscriberId.current
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to establish stream: ${response.status}`);
+      }
+
+      // Response is the stream itself, not a token
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body available');
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      const processStream = async () => {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+              console.log('Stream ended');
+              setOnline(false);
+              setIsSubscribed(false);
+              break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+            
+            // Process complete messages (separated by \n\n)
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || ''; // Keep incomplete message in buffer
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6)); // Remove 'data: ' prefix
+                  
+                  switch (data.type) {
+                    case 'initial':
+                    case 'update':
+                      setPrinterState(data.data);
+                      setOnline(data.connected);
+                      setIsSubscribed(true);
+                      break;
+                    case 'connected':
+                      setOnline(data.connected);
+                      setIsSubscribed(true);
+                      // Send pushall command when connected
+                      fetch(`/api/printers/${printer.name}/mqtt/command`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          slug: printer.name,
+                          host: printer.ip,
+                          password: printer.password,
+                          serial: printer.serial,
+                          command: 'pushall',
+                          params: {}
+                        })
+                      });
+                      break;
+                    case 'heartbeat':
+                      setOnline(data.connected);
+                      break;
+                    case 'error':
+                      console.error('Stream error:', data.error);
+                      setOnline(false);
+                      break;
+                  }
+                } catch (error) {
+                  console.error('Failed to parse stream data:', error);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Stream processing error:', error);
+          setOnline(false);
+          setIsSubscribed(false);
+        } finally {
+          reader.releaseLock();
+        }
+      };
+
+      processStream();
+
+      // Return cleanup function
+      return () => {
+        reader.cancel();
+      };
+      
+    } catch (error) {
+      console.error('Failed to connect to stream:', error);
+      setOnline(false);
+      setIsSubscribed(false);
+      return null;
+    }
+  };
 
   useEffect(() => {
     async function fetchPrinters() {
@@ -49,8 +183,24 @@ export default function MainView({ params }: PrinterPageProps) {
     fetchPrinters();
   }, []);
 
-  const { slug } = React.use(params);
-  const printer = printers.find((p) => p.slug === slug);
+  // Initialize subscription when printer is available
+  useEffect(() => {
+    if (!printer) return;
+
+    const initializePrinter = async () => {
+      const eventSource = await connectToStream();
+      
+      return () => {
+        eventSource?.close();
+      };
+    };
+
+    const cleanup = initializePrinter();
+    
+    return () => {
+      cleanup.then(cleanupFn => cleanupFn?.());
+    };
+  }, [printer?.ip, printer?.password, printer?.serial, printer?.name]);
 
   if (!printer) {
     return (
@@ -63,17 +213,47 @@ export default function MainView({ params }: PrinterPageProps) {
   const renderView = () => {
     switch (activeView) {
       case 'files':
-        return <FilesView slug={slug} model={printer.model} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
+        return <FilesView 
+          slug={slug} 
+          model={printer.model} 
+          host={printer.ip}
+          port={printer.port || 990}
+          password={printer.password}
+          files={files} 
+          setFiles={setFiles} 
+          isLoading={filesLoading} 
+          setIsLoading={setFilesLoading} 
+          error={filesError} 
+          setError={setFilesError}
+        />;
       case 'settings':
-        return <SettingsView slug={slug} model={printer.model}/>;
+        return <SettingsView slug={slug} model={printer.model} serial={printer.serial}/>;
       case 'filament':
         return <FilamentView slug={slug} model={printer.model}/>;
       case 'control':
-        return <ControlView slug={slug} model={printer.model}/>;
+        return <ControlView 
+          slug={slug} 
+          ip={printer.ip} 
+          password={printer.password} 
+          serial={printer.serial} 
+          model={printer.model}
+          printerState={printerState}
+          online={online}
+          setOnline={setOnline}
+        />;
       case 'hms':
         return <HMSView slug={slug} model={printer.model}/>;
       default:
-        return <FilesView slug={slug} model={printer.model} files={files} setFiles={setFiles} isLoading={filesLoading} setIsLoading={setFilesLoading} error={filesError} setError={setFilesError}/>;
+        return <ControlView 
+          slug={slug} 
+          ip={printer.ip} 
+          password={printer.password} 
+          serial={printer.serial} 
+          model={printer.model}
+          printerState={printerState}
+          online={online}
+          setOnline={setOnline}
+        />;
     }
   };
 

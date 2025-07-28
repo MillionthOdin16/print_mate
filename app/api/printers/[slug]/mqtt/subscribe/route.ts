@@ -14,8 +14,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await mqttManager.subscribe(host, serial, password, subscriberId, (topic, message) => {
-      console.log(`Message received on ${topic}:`, message.toString());
+    // Simple subscription without data handling (data is now handled in stream API)
+    await mqttManager.subscribe(host, password, serial, subscriberId, () => {
+      // Empty handler - actual data processing is now in the stream API
     });
 
     return new Response(JSON.stringify({ 
@@ -53,41 +54,6 @@ export async function DELETE(req: NextRequest) {
     return new Response(JSON.stringify({ 
       success: true,
       message: 'Successfully unsubscribed from MQTT broker'
-    }), { 
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), { 
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
-
-export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const host = searchParams.get('host');
-    const serial = searchParams.get('serial');
-
-    if (!host || !serial) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing required parameters: host, serial' 
-      }), { 
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    const connected = mqttManager.isConnected(host, serial);
-    const stats = mqttManager.getConnectionStats();
-
-    return new Response(JSON.stringify({ 
-      success: true,
-      connected,
-      stats: stats[`${host}:${serial}`] || null
     }), { 
       status: 200,
       headers: { 'Content-Type': 'application/json' }

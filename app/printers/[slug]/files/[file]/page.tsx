@@ -36,7 +36,7 @@ export default function MainView({ params }: FilePageProps) {
         <span className="m-2">{file}</span>
       </header>
       <div className="flex flex-row justify-between">
-        <img src="nonexistent.png" className="w-[40%]"/>
+        <img src="/no_image.png" className="w-[40%]"/>
         <div className="flex flex-col m-4">
           <div onClick={() => setAms(!ams)}
             className="flex m-1 p-2 transition rounded-md justify-center"
