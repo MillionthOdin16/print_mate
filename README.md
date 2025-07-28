@@ -2,15 +2,15 @@
 A react/next.js based controller for Bambu Lab 3D printers. 
 
 ## Printer Compatibility
-A1 series - Tested and working
-P1 series - Untested, most likely will work
-X1 series - Untested, most likely will work
+A1 series - Tested and working\
+P1 series - Untested, most likely will work\
+X1 series - Untested, most likely will work\
 H2D - Untested, unlikely to function correctly
 
 ## Features
-* Connect to Bambu Lab printers over MQTT R
+* Connect to Bambu Lab printers over MQTT
 * Receive data about temperature, status, etc
-* List and print files on the internal storage
+* List and (todo: print) files on the internal storage
 * Control an in-progress print
 
 ## Planned features
