@@ -36,8 +36,6 @@ export default function FileGrid({
   error,
   setError
 }: FileGridProps) {
-  const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
-
   useEffect(() => {
     async function fetchFiles() {
       if (files.length === 0) {
@@ -104,9 +102,10 @@ export default function FileGrid({
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
         {files.map((file) => (
-          <Link key={file.filename} href={`/printers/${printer}/files/${file.filename}?model=${model}`} className='block'>
+          <Link key={file.filename} href={`/printers/${printer}/files/${encodeURIComponent(file.filename)}?model=${model}`} className='block'>
             <FileCard
-              filename={file.filename}            />
+              filename={file.filename}
+            />
           </Link>
         ))}
       </div>

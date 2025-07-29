@@ -4,7 +4,7 @@ import { getCachedFile, cacheFile } from '@/lib/fileCache';
 
 export async function POST(req: NextRequest) {
   const url = new URL(req.url);
-  const filename = url.searchParams.get('filename');
+  const filename = decodeURIComponent(url.searchParams.get('filename') || '');
   
   if (filename) { 
     // file retrieval request

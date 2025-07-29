@@ -95,16 +95,16 @@ const COMMANDS = {
       "sequence_id": "0",
       "command": "project_file",
       "param": "%s",
-      "project_id": "0",
-      "profile_id": "0",
-      "task_id": "0",
-      "subtask_id": "0",
+      "project_id": "0", // always 0
+      "profile_id": "0", // always 0
+      "task_id": "0", // always 0
+      "subtask_id": "0", // always 0
       "subtask_name": "",
-      "file": "%s",
+      "file": "", // not required when param is specified in url
       "url": "%s",
-      "md5": "%s",
+      "md5": "", // optional
       "timelapse": "%s",
-      "bed_type": "auto",
+      "bed_type": "auto", // always auto
       "bed_levelling": "%s",
       "flow_cali": "%s",
       "vibration_cali": "%s",
