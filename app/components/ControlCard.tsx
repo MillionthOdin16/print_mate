@@ -171,7 +171,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
   }, [gcodeFile, ip, password, name]);
 
   return (
-    <div className="flex flex-col sm:flex-row bg-gray-900 rounded-lg p-2 sm:p-4 w-[100%] h-[100%]">
+    <div className="flex flex-col sm:flex-row bg-gray-900 rounded-lg p-2 sm:p-4">
       <div className="flex flex-col w-full sm:w-[80%] m-1 sm:m-2">
         <img src={previewImage} className="w-[100%]"/>
         <div className="flex flex-row justify-between">
@@ -234,46 +234,45 @@ export default function ControlCard({ name, ip, password, serial, model, online,
             <path d="M9.5 19a2 2 0 104 0h-4z"/>
           </svg>
         </button>
-        <button className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2">
+        <button className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2 max-h-[50px]">
           {gcodeStatus}
         </button>
-        <label className="text-xs sm:text-med">{currentLayer}/{totalLayer}</label>
       </div>
-      <div className="flex justify-end w-[100%]">
+      <div className="flex justify-end w-full">
         <div className="flex flex-col w-full sm:w-[45%] m-1 sm:m-2">
           <div
-            className="flex bg-gray-800 m-1 sm:m-2 rounded-md h-[15%] items-center hover:bg-gray-700 transition"
+            className="flex bg-gray-800 m-1 sm:m-2 rounded-md max-h-[15%] items-center hover:bg-gray-700 transition"
             onClick={() => setNozzleOpen(true)}
           >
-            <img src="/nozzle.png" className="h-[100%]" />
+            <img src="/nozzle.png" className="h-32"/>
             <span className="text-sm sm:text-xl m-2 sm:m-4">{nozzleTemperature}° / {nozzleTarget}°</span>
           </div>
           <div
-            className="flex bg-gray-800 m-1 sm:m-2 rounded-md h-[15%] items-center hover:bg-gray-700 transition"
+            className="flex bg-gray-800 m-1 sm:m-2 rounded-md max-h-[15%] items-center hover:bg-gray-700 transition"
             onClick={() => setBedOpen(true)}
           >
-            <img src="/bed.png" className="h-[100%]" />
+            <img src="/bed.png" className="h-32"/>
             <span className="text-sm sm:text-xl m-2 sm:m-4">{bedTemperature}° / {bedTarget}°</span>
           </div>
           <div
-            className="flex bg-gray-800 m-1 sm:m-2 rounded-md h-[15%] items-center hover:bg-gray-700 transition"
+            className="flex bg-gray-800 m-1 sm:m-2 rounded-md max-h-[15%] items-center hover:bg-gray-700 transition"
             onClick={() => setSkipOpen(true)}
           >
-            <img src="nonexistant.png" className="h-[80%]" />
-            <span className="text-xl m-4">{objectsSkipped} skipped</span>
+            <img src="/skip.png" className="h-32"/>
+            <span className="text-sm sm:text-xl m-2 sm:m-4">{objectsSkipped} skipped</span>
           </div>
           <div
-            className="flex bg-gray-800 m-1 sm:m-2 rounded-md h-[15%] items-center hover:bg-gray-700 transition"
+            className="flex bg-gray-800 m-1 sm:m-2 rounded-md max-h-[15%] items-center hover:bg-gray-700 transition"
             onClick={() => setSpeedOpen(true)}
           >
-            <img src="nonexistant.png" className="h-[80%]" />
-            <span className="text-xl m-4">{printSpeed}%</span>
+            <img src="/speed.png" className="h-32"/>
+            <span className="text-sm sm:text-xl m-2 sm:m-4">{printSpeed}%</span>
           </div>
           <div
-            className="flex bg-gray-800 m-1 sm:m-2 rounded-md h-[15%] items-center hover:bg-gray-700 transition"
+            className="flex bg-gray-800 m-1 sm:m-2 rounded-md max-h-[15%] items-center hover:bg-gray-700 transition"
             onClick={() => setFanOpen(true)}
           >
-            <img src="nonexistant.png" className="h-[100%]" />
+            <img src="/fan.png" className="h-32"/>
             <span className="text-sm sm:text-xl m-2 sm:m-4">{fanPercentage}%</span>
           </div>
         </div>

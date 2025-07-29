@@ -21,7 +21,7 @@ export default function ControlView({ slug, ip, password, serial, model, printer
         <h2 className="text-xl text-white ml-4">Control</h2>
         <span className="text-xl text-white m-2">{slug} ⋅ {online? "Online" : "Offline"}</span>
       </header>
-      <div className="flex">
+      <div>
         <ControlCard 
           name={slug} 
           ip={ip} 
