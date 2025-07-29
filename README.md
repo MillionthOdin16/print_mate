@@ -8,12 +8,14 @@ X1 series - Untested, most likely will work\
 H2D - Untested, unlikely to function correctly
 
 ## Features
-* Connect to Bambu Lab printers over MQTT
+* Connect to Bambu Lab printers over MQTT and FTP
 * Receive data about temperature, status, etc
-* List and (todo: print) files on the internal storage
+* List and print files on the internal storage
 * Control an in-progress print
 
 ## Planned features
 * Camera stream for inbuilt camera
 * Camera stream for external RTSP camera
 * Modify the printer configuration
+* Manage filament settings
+* Get Bambu's HMS (Health Management System) messages
