@@ -12,10 +12,10 @@ H2D - Untested, unlikely to function correctly
 * Receive data about temperature, status, etc
 * List and print files on the internal storage
 * Control an in-progress print
+* Camera stream for A1/P1 series printers
 
 ## Planned features
-* Camera stream for inbuilt camera
-* Camera stream for external RTSP camera
+* Camera stream for X1 series/external RTSP camera
 * Modify the printer configuration
 * Manage filament settings
 * Get Bambu's HMS (Health Management System) messages
