@@ -8,6 +8,7 @@ import FilamentView from '@/app/components/FilamentView';
 import HMSView from '@/app/components/HMSView';
 import SettingsView from '@/app/components/SettingsView';
 import React from 'react';
+import CameraView from '@/app/components/CameraView';
 
 interface PrinterPageProps {
   params: Promise<{
@@ -33,7 +34,7 @@ interface Printer {
 
 export default function MainView({ params }: PrinterPageProps) {
   const [printers, setPrinters] = useState<Printer[]>([]);
-  const [activeView, setActiveView] = useState<'files' | 'settings' | 'filament' | 'control' | 'hms'>('control');
+  const [activeView, setActiveView] = useState<'files' | 'settings' | 'filament' | 'control' | 'hms' | 'camera'>('control');
   const [files, setFiles] = useState<PrinterFile[]>([]);
   const [filesLoading, setFilesLoading] = useState(true);
   const [filesError, setFilesError] = useState<string | null>(null);
@@ -249,6 +250,8 @@ export default function MainView({ params }: PrinterPageProps) {
         />;
       case 'hms':
         return <HMSView slug={slug} model={printer.model}/>;
+      case 'camera':
+        return <CameraView slug={slug} ip={printer.ip} password={printer.password} model={printer.model}/>
       default:
         return <ControlView 
           slug={slug} 
@@ -324,7 +327,8 @@ export default function MainView({ params }: PrinterPageProps) {
               { id: 'control', icon: '/control.png' },
               { id: 'filament', icon: '/filament.png' },
               { id: 'settings', icon: '/settings.png' },
-              { id: 'hms', label: 'HMS', icon: '/hms.png' }
+              { id: 'hms', label: 'HMS', icon: '/hms.png' },
+              { id: 'camera', icon: '/camera.png' }
             ].map((item) => (
               <button
                 key={item.id}
