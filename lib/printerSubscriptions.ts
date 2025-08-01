@@ -69,6 +69,7 @@ export function createSubscription(
       } catch (error) {
         console.error('failed to enqueue data:', error);
         isStreamActive = false;
+        cleanup();
         return false;
       }
     };

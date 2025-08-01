@@ -12,45 +12,300 @@ interface Printer {
   serial: string;
 }
 
+interface Connection {
+  socket: TLSSocket | null;
+  connecting: boolean;
+  lastFrame: Buffer | null;
+  lastFrameTime: number;
+  subscribers: Set<ReadableStreamDefaultController>;
+  timeout: NodeJS.Timeout | null;
+  reconnect: boolean;
+}
+
+class CameraManager {
+  private static instance: CameraManager;
+  private connections: Map<string, Connection> = new Map();
+  private cleanupInterval: NodeJS.Timeout;
+
+  private constructor() {
+    this.cleanupInterval = setInterval(() => {
+      this.cleanup();
+    }, 5 * 60 * 1000); // 5m
+    
+    this.initCameras();
+  }
+
+  static getInstance(): CameraManager {
+    if (!CameraManager.instance) {
+      CameraManager.instance = new CameraManager();
+    }
+    return CameraManager.instance;
+  }
+
+  private loadPrinters(): Printer[] {
+    const filePath = path.join(process.cwd(), 'data', 'printers.json');
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContents);
+  }
+
+  private initCameras(): void {
+    const printers = this.loadPrinters();
+    for (const printer of printers) {
+      this.getConnection(printer.slug);
+    }
+  }
+
+  private createAuthPacket(username: string, password: string): Buffer {
+    const packet = Buffer.alloc(80);
+    
+    packet.writeUInt32LE(0x40, 0);
+    packet.writeUInt32LE(0x3000, 4);
+    packet.writeUInt32LE(0, 8);
+    packet.writeUInt32LE(0, 12);
+    
+    const usernameBuffer = Buffer.from(username, 'ascii');
+    usernameBuffer.copy(packet, 16);
+    
+    const passwordBuffer = Buffer.from(password, 'ascii');
+    passwordBuffer.copy(packet, 48);
+    
+    return packet;
+  }
+
+  private parseHeader(headerBuffer: Buffer) {
+    return {
+      payloadSize: headerBuffer.readUInt32LE(0),
+      itrack: headerBuffer.readUInt32LE(4),
+      flags: headerBuffer.readUInt32LE(8),
+      reserved: headerBuffer.readUInt32LE(12)
+    };
+  }
+
+  private connect(slug: string): void {
+    const printers = this.loadPrinters();
+    const printer = printers.find(p => p.slug === slug);
+    if (!printer) return;
+
+    const connection = this.connections.get(slug);
+    if (!connection || connection.connecting) return;
+
+    connection.connecting = true;
+
+    let headerBuffer = Buffer.alloc(0);
+    let imageBuffer = Buffer.alloc(0);
+    let imageSize = 0;
+    let receiving = false;
+
+    try {
+      console.log(`connecting to camera at ${printer.ip}:6000`);
+      connection.socket = tlsConnect({
+        host: printer.ip,
+        port: 6000,
+        rejectUnauthorized: false,
+        timeout: 10000
+      });
+
+      connection.socket.on('connect', () => {
+        console.log(`connected to camera on ${printer.ip}:6000`);
+        connection.connecting = false;
+        
+        const auth = this.createAuthPacket('bblp', printer.password);
+        connection.socket?.write(auth);
+      });
+
+      connection.socket.on('data', (data: Buffer) => {
+        let offset = 0;
+        
+        while (offset < data.length) {
+          if (!receiving) {
+            const headerBytes = 16 - headerBuffer.length;
+            const dataBytes = data.length - offset;
+            const bytesToRead = Math.min(headerBytes, dataBytes);
+            
+            headerBuffer = Buffer.concat([headerBuffer, data.subarray(offset, offset + bytesToRead)]);
+            offset += bytesToRead;
+            
+            if (headerBuffer.length === 16) {
+              const header = this.parseHeader(headerBuffer);
+              imageSize = header.payloadSize;
+              
+              if (imageSize > 0 && imageSize < 10 * 1024 * 1024) {
+                receiving = true;
+                headerBuffer = Buffer.alloc(0);
+                imageBuffer = Buffer.alloc(0);
+              } else {
+                console.error('invalid payload size:', imageSize);
+                headerBuffer = Buffer.alloc(0);
+              }
+            }
+          } else {
+            const imageBytes = imageSize - imageBuffer.length;
+            const dataBytes = data.length - offset;
+            const bytesToRead = Math.min(imageBytes, dataBytes);
+            
+            imageBuffer = Buffer.concat([imageBuffer, data.subarray(offset, offset + bytesToRead)]);
+            offset += bytesToRead;
+            
+            if (imageBuffer.length === imageSize) {
+              if (imageBuffer.length >= 4 &&
+                  imageBuffer[0] === 0xFF && imageBuffer[1] === 0xD8 && 
+                  imageBuffer[imageBuffer.length - 2] === 0xFF && 
+                  imageBuffer[imageBuffer.length - 1] === 0xD9) {
+                
+                connection.lastFrame = imageBuffer;
+                connection.lastFrameTime = Date.now();
+                this.broadcast(slug, imageBuffer);
+              } else {
+                console.warn('invalid frame received');
+              }
+              
+              receiving = false;
+              imageSize = 0;
+              imageBuffer = Buffer.alloc(0);
+            }
+          }
+        }
+      });
+
+      connection.socket.on('error', (error) => {
+        console.error(`camera connection error for ${slug}:`, error);
+        this.disconnect(slug);
+      });
+
+      connection.socket.on('close', () => {
+        console.log(`camera connection closed for ${slug}`);
+        this.disconnect(slug);
+      });
+
+      connection.socket.on('timeout', () => {
+        console.log(`camera connection timeout for ${slug}`);
+        this.disconnect(slug);
+      });
+
+    } catch (error) {
+      console.error(`failed to connect to camera ${slug}:`, error);
+      this.disconnect(slug);
+    }
+  }
+
+  private disconnect(slug: string): void {
+    const connection = this.connections.get(slug);
+    if (!connection) return;
+
+    connection.connecting = false;
+    if (connection.socket) {
+      connection.socket.destroy();
+      connection.socket = null;
+    }
+
+    if (connection.reconnect) {
+      this.scheduleReconnect(slug);
+    }
+  }
+
+  private scheduleReconnect(slug: string): void {
+    const connection = this.connections.get(slug);
+    if (!connection || !connection.reconnect) return;
+    
+    if (connection.timeout) {
+      clearTimeout(connection.timeout);
+    }
+    
+    connection.timeout = setTimeout(() => {
+      if (connection.reconnect) {
+        this.connect(slug);
+      }
+    }, 3000);
+  }
+
+  private broadcast(slug: string, frame: Buffer): void {
+    const connection = this.connections.get(slug);
+    if (!connection) return;
+
+    const boundary = '\r\n--mjpegboundary\r\n';
+    const headers = `Content-Type: image/jpeg\r\nContent-Length: ${frame.length}\r\n\r\n`;
+    
+    const boundaryBuffer = new TextEncoder().encode(boundary);
+    const headersBuffer = new TextEncoder().encode(headers);
+
+    connection.subscribers.forEach(controller => {
+      try {
+        controller.enqueue(boundaryBuffer);
+        controller.enqueue(headersBuffer);
+        controller.enqueue(frame);
+      } catch (error) {
+        connection.subscribers.delete(controller);
+      }
+    });
+  }
+
+  getConnection(slug: string): Connection {
+    if (!this.connections.has(slug)) {
+      const connection: Connection = {
+        socket: null,
+        connecting: false,
+        lastFrame: null,
+        lastFrameTime: 0,
+        subscribers: new Set(),
+        timeout: null,
+        reconnect: true
+      };
+      
+      this.connections.set(slug, connection);
+      this.connect(slug);
+    }
+
+    return this.connections.get(slug)!;
+  }
+
+  subscribe(slug: string, controller: ReadableStreamDefaultController): () => void {
+    const connection = this.getConnection(slug);
+    connection.subscribers.add(controller);
+
+    if (connection.lastFrame && Date.now() - connection.lastFrameTime < 5000) {
+      try {
+        const boundary = '\r\n--mjpegboundary\r\n';
+        const headers = `Content-Type: image/jpeg\r\nContent-Length: ${connection.lastFrame.length}\r\n\r\n`;
+        
+        controller.enqueue(new TextEncoder().encode(boundary));
+        controller.enqueue(new TextEncoder().encode(headers));
+        controller.enqueue(connection.lastFrame);
+      } catch (error) {
+        console.error('error sending cached frame:', error);
+      }
+    }
+
+    return () => {
+      connection.subscribers.delete(controller);
+    };
+  }
+
+  private cleanup(): void {
+    for (const [slug, connection] of this.connections) {
+      if (connection.subscribers.size === 0) {
+        const timeSinceFrame = Date.now() - connection.lastFrameTime;
+        if (timeSinceFrame > 10 * 60 * 1000) { // 10m
+          console.log(`cleaning up inactive camera connection: ${slug}`);
+          connection.reconnect = false;
+          if (connection.timeout) {
+            clearTimeout(connection.timeout);
+          }
+          if (connection.socket) {
+            connection.socket.destroy();
+          }
+          this.connections.delete(slug);
+        }
+      }
+    }
+  }
+}
+
+const cameraManager = CameraManager.getInstance();
+
 function loadPrinters(): Printer[] {
   const filePath = path.join(process.cwd(), 'data', 'printers.json');
   const fileContents = fs.readFileSync(filePath, 'utf8');
   return JSON.parse(fileContents);
-}
-
-function createAuthPacket(username: string, password: string): Buffer {
-  const packet = Buffer.alloc(80);
-  
-  // payload size 0x40 = 64 bytes
-  packet.writeUInt32LE(0x40, 0);
-  
-  // type 0x3000
-  packet.writeUInt32LE(0x3000, 4);
-  
-  // flags (0)
-  packet.writeUInt32LE(0, 8);
-  
-  // reserved (0)
-  packet.writeUInt32LE(0, 12);
-  
-  // 32 byte ascii username (null padded)
-  const usernameBuffer = Buffer.from(username, 'ascii');
-  usernameBuffer.copy(packet, 16);
-  
-  // 32 byte ascii password (null padded)
-  const passwordBuffer = Buffer.from(password, 'ascii');
-  passwordBuffer.copy(packet, 48);
-  
-  return packet;
-}
-
-function parseFrameHeader(headerBuffer: Buffer) {
-  return {
-    payloadSize: headerBuffer.readUInt32LE(0),
-    itrack: headerBuffer.readUInt32LE(4),
-    flags: headerBuffer.readUInt32LE(8),
-    reserved: headerBuffer.readUInt32LE(12)
-  };
 }
 
 export async function GET(
@@ -68,115 +323,10 @@ export async function GET(
 
   const stream = new ReadableStream({
     start(controller) {
-      let socket: TLSSocket;
-      let headerBuffer = Buffer.alloc(0);
-      let imageBuffer = Buffer.alloc(0);
-      let expectedImageSize = 0;
-      let receivingImage = false;
-
-      const connectToCamera = () => {
-        try {
-          console.log(`Connecting to camera at ${printer.ip}:6000`);
-          socket = tlsConnect({
-            host: printer.ip,
-            port: 6000,
-            rejectUnauthorized: false
-          });
-
-          socket.on('connect', () => {
-            console.log(`Connected to camera on ${printer.ip}:6000`);
-            
-            const authPacket = createAuthPacket('bblp', printer.password);
-            socket.write(authPacket);
-          });
-
-          socket.on('data', (data: Buffer) => {
-            let offset = 0;
-            
-            while (offset < data.length) {
-              if (!receivingImage) {
-                // receiving header
-                const remainingHeaderBytes = 16 - headerBuffer.length;
-                const availableBytes = data.length - offset;
-                const bytesToRead = Math.min(remainingHeaderBytes, availableBytes);
-                
-                headerBuffer = Buffer.concat([headerBuffer, data.subarray(offset, offset + bytesToRead)]);
-                offset += bytesToRead;
-                
-                if (headerBuffer.length === 16) {
-                  // fully received
-                  const frameHeader = parseFrameHeader(headerBuffer);
-                  expectedImageSize = frameHeader.payloadSize;
-                  
-                  if (expectedImageSize > 0 && expectedImageSize < 10 * 1024 * 1024) { // Max 10MB
-                    receivingImage = true;
-                    headerBuffer = Buffer.alloc(0);
-                    imageBuffer = Buffer.alloc(0);
-                  } else {
-                    console.error('Invalid payload size:', expectedImageSize);
-                    headerBuffer = Buffer.alloc(0);
-                  }
-                }
-              } else {
-                // receiving image
-                const remainingImageBytes = expectedImageSize - imageBuffer.length;
-                const availableBytes = data.length - offset;
-                const bytesToRead = Math.min(remainingImageBytes, availableBytes);
-                
-                imageBuffer = Buffer.concat([imageBuffer, data.subarray(offset, offset + bytesToRead)]);
-                offset += bytesToRead;
-                
-                if (imageBuffer.length === expectedImageSize) {
-                  // check magic bytes
-                  if (imageBuffer.length >= 4 &&
-                      imageBuffer[0] === 0xFF && imageBuffer[1] === 0xD8 && 
-                      imageBuffer[imageBuffer.length - 2] === 0xFF && 
-                      imageBuffer[imageBuffer.length - 1] === 0xD9) {
-                    
-                    try {
-                      const boundary = '\r\n--mjpegboundary\r\n';
-                      const headers = `Content-Type: image/jpeg\r\nContent-Length: ${imageBuffer.length}\r\n\r\n`;
-                      
-                      controller.enqueue(new TextEncoder().encode(boundary));
-                      controller.enqueue(new TextEncoder().encode(headers));
-                      controller.enqueue(imageBuffer);
-                    } catch (error) {
-                      console.error('Error sending frame:', error);
-                    }
-                  } else {
-                    console.warn('Invalid JPEG frame received');
-                  }
-                  
-                  receivingImage = false;
-                  expectedImageSize = 0;
-                  imageBuffer = Buffer.alloc(0);
-                }
-              }
-            }
-          });
-
-          socket.on('error', (error) => {
-            console.error('Camera connection error:', error);
-            controller.error(error);
-          });
-
-          socket.on('close', () => {
-            console.log('Camera connection closed');
-            controller.close();
-          });
-
-        } catch (error) {
-          console.error('Failed to connect to camera:', error);
-          controller.error(error);
-        }
-      };
-
-      connectToCamera();
-
+      const unsubscribe = cameraManager.subscribe(slug, controller);
+      
       return () => {
-        if (socket) {
-          socket.destroy();
-        }
+        unsubscribe();
       };
     }
   });

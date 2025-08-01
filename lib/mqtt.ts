@@ -139,11 +139,23 @@ class MQTTConnectionManager {
       client.on('message', (topic, message) => {
         const handlers = this.messageHandlers.get(key);
         if (handlers) {
-          handlers.forEach(handler => {
+          const failedHandlers: string[] = [];
+          
+          handlers.forEach((handler, subscriberId) => {
             try {
               handler(topic, message);
             } catch (error) {
               console.error(`error in message handler for ${key}: ${error || 'unknown error'}`);
+              failedHandlers.push(subscriberId);
+            }
+          });
+          
+          // remove failed handlers
+          failedHandlers.forEach(subscriberId => {
+            handlers.delete(subscriberId);
+            const connectionInfo = this.connections.get(key);
+            if (connectionInfo) {
+              connectionInfo.subscribers.delete(subscriberId);
             }
           });
         }
