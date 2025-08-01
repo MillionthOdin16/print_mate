@@ -1,0 +1,938 @@
+[
+  {
+    "0300-0100-0001-000A": "The heatbed temperature control is abnormal, the AC board may be broken."
+  },
+  {
+    "0300-0100-0001-000A": "The heatbed temperature control is abnormal, the AC board may be broken."
+  },
+  {
+    "0300-0100-0001-0003": "The heatbed temperature is abnormal; the heater is over temperature."
+  },
+  {
+    "0300-0100-0001-0003": "The heatbed temperature is abnormal; the heater is over temperature."
+  },
+  {
+    "0300-1000-0002-0001": "The 1st order mechanical resonance mode of X axis is low."
+  },
+  {
+    "0300-1000-0002-0001": "The 1st order mechanical resonance mode of X axis is low."
+  },
+  {
+    "0300-1100-0002-0001": "The 1st order mechanical resonance mode of X axis is low."
+  },
+  {
+    "0300-1B00-0001-0001": "The signal of the heatbed acceleration sensor is weak. The sensor may have fallen off or been damaged."
+  },
+  {
+    "0300-1B00-0001-0001": "The signal of the heatbed acceleration sensor is weak. The sensor may have fallen off or been damaged."
+  },
+  {
+    "0300-1000-0002-0002": "The resonance frequency of the X axis differs greatly from last calibration."
+  },
+  {
+    "0300-1000-0002-0002": "The resonance frequency of the X axis differs greatly from last calibration."
+  },
+  {
+    "0300-1100-0002-0002": "The resonance frequency of the X axis differs greatly from last calibration."
+  },
+  {
+    "0300-0F00-0001-0001": "Abnormal accelerometer data detected."
+  },
+  {
+    "0300-0F00-0001-0001": "Abnormal accelerometer data detected."
+  },
+  {
+    "0300-0D00-0001-000B": "The Z axis motor seems to be stuck when moving."
+  },
+  {
+    "0300-0D00-0001-000B": "The Z axis motor seems to be stuck when moving."
+  },
+  {
+    "0300-0D00-0001-0003": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-0004": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-0005": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-0006": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-0007": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-0008": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-0009": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0001-000A": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0003": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0004": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0005": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0006": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0007": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0008": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0009": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-000A": "The build plate is not placed properly."
+  },
+  {
+    "0300-0D00-0002-0001": "Heatbed homing abnormal: there may be a bulge on the heatbed or the nozzle tip may not be clean."
+  },
+  {
+    "0300-0D00-0002-0001": "Heatbed homing abnormal: there may be a bulge on the heatbed or the nozzle tip may not be clean."
+  },
+  {
+    "0300-0A00-0001-0005": "Force sensor 1 detected unexpected continuous force."
+  },
+  {
+    "0300-0A00-0001-0005": "Force sensor 1 detected unexpected continuous force."
+  },
+  {
+    "0300-0B00-0001-0005": "Force sensor 1 detected unexpected continuous force."
+  },
+  {
+    "0300-0C00-0001-0005": "Force sensor 1 detected unexpected continuous force."
+  },
+  {
+    "0300-0A00-0001-0004": "An external disturbance was detected on force sensor 1."
+  },
+  {
+    "0300-0A00-0001-0004": "An external disturbance was detected on force sensor 1."
+  },
+  {
+    "0300-0B00-0001-0004": "An external disturbance was detected on force sensor 1."
+  },
+  {
+    "0300-0C00-0001-0004": "An external disturbance was detected on force sensor 1."
+  },
+  {
+    "0300-0A00-0001-0003": "The sensitivity of heatbed force sensor 1/2/3 is too low."
+  },
+  {
+    "0300-0A00-0001-0003": "The sensitivity of heatbed force sensor 1/2/3 is too low."
+  },
+  {
+    "0300-0B00-0001-0003": "The sensitivity of heatbed force sensor 1/2/3 is too low."
+  },
+  {
+    "0300-0C00-0001-0003": "The sensitivity of heatbed force sensor 1/2/3 is too low."
+  },
+  {
+    "0300-0A00-0001-0002": "The sensitivity of heatbed force sensor 1/2/3 is low."
+  },
+  {
+    "0300-0A00-0001-0002": "The sensitivity of heatbed force sensor 1/2/3 is low."
+  },
+  {
+    "0300-0B00-0001-0002": "The sensitivity of heatbed force sensor 1/2/3 is low."
+  },
+  {
+    "0300-0C00-0001-0002": "The sensitivity of heatbed force sensor 1/2/3 is low."
+  },
+  {
+    "0300-0A00-0001-0001": "The sensitivity of heatbed force sensor 1/2/3 is too high."
+  },
+  {
+    "0300-0A00-0001-0001": "The sensitivity of heatbed force sensor 1/2/3 is too high."
+  },
+  {
+    "0300-0B00-0001-0001": "The sensitivity of heatbed force sensor 1/2/3 is too high."
+  },
+  {
+    "0300-0C00-0001-0001": "The sensitivity of heatbed force sensor 1/2/3 is too high."
+  },
+  {
+    "0300-0200-0001-0009": "The nozzle temperature control is abnormal. The hot end may not be installed."
+  },
+  {
+    "0300-0200-0001-0009": "The nozzle temperature control is abnormal. The hot end may not be installed."
+  },
+  {
+    "0300-0300-0001-0001": "The hotend cooling fan speed is too slow or stopped."
+  },
+  {
+    "0300-0300-0001-0001": "The hotend cooling fan speed is too slow or stopped."
+  },
+  {
+    "0300-0300-0002-0002": "The speed of hotend fan is slow."
+  },
+  {
+    "0300-0300-0002-0002": "The speed of hotend fan is slow."
+  },
+  {
+    "0300-0400-0002-0001": "The speed of part cooling fan if too slow or stopped."
+  },
+  {
+    "0300-0400-0002-0001": "The speed of part cooling fan if too slow or stopped."
+  },
+  {
+    "0300-0600-0001-0001": "Motor-A has an open-circuit."
+  },
+  {
+    "0300-0600-0001-0001": "Motor-A has an open-circuit."
+  },
+  {
+    "0300-0700-0001-0001": "Motor-A has an open-circuit."
+  },
+  {
+    "0300-0800-0001-0001": "Motor-A has an open-circuit."
+  },
+  {
+    "0300-0600-0001-0002": "Motor-A has a short-circuit."
+  },
+  {
+    "0300-0600-0001-0002": "Motor-A has a short-circuit."
+  },
+  {
+    "0300-0700-0001-0002": "Motor-A has a short-circuit."
+  },
+  {
+    "0300-0800-0001-0002": "Motor-A has a short-circuit."
+  },
+  {
+    "0300-0600-0001-0003": "The resistance of Motor-A is abnormal, the motor may have failed."
+  },
+  {
+    "0300-0600-0001-0003": "The resistance of Motor-A is abnormal, the motor may have failed."
+  },
+  {
+    "0300-0700-0001-0003": "The resistance of Motor-A is abnormal, the motor may have failed."
+  },
+  {
+    "0300-0800-0001-0003": "The resistance of Motor-A is abnormal, the motor may have failed."
+  },
+  {
+    "0300-0100-0001-0007": "The heatbed temperature is abnormal; the sensor may have an open circuit."
+  },
+  {
+    "0300-0100-0001-0007": "The heatbed temperature is abnormal; the sensor may have an open circuit."
+  },
+  {
+    "0300-0100-0001-0006": "The heatbed temperature is abnormal; the sensor may have an short circuit."
+  },
+  {
+    "0300-0100-0001-0006": "The heatbed temperature is abnormal; the sensor may have an short circuit."
+  },
+  {
+    "0300-1300-0001-0001": "The current sensor of Motor-A is abnormal."
+  },
+  {
+    "0300-1300-0001-0001": "The current sensor of Motor-A is abnormal."
+  },
+  {
+    "0300-1400-0001-0001": "The current sensor of Motor-A is abnormal."
+  },
+  {
+    "0300-1500-0001-0001": "The current sensor of Motor-A is abnormal."
+  },
+  {
+    "0300-1800-0001-0005": "The Z axis motor seems got stuck during movement, please check if there is any foreign matter on the Z sliders or Z timing belt wheels."
+  },
+  {
+    "0300-1800-0001-0005": "The Z axis motor seems got stuck during movement, please check if there is any foreign matter on the Z sliders or Z timing belt wheels."
+  },
+  {
+    "0300-1900-0001-0001": "The eddy current sensor on Y-axis is not available, the wire should be broken."
+  },
+  {
+    "0300-1900-0001-0001": "The eddy current sensor on Y-axis is not available, the wire should be broken."
+  },
+  {
+    "0300-1900-0002-0002": "The sensitivity of Y-axis eddy current sensor is too low."
+  },
+  {
+    "0300-1900-0002-0002": "The sensitivity of Y-axis eddy current sensor is too low."
+  },
+  {
+    "0300-3100-0001-0001": "The speed of part cooling fan is too slow or stopped."
+  },
+  {
+    "0300-3100-0001-0001": "The speed of part cooling fan is too slow or stopped."
+  },
+  {
+    "0300-3100-0002-0002": "The speed of part cooling fan is too slow or stopped."
+  },
+  {
+    "0300-4000-0002-0001": "Data transmission over the serial port is abnormal; the software system may be faulty."
+  },
+  {
+    "0300-4000-0002-0001": "Data transmission over the serial port is abnormal; the software system may be faulty."
+  },
+  {
+    "0300-4100-0001-0001": "The system voltage is unstable; triggering the power failure protection function."
+  },
+  {
+    "0300-4100-0001-0001": "The system voltage is unstable; triggering the power failure protection function."
+  },
+  {
+    "0300-0100-0001-0008": "An abnormality occurs during the heating process of the heatbed."
+  },
+  {
+    "0300-0100-0001-0008": "An abnormality occurs during the heating process of the heatbed."
+  },
+  {
+    "0300-0100-0003-0008": "The temperature of the heated bed exceeds the limit and automatically adjusts to the limit temperature."
+  },
+  {
+    "0300-0100-0003-0008": "The temperature of the heated bed exceeds the limit and automatically adjusts to the limit temperature."
+  },
+  {
+    "0300-0100-0001-000C": "The heatbed works at full load for a long time."
+  },
+  {
+    "0300-0100-0001-000C": "The heatbed works at full load for a long time."
+  },
+  {
+    "0300-0100-0001-000D": "An abnormality happened in heating modules of heatbed before."
+  },
+  {
+    "0300-0100-0001-000D": "An abnormality happened in heating modules of heatbed before."
+  },
+  {
+    "0300-9000-0001-0001": "Chamber heating failed. The chamber heater may be failing to blow hot air."
+  },
+  {
+    "0300-9000-0001-0001": "Chamber heating failed. The chamber heater may be failing to blow hot air."
+  },
+  {
+    "0300-9000-0001-0002": "Chamber heating failed. The chamber may not be enclosed, or the ambient temperature may be too low, or the heat dissipation vent of the power supply may be blocked."
+  },
+  {
+    "0300-9000-0001-0002": "Chamber heating failed. The chamber may not be enclosed, or the ambient temperature may be too low, or the heat dissipation vent of the power supply may be blocked."
+  },
+  {
+    "0300-9000-0001-0003": "Chamber heating failed. The temperature of power supply may be too high."
+  },
+  {
+    "0300-9000-0001-0003": "Chamber heating failed. The temperature of power supply may be too high."
+  },
+  {
+    "0300-9000-0001-0004": "Chamber heating failed. The speed of the heating fan is too low."
+  },
+  {
+    "0300-9000-0001-0004": "Chamber heating failed. The speed of the heating fan is too low."
+  },
+  {
+    "0300-9000-0001-0005": "Chamber heating failed. The thermal resistance is too high."
+  },
+  {
+    "0300-9000-0001-0005": "Chamber heating failed. The thermal resistance is too high."
+  },
+  {
+    "0300-9100-0001-000C": "The chamber heater 1 works at full load for a long time. Temperature control system may be abnormal."
+  },
+  {
+    "0300-9100-0001-000C": "The chamber heater 1 works at full load for a long time. Temperature control system may be abnormal."
+  },
+  {
+    "0300-9100-0001-0008": "Chamber heater 1 failed to rise to target temperature."
+  },
+  {
+    "0300-9100-0001-0008": "Chamber heater 1 failed to rise to target temperature."
+  },
+  {
+    "0300-9200-0001-0008": "Chamber heater 1 failed to rise to target temperature."
+  },
+  {
+    "0300-9100-0001-000A": "The temperature of chamber heater 1 is abnormal. The AC board may be broken."
+  },
+  {
+    "0300-9100-0001-000A": "The temperature of chamber heater 1 is abnormal. The AC board may be broken."
+  },
+  {
+    "0300-9200-0001-000A": "The temperature of chamber heater 1 is abnormal. The AC board may be broken."
+  },
+  {
+    "0300-9100-0001-0003": "The temperature of chamber heater 1 is abnormal. The heater is over temperature."
+  },
+  {
+    "0300-9100-0001-0003": "The temperature of chamber heater 1 is abnormal. The heater is over temperature."
+  },
+  {
+    "0300-9200-0001-0003": "The temperature of chamber heater 1 is abnormal. The heater is over temperature."
+  },
+  {
+    "0300-9100-0001-0001": "The temperature of chamber heater 1 is abnormal. The heater may have a short circuit."
+  },
+  {
+    "0300-9100-0001-0001": "The temperature of chamber heater 1 is abnormal. The heater may have a short circuit."
+  },
+  {
+    "0300-9200-0001-0001": "The temperature of chamber heater 1 is abnormal. The heater may have a short circuit."
+  },
+  {
+    "0300-9100-0001-0002": "The temperature of chamber heater 1 is abnormal. The heater may have an open circuit or the thermal fuse may have taken effect."
+  },
+  {
+    "0300-9100-0001-0002": "The temperature of chamber heater 1 is abnormal. The heater may have an open circuit or the thermal fuse may have taken effect."
+  },
+  {
+    "0300-9200-0001-0002": "The temperature of chamber heater 1 is abnormal. The heater may have an open circuit or the thermal fuse may have taken effect."
+  },
+  {
+    "0300-9100-0001-0006": "The temperature of chamber heater 1 is abnormal. The sensor may have a short circuit."
+  },
+  {
+    "0300-9100-0001-0006": "The temperature of chamber heater 1 is abnormal. The sensor may have a short circuit."
+  },
+  {
+    "0300-9200-0001-0006": "The temperature of chamber heater 1 is abnormal. The sensor may have a short circuit."
+  },
+  {
+    "0300-9100-0001-0007": "The temperature of chamber heater 1 is abnormal. The sensor may have an open circuit."
+  },
+  {
+    "0300-9100-0001-0007": "The temperature of chamber heater 1 is abnormal. The sensor may have an open circuit."
+  },
+  {
+    "0300-9200-0001-0007": "The temperature of chamber heater 1 is abnormal. The sensor may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0003": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air outlet may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0003": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air outlet may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0004": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air outlet may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0004": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air outlet may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0007": "Chamber temperature is abnormal. The temperature sensor at the power supply may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0007": "Chamber temperature is abnormal. The temperature sensor at the power supply may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0008": "Chamber temperature is abnormal. The temperature sensor at power supply may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0008": "Chamber temperature is abnormal. The temperature sensor at power supply may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0001": "Chamber temperature is abnormal. The chamber heater's temperature sensor may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0001": "Chamber temperature is abnormal. The chamber heater's temperature sensor may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0002": "Chamber temperature is abnormal. The chamber heater's temperature sensor may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0002": "Chamber temperature is abnormal. The chamber heater's temperature sensor may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0005": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air inlet may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0005": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air inlet may have a short circuit."
+  },
+  {
+    "0300-9300-0001-0006": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air inlet may have an open circuit."
+  },
+  {
+    "0300-9300-0001-0006": "Chamber temperature is abnormal. The chamber heater's temperature sensor at the air inlet may have an open circuit."
+  },
+  {
+    "0300-9400-0002-0003": "Chamber failed to reach the desired temperature."
+  },
+  {
+    "0300-9400-0002-0003": "Chamber failed to reach the desired temperature."
+  },
+  {
+    "0300-9400-0003-0001": "Chamber cooling may be too slow."
+  },
+  {
+    "0300-9400-0003-0001": "Chamber cooling may be too slow."
+  },
+  {
+    "0300-9D00-0002-0001": "The engrave laser focal point XY calibration has failed."
+  },
+  {
+    "0300-9D00-0002-0001": "The engrave laser focal point XY calibration has failed."
+  },
+  {
+    "0300-1800-0001-0006": "The heatbed leveling data is abnormal."
+  },
+  {
+    "0300-1800-0001-0006": "The heatbed leveling data is abnormal."
+  },
+  {
+    "0300-2500-0001-0005": "Z axis motor rotation is obstructed."
+  },
+  {
+    "0300-2500-0001-0005": "Z axis motor rotation is obstructed."
+  },
+  {
+    "0300-2600-0001-0005": "Z axis motor rotation is obstructed."
+  },
+  {
+    "0300-2900-0001-0001": "Encoder pattern can not be recognized."
+  },
+  {
+    "0300-2900-0001-0001": "Encoder pattern can not be recognized."
+  },
+  {
+    "0300-0200-0001-0001": "The nozzle temperature is abnormal, the heater may be short circuit."
+  },
+  {
+    "0300-0200-0001-0001": "The nozzle temperature is abnormal, the heater may be short circuit."
+  },
+  {
+    "0300-0200-0001-0002": "The nozzle temperature is abnormal,the heater may be open circuit."
+  },
+  {
+    "0300-0200-0001-0002": "The nozzle temperature is abnormal,the heater may be open circuit."
+  },
+  {
+    "0300-0200-0001-0003": "The nozzle temperature is abnormal,the heater is over temperature."
+  },
+  {
+    "0300-0200-0001-0003": "The nozzle temperature is abnormal,the heater is over temperature."
+  },
+  {
+    "0300-0200-0001-0006": "The nozzle temperature is abnormal,the sensor may be short circuit."
+  },
+  {
+    "0300-0200-0001-0006": "The nozzle temperature is abnormal,the sensor may be short circuit."
+  },
+  {
+    "0300-0200-0001-0007": "The nozzle temperature is abnormal,the sensor may be open circuit."
+  },
+  {
+    "0300-0200-0001-0007": "The nozzle temperature is abnormal,the sensor may be open circuit."
+  },
+  {
+    "0300-1200-0002-0001": "The front cover of the toolhead fell off."
+  },
+  {
+    "0300-1200-0002-0001": "The front cover of the toolhead fell off."
+  },
+  {
+    "0300-1800-0001-0001": "The value of extrusion force sensor is low, the nozzle seems to not be installed."
+  },
+  {
+    "0300-1800-0001-0001": "The value of extrusion force sensor is low, the nozzle seems to not be installed."
+  },
+  {
+    "0300-1800-0001-0002": "The sensitivity of the extrusion force sensor is low, the hotend may not installed correctly."
+  },
+  {
+    "0300-1800-0001-0002": "The sensitivity of the extrusion force sensor is low, the hotend may not installed correctly."
+  },
+  {
+    "0300-1800-0001-0003": "The extrusion force sensor is not available, the link between the MC and TH may be broken or the sensor is broken."
+  },
+  {
+    "0300-1800-0001-0003": "The extrusion force sensor is not available, the link between the MC and TH may be broken or the sensor is broken."
+  },
+  {
+    "0300-0400-0002-0001": "The speed of the part cooling fan is too slow or stopped."
+  },
+  {
+    "0300-0400-0002-0001": "The speed of the part cooling fan is too slow or stopped."
+  },
+  {
+    "0300-0900-0001-0001": "The extruder servo motor has an open circuit."
+  },
+  {
+    "0300-0900-0001-0001": "The extruder servo motor has an open circuit."
+  },
+  {
+    "0300-0900-0001-0002": "The extruder servo motor has a short-circuit."
+  },
+  {
+    "0300-0900-0001-0002": "The extruder servo motor has a short-circuit."
+  },
+  {
+    "0300-0900-0001-0003": "The resistance of the extruder servo motor is abnormal; the motor may have failed."
+  },
+  {
+    "0300-0900-0001-0003": "The resistance of the extruder servo motor is abnormal; the motor may have failed."
+  },
+  {
+    "0300-0900-0002-0001": "The extrusion motor is overloaded."
+  },
+  {
+    "0300-0900-0002-0001": "The extrusion motor is overloaded."
+  },
+  {
+    "0300-0900-0002-0002": "The extrusion resistance is abnormal."
+  },
+  {
+    "0300-0900-0002-0002": "The extrusion resistance is abnormal."
+  },
+  {
+    "0300-0900-0002-0003": "The extruder is extruding abnormally."
+  },
+  {
+    "0300-0900-0002-0003": "The extruder is extruding abnormally."
+  },
+  {
+    "0300-1D00-0001-0001": "The position sensor of extrusion motor is abnormal."
+  },
+  {
+    "0300-1D00-0001-0001": "The position sensor of extrusion motor is abnormal."
+  },
+  {
+    "0300-1E00-0001-0001": "The left nozzle temperature is abnormal; the heater may have a short circuit."
+  },
+  {
+    "0300-1E00-0001-0001": "The left nozzle temperature is abnormal; the heater may have a short circuit."
+  },
+  {
+    "0300-1E00-0001-0002": "The left nozzle temperature is abnormal; the heater may have an open circuit."
+  },
+  {
+    "0300-1E00-0001-0002": "The left nozzle temperature is abnormal; the heater may have an open circuit."
+  },
+  {
+    "0300-1E00-0001-0003": "The left nozzle temperature is abnormal; the heater is over temperature."
+  },
+  {
+    "0300-1E00-0001-0003": "The left nozzle temperature is abnormal; the heater is over temperature."
+  },
+  {
+    "0300-1E00-0001-0006": "The left nozzle temperature is abnormal; the sensor may have a short circuit, please check whether the connector is properly plugged in."
+  },
+  {
+    "0300-1E00-0001-0006": "The left nozzle temperature is abnormal; the sensor may have a short circuit, please check whether the connector is properly plugged in."
+  },
+  {
+    "0300-1E00-0001-0007": "The left nozzle temperature is abnormal; the sensor may have an open circuit."
+  },
+  {
+    "0300-1E00-0001-0007": "The left nozzle temperature is abnormal; the sensor may have an open circuit."
+  },
+  {
+    "0300-1E00-0001-0009": "The left nozzle temperature control is abnormal; the hot end may not be installed."
+  },
+  {
+    "0300-1E00-0001-0009": "The left nozzle temperature control is abnormal; the hot end may not be installed."
+  },
+  {
+    "0300-2500-0001-0001": "The frequency of the extrusion force sensor of the right extruder is too low."
+  },
+  {
+    "0300-2500-0001-000B": "Nozzle presence detection failed: Right extruder nozzle not installed or improperly installed."
+  },
+  {
+    "0300-2500-0001-000B": "Nozzle presence detection failed: Right extruder nozzle not installed or improperly installed."
+  },
+  {
+    "0300-2600-0001-0001": "The frequency of the extrusion force sensor of the left extruder is too low."
+  },
+  {
+    "0300-2600-0001-0001": "The frequency of the extrusion force sensor of the left extruder is too low."
+  },
+  {
+    "0300-2600-0001-0002": "The sensitivity of the left extruder extrusion force sensor is low; the force sensor may not be installed correctly."
+  },
+  {
+    "0300-2600-0001-0002": "The sensitivity of the left extruder extrusion force sensor is low; the force sensor may not be installed correctly."
+  },
+  {
+    "0300-2600-0001-0007": "The frequency of the extrusion force sensor of the left extruder is too high."
+  },
+  {
+    "0300-2600-0001-0007": "The frequency of the extrusion force sensor of the left extruder is too high."
+  },
+  {
+    "0300-2600-0001-000B": "Nozzle presence detection failed: Left extruder nozzle not installed or improperly installed."
+  },
+  {
+    "0300-2600-0001-000B": "Nozzle presence detection failed: Left extruder nozzle not installed or improperly installed."
+  },
+  {
+    "0300-2700-0001-0001": "The nozzle offset calibration sensor frequency is too low."
+  },
+  {
+    "0300-2700-0001-0001": "The nozzle offset calibration sensor frequency is too low."
+  },
+  {
+    "0300-2700-0001-0004": "The signal of the nozzle offset calibration sensor is abnormal."
+  },
+  {
+    "0300-2700-0001-0004": "The signal of the nozzle offset calibration sensor is abnormal."
+  },
+  {
+    "0300-2700-0001-0007": "The nozzle offset calibration sensor frequency is too high."
+  },
+  {
+    "0300-2700-0001-0007": "The nozzle offset calibration sensor frequency is too high."
+  },
+  {
+    "0300-9600-0001-0001": "The front door seems to be open; the task has been paused."
+  },
+  {
+    "0300-9600-0001-0001": "The front door seems to be open; the task has been paused."
+  },
+  {
+    "0300-9600-0001-0002": "The front door Hall sensor (Upper) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9600-0001-0002": "The front door Hall sensor (Upper) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9600-0001-0003": "The front door Hall sensor (Upper) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9700-0001-0001": "The top cover seems to be open; the task has been paused."
+  },
+  {
+    "0300-9700-0001-0001": "The top cover seems to be open; the task has been paused."
+  },
+  {
+    "0300-9700-0001-0002": "The top cover Hall sensor (Front Right) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9700-0001-0002": "The top cover Hall sensor (Front Right) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9700-0001-0003": "The top cover Hall sensor (Front Right) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9800-0001-0002": "The left side window Hall sensor (Upper) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9800-0001-0002": "The left side window Hall sensor (Upper) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9800-0001-0003": "The left side window Hall sensor (Upper) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9900-0001-0002": "The right side window Hall sensor (Lower) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9900-0001-0002": "The right side window Hall sensor (Lower) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-9900-0001-0003": "The right side window Hall sensor (Lower) is abnormal; please check whether the connection wire is loose."
+  },
+  {
+    "0300-A100-0001-0001": "Chamber temperature is too high."
+  },
+  {
+    "0300-A100-0001-0001": "Chamber temperature is too high."
+  },
+  {
+    "0300-A200-0001-0001": "MC module temperature is too high, possibly because of high chamber temperature of the printer."
+  },
+  {
+    "0300-A200-0001-0001": "MC module temperature is too high, possibly because of high chamber temperature of the printer."
+  },
+  {
+    "0300-C000-0001-0001": "Active Chamber Exhaust air door malfunction: it may be stuck."
+  },
+  {
+    "0300-C000-0001-0001": "Active Chamber Exhaust air door malfunction: it may be stuck."
+  },
+  {
+    "0300-C000-0001-0002": "Filter Switch Flap air door malfunction: it may be stuck."
+  },
+  {
+    "0300-C000-0001-0002": "Filter Switch Flap air door malfunction: it may be stuck."
+  },
+  {
+    "0300-C000-0001-0003": "Automatic Top Vent air door malfunction: it may be stuck."
+  },
+  {
+    "0300-C000-0001-0003": "Automatic Top Vent air door malfunction: it may be stuck."
+  },
+  {
+    "0300-C100-0001-0001": "Airflow System failed to activate cooling mode; please check the air door status."
+  },
+  {
+    "0300-C100-0001-0001": "Airflow System failed to activate cooling mode; please check the air door status."
+  },
+  {
+    "0C00-0100-0001-0001": "Micro Lidar camera is offline."
+  },
+  {
+    "0C00-0100-0001-0001": "Micro Lidar camera is offline."
+  },
+  {
+    "0C00-0100-0002-0002": "Micro Lidar camera is malfunctioning."
+  },
+  {
+    "0C00-0100-0002-0002": "Micro Lidar camera is malfunctioning."
+  },
+  {
+    "0C00-0100-0001-0003": "Micro Lidar Synchronization abnormal."
+  },
+  {
+    "0C00-0100-0001-0003": "Micro Lidar Synchronization abnormal."
+  },
+  {
+    "0C00-0100-0001-0004": "Micro Lidar Lens dirty."
+  },
+  {
+    "0C00-0100-0001-0004": "Micro Lidar Lens dirty."
+  },
+  {
+    "0C00-0100-0001-0005": "Micro Lidar OTP parameter abnormal."
+  },
+  {
+    "0C00-0100-0001-0005": "Micro Lidar OTP parameter abnormal."
+  },
+  {
+    "0C00-0100-0002-0006": "Micro Lidar extrinsic parameter abnormal."
+  },
+  {
+    "0C00-0100-0002-0006": "Micro Lidar extrinsic parameter abnormal."
+  },
+  {
+    "0C00-0100-0002-0007": "Micro Lidar laser parameter drifted."
+  },
+  {
+    "0C00-0100-0002-0007": "Micro Lidar laser parameter drifted."
+  },
+  {
+    "0C00-0100-0002-0008": "Chamber camera offline."
+  },
+  {
+    "0C00-0100-0002-0008": "Chamber camera offline."
+  },
+  {
+    "0C00-0100-0001-0009": "Chamber camera dirty."
+  },
+  {
+    "0C00-0100-0001-0009": "Chamber camera dirty."
+  },
+  {
+    "0C00-0100-0001-000A": "The Micro Lidar LED may be broken."
+  },
+  {
+    "0C00-0100-0001-000A": "The Micro Lidar LED may be broken."
+  },
+  {
+    "0C00-0100-0001-000B": "Failed to calibrate Micro Lidar."
+  },
+  {
+    "0C00-0100-0001-000B": "Failed to calibrate Micro Lidar."
+  },
+  {
+    "0C00-0200-0001-0001": "Laser not lit."
+  },
+  {
+    "0C00-0200-0001-0001": "Laser not lit."
+  },
+  {
+    "0C00-0200-0002-0002": "Laser too thick."
+  },
+  {
+    "0C00-0200-0002-0002": "Laser too thick."
+  },
+  {
+    "0C00-0200-0002-0003": "Laser not bright enough."
+  },
+  {
+    "0C00-0200-0002-0003": "Laser not bright enough."
+  },
+  {
+    "0C00-0200-0002-0004": "Nozzle height seems too low."
+  },
+  {
+    "0C00-0200-0002-0004": "Nozzle height seems too low."
+  },
+  {
+    "0C00-0200-0001-0005": "A new micro lidar is detected."
+  },
+  {
+    "0C00-0200-0001-0005": "A new micro lidar is detected."
+  },
+  {
+    "0C00-0200-0002-0006": "Nozzle height seems too high."
+  },
+  {
+    "0C00-0200-0002-0006": "Nozzle height seems too high."
+  },
+  {
+    "0C00-0300-0002-0001": "Filament exposure metering failed."
+  },
+  {
+    "0C00-0300-0002-0001": "Filament exposure metering failed."
+  },
+  {
+    "0C00-0300-0002-0002": "First layer inspection terminated due to abnormal lidar data."
+  },
+  {
+    "0C00-0300-0002-0002": "First layer inspection terminated due to abnormal lidar data."
+  },
+  {
+    "0C00-0300-0002-0004": "First layer inspection not supported for current print job."
+  },
+  {
+    "0C00-0300-0002-0004": "First layer inspection not supported for current print job."
+  },
+  {
+    "0C00-0300-0002-0005": "First layer inspection timeout."
+  },
+  {
+    "0C00-0300-0002-0005": "First layer inspection timeout."
+  },
+  {
+    "0C00-0300-0003-0006": "Purged filaments piled up."
+  },
+  {
+    "0C00-0300-0003-0006": "Purged filaments piled up."
+  },
+  {
+    "0C00-0300-0003-0007": "Possible first layer defects."
+  },
+  {
+    "0C00-0300-0003-0007": "Possible first layer defects."
+  },
+  {
+    "0C00-0300-0003-0008": "Possible spaghetti defects."
+  },
+  {
+    "0C00-0300-0003-0008": "Possible spaghetti defects."
+  },
+  {
+    "0C00-0300-0001-0009": "First layer inspection module rebooted."
+  },
+  {
+    "0C00-0300-0001-0009": "First layer inspection module rebooted."
+  },
+  {
+    "0C00-0300-0003-000B": "Inspecting first layer."
+  },
+  {
+    "0C00-0300-0003-000B": "Inspecting first layer."
+  },
+  {
+    "0C00-0300-0002-000C": "Build plate marker not detected."
+  },
+  {
+    "0C00-0300-0002-000C": "Build plate marker not detected."
+  },
+  {
+    "0C00-0300-0002-001C": "Your nozzle seems to be covered with jammed or clogged material."
+  },
+  {
+    "0C00-0300-0002-001C": "Your nozzle seems to be covered with jammed or clogged material."
+  }
+]
