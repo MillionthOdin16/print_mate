@@ -249,7 +249,11 @@ export default function MainView({ params }: PrinterPageProps) {
           setOnline={setOnline}
         />;
       case 'hms':
-        return <HMSView slug={slug} model={printer.model}/>;
+        return <HMSView 
+          slug={slug}
+          model={printer.model}
+          printerState={printerState}
+        />;
       case 'camera':
         return <CameraView slug={slug} ip={printer.ip} password={printer.password} model={printer.model}/>
       default:
