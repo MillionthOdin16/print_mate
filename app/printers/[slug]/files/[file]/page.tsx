@@ -38,7 +38,7 @@ export default function MainView({ params }: FilePageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [previewImage, setPreviewImage] = useState('/no_image.png');
-  const [plate, setPlate] = useState(1);
+  const [plate, setPlate] = useState('1');
 
   const retrieveGcodeFile = async (filename: string) => {
     if (!filename || filename === "No print in progress") return;

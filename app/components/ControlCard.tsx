@@ -1,7 +1,7 @@
 import mqtt from "@/lib/mqtt";
 import { useEffect, useState } from "react";
 import JSZip from "jszip";
-import { send } from "process";
+import { buildCommand, sendCommand } from "@/lib/commands"
 
 interface ControlCardProps {
   name: string;
@@ -12,30 +12,6 @@ interface ControlCardProps {
   online: boolean;
   setOnline: React.Dispatch<React.SetStateAction<boolean>>;
   printerState?: any;
-}
-
-async function sendMqttCommand(command: string, ip: string, password: string, serial: string, params: any = {}, printer: string) {
-  const res = await fetch(`/api/printers/${printer}/mqtt/command`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      slug: printer,
-      host: ip,
-      password: password,
-      serial: serial,
-      command: command,
-      params: params
-    })
-  });
-
-  if (!res.ok) {
-    console.error(res)
-  }
-
-  const result = await res.json();
-  console.log('MQTT response:', result);
 }
 
 export default function ControlCard({ name, ip, password, serial, model, online, setOnline, printerState }: ControlCardProps) {
@@ -191,7 +167,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
         <button 
           className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2" 
           style={{ display: (gcodeStatus === "PAUSE"? 'block' : 'none') }}
-          onClick={() => sendMqttCommand('resume_print', ip, password, serial, {}, name)}
+          onClick={() => sendCommand(name, ip, password, serial, buildCommand('resume_print', {}))}
         >
           <svg className="w-10 h-10 text-green-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 5v14l11-7z"/>
@@ -200,7 +176,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
         <button 
           className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2" 
           style={{ display: (gcodeStatus === "RUNNING"? 'block' : 'none') }}
-          onClick={() => sendMqttCommand('pause_print', ip, password, serial, {}, name)}
+          onClick={() => sendCommand(name, ip, password, serial, buildCommand('pause_print', {}))}
         >
           <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 5h4v14H6zm8 0h4v14h-4z"/>
@@ -212,7 +188,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
           onClick={
             () => {
               if (confirm('Are you sure you want to cancel the print?')) 
-                sendMqttCommand('stop_print', ip, password, serial, {}, name)
+                sendCommand(name, ip, password, serial, buildCommand('stop_print', {}))
             }
           }>
           <svg className="w-5 h-5 m-2.5 text-red-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -226,7 +202,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-gray-700)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = chamberLight ? 'var(--color-gray-700)' : 'var(--color-gray-800)'}
           onClick={(e) => {
-            sendMqttCommand('led_control', ip, password, serial, { node: 'chamber_light', mode: (chamberLight ? 'off' : 'on') }, name);
+            sendCommand(name, ip, password, serial, buildCommand('led_control', { node: 'chamber_light', mode: (chamberLight ? 'off' : 'on') }));
           }}
         >
           <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -283,7 +259,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
           <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
             <button
               onClick={() => {
-                sendMqttCommand('temp_nozzle', ip, password, serial, {"1": `S${nozzleTargetInput}`}, name);
+                sendCommand(name, ip, password, serial, buildCommand('temp_nozzle', {"1": `S${nozzleTargetInput}`}));
                 setNozzleOpen(false);
               }}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -318,7 +294,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
           <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
             <button
               onClick={() => {
-                sendMqttCommand('temp_bed', ip, password, serial, {"1": `S${bedTargetInput}`}, name);
+                sendCommand(name, ip, password, serial, buildCommand('temp_bed', {"1": `S${bedTargetInput}`}));
                 setBedOpen(false);
               }}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -424,25 +400,25 @@ export default function ControlCard({ name, ip, password, serial, model, online,
             <h2 className="text-xl mb-4 text-white">Print Speed</h2>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => sendMqttCommand('print_speed', ip, password, serial, { speed: '1' }, name)}
+              onClick={() => sendCommand(name, ip, password, serial, buildCommand('print_speed', { speed: '1' }))}
             >
               Silent 50%
             </button>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => sendMqttCommand('print_speed', ip, password, serial, { speed: '2' }, name)}
+              onClick={() => sendCommand(name, ip, password, serial, buildCommand('print_speed', { speed: '2' }))}
             >
               Standard 100%
             </button>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => sendMqttCommand('print_speed', ip, password, serial, { speed: '3' }, name)}
+              onClick={() => sendCommand(name, ip, password, serial, buildCommand('print_speed', { speed: '3' }))}
             >
               Sport 124%
             </button>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => sendMqttCommand('print_speed', ip, password, serial, { speed: '4' }, name)}
+              onClick={() => sendCommand(name, ip, password, serial, buildCommand('print_speed', { speed: '4' }))}
             >
               Ludicrous 166%
             </button>

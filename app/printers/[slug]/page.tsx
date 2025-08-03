@@ -9,6 +9,7 @@ import HMSView from '@/app/components/HMSView';
 import SettingsView from '@/app/components/SettingsView';
 import React from 'react';
 import CameraView from '@/app/components/CameraView';
+import { buildCommand, sendCommand } from '@/lib/commands';
 
 interface PrinterPageProps {
   params: Promise<{
@@ -112,21 +113,8 @@ export default function MainView({ params }: PrinterPageProps) {
                     case 'connected':
                       setOnline(data.connected);
                       setIsSubscribed(true);
-
-                      fetch(`/api/printers/${printer.name}/mqtt/command`, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          slug: printer.name,
-                          host: printer.ip,
-                          password: printer.password,
-                          serial: printer.serial,
-                          command: 'pushall',
-                          params: {}
-                        })
-                      });
+                      console.log('conn')
+                      sendCommand(slug, printer.ip, printer.password, printer.serial, (buildCommand('pushall', {})))
                       break;
                     case 'heartbeat':
                       setOnline(data.connected);
@@ -234,7 +222,14 @@ export default function MainView({ params }: PrinterPageProps) {
           setError={setFilesError}
         />;
       case 'settings':
-        return <SettingsView slug={slug} model={printer.model} serial={printer.serial}/>;
+        return <SettingsView
+          slug={slug}
+          model={printer.model}
+          serial={printer.serial}
+          ip={printer.ip}
+          password={printer.password}
+          printerState={printerState}
+        />;
       case 'filament':
         return <FilamentView slug={slug} model={printer.model}/>;
       case 'control':

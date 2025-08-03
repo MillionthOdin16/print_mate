@@ -1,18 +1,33 @@
 'use client';
 
+import { buildCommand, sendCommand } from '@/lib/commands';
 import { useState } from 'react';
 
 interface SettingsCardProps {
   name: string;
   model: string;
   serial: string;
+  ip: string;
+  password: string;
+  printerState?: any;
 }
 
-export default function SettingsCard({ name, model, serial }: SettingsCardProps) {
+export default function SettingsCard({ name, model, serial, ip, password, printerState }: SettingsCardProps) {
   const [activeView, setActiveView] = useState<'main' | 'device' | 'network' | 'firmware' | 'ams'>('main');
-  const [amsSettings, setAmsSettings] = useState<boolean[]>([false, false]); //TODO: get from printer, set to printer
+  const [nozzleOpen, setNozzleOpen] = useState(false);
+  const [calibrationOpen, setCalibrationOpen] = useState(false);
+
+  const [motorCancellation, setMotorCancellation] = useState(true);
+  const [vibrationCompensation, setVibrationCompensation] = useState(true);
+  const [bedLevelling, setBedLevelling] = useState(true);
+  
   const [firmware, setFirmware] = useState('01.04.01.00'); //TODO: get from printer
-  const [network, setNetwork] = useState('-35dBm'); // TODO: get from printer
+  
+  const network = printerState.print?.wifi_signal;
+  const amsStartupRead = printerState.print?.ams?.power_on_flag || false;
+  const amsInsertRead = printerState.print?.ams?.insert_flag || false;
+  const nozzleDiameter = printerState.print?.nozzle_diameter;
+  const nozzleType = printerState.print?.nozzle_type;
 
   return (
     <div>
@@ -134,14 +149,17 @@ export default function SettingsCard({ name, model, serial }: SettingsCardProps)
             <label>Firmware version: {firmware}</label>
             <label>Serial number: {serial}</label>
 
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center" onClick={() => setCalibrationOpen(true)}>
               <button className="bg-gray-800 rounded-md hover:bg-gray-700 p-2 m-2 w-min">Calibration</button>
-              <label>Perform the printer calibration</label> {/* TODO: add function */}
+              <label>Perform the printer calibration</label>
             </div>
 
-            <div className="flex flex-row items-center">
+            <div
+              className="flex flex-row items-center"
+              onClick={() => setNozzleOpen(true)}
+            >
               <button className="bg-gray-800 rounded-md hover:bg-gray-700 p-2 m-2 w-min">Nozzle</button>
-              <label>Current: 0.4mm Hardened</label> {/* TODO: add function */}
+              <label>Current: {nozzleDiameter}mm {nozzleType == "stainless_steel" ? "Stainless steel": "Harderned steel"}</label>
             </div>
           </div>
         </div>
@@ -226,17 +244,148 @@ export default function SettingsCard({ name, model, serial }: SettingsCardProps)
           </div>
           <div className="flex flex-col">
             <label 
-              className={(amsSettings[0]? "bg-gray-700 hover:bg-gray-600" : "bg-gray-800 hover:bg-gray-700") + " w-fit p-2 rounded-md m-1 transition"}
-              onClick={() => setAmsSettings([!amsSettings[0], amsSettings[1]])}
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={amsStartupRead? {border: '1px solid white'} : {}}
+              onClick={() => {
+                //TODO
+              }}
             >
               Read RFID on startup
             </label>
             <label 
-              className={(amsSettings[1]? "bg-gray-700 hover:bg-gray-600" : "bg-gray-800 hover:bg-gray-700") + " w-fit p-2 rounded-md m-1 transition"}
-              onClick={() => setAmsSettings([amsSettings[0], !amsSettings[1]])}
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={amsInsertRead? {border: '1px solid white'} : {}}
+              onClick={() => {
+                //TODO
+              }}
             >
               Read RFID on insertion
             </label>
+          </div>
+        </div>
+      )}
+      {nozzleOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
+            <button
+              onClick={() => setNozzleOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <h2 className="text-lg sm:text-xl mb-4 text-white">Nozzle</h2>
+            <form onSubmit={() => {}}>
+              <label>Nozzle Type</label>
+              <select
+                className="m-1 bg-gray-700 rounded-sm p-2"
+                id="in-type"
+                defaultValue={nozzleType}
+                required
+              >
+                <option value="stainless_steel">Stainless steel</option>
+                <option value="hardened_steel">Hardened steel</option>
+              </select>
+              <br/>
+              <label>Nozzle Diameter</label>
+              <select
+                className="m-1 bg-gray-700 rounded-sm p-2"
+                id="in-diameter"
+                defaultValue={nozzleDiameter}
+                required
+              >
+                <option value="0.2">0.2mm</option>
+                <option value="0.4">0.4mm</option>
+                <option value="0.6">0.6mm</option>
+                <option value="0.8">0.8mm</option>
+              </select>
+              <br/>
+              <input 
+                type="submit"
+                className="p-2 bg-gray-700 rounded-sm hover:bg-gray-600"
+                value="Finish"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const type = (document.getElementById("in-type") as HTMLInputElement).value;
+                  const diameter = (document.getElementById('in-diameter') as HTMLInputElement).value;
+                  sendCommand(name, ip, password, serial, buildCommand('nozzle_settings', {
+                    "nozzle_diameter": parseFloat(diameter),
+                    "nozzle_type": type
+                  }))
+                  setNozzleOpen(false);
+                }}
+              />
+            </form>
+          </div>
+        </div>
+      )}
+      {calibrationOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
+            <button
+              onClick={() => setCalibrationOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <h2 className="text-lg sm:text-xl mb-4 text-white">Calibration</h2>
+            <form className="flex flex-col">
+              <label 
+                className="bg-gray-700 p-2 m-1 hover:bg-gray-600 rounded-md w-fit"
+                style={motorCancellation? {'border': '1px solid white'} : {}}
+                onClick={() => setMotorCancellation(!motorCancellation)}
+              >
+                Motor Noise Cancellation
+              </label>
+              <label 
+                className="bg-gray-700 p-2 m-1 hover:bg-gray-600 rounded-md w-fit"
+                style={vibrationCompensation? {'border': '1px solid white'} : {}}
+                onClick={() => setVibrationCompensation(!vibrationCompensation)}
+              >
+                Vibration Compensation
+              </label>
+              <label 
+                className="bg-gray-700 p-2 m-1 hover:bg-gray-600 rounded-md w-fit"
+                style={bedLevelling? {'border': '1px solid white'} : {}}
+                onClick={() => setBedLevelling(!bedLevelling)}
+              >
+                Auto Bed Levelling
+              </label>
+              <input type="submit" className="bg-gray-700 hover:bg-gray-600 rounded-md p-2 m-1 w-fit" value="Start Calibration" onClick={(e) => {
+                e.preventDefault();
+                let bitmask = 0;
+                if (bedLevelling) bitmask |= 1 << 1;
+                if (vibrationCompensation) bitmask |= 1 << 2;
+                if (motorCancellation) bitmask |= 1 << 3;
+                sendCommand(name, ip, password, serial, buildCommand('calibration', {'options': bitmask}));
+                setCalibrationOpen(false);
+              }}/>
+            </form>
           </div>
         </div>
       )}
