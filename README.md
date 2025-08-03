@@ -17,5 +17,4 @@ H2D - Untested, unlikely to function correctly
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
 * Modify the printer configuration
-* Manage filament settings
-* Get Bambu's HMS (Health Management System) messages
+* Manage filament settings (partially implemented)
