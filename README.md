@@ -13,6 +13,7 @@ H2D - Untested, unlikely to function correctly
 * List and print files on the internal storage
 * Control an in-progress print
 * Camera stream for A1/P1 series printers
+* Get Bambu HMS (Health Management System) messages
 
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
