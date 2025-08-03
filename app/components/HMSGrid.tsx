@@ -29,16 +29,20 @@ export default function HMSGrid({ name, model, printerState }: HMSGridProps) {
   
   return (
     <div className="bg-gray-900 grid grid-cols-1 gap-2">
-      {messages.map((item: any, index: number) => {
-        const formattedCode = formatHMSCode(item.attr, item.code);
-        return (
-          <HMSCard 
-            key={index} 
-            message={mapHMSCode(formattedCode)} 
-            code={formattedCode}
-          />
-        );
-      })}
+      {messages.length === 0 ? (
+        <div className="text-center p-4">No messages</div>
+      ) : (
+        messages.map((item: any, index: number) => {
+          const formattedCode = formatHMSCode(item.attr, item.code);
+          return (
+            <HMSCard 
+              key={index} 
+              message={mapHMSCode(formattedCode)} 
+              code={formattedCode}
+            />
+          );
+        })
+      )}
     </div>
   );
 }
