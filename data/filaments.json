@@ -67,8 +67,7 @@
     "id": "tpu-ams",
     "brand": "Bambu Lab",
     "material": "TPU for AMS",
-    "type": "TPU",
-    "_comment": "!!!!!!![TODO] [TODO] [TODO] check filament type!!!!!!!!!",
+    "type": "TPU_AMS",
     "minTemp": 220,
     "maxTemp": 240
   },
@@ -156,7 +155,7 @@
     "id": "paht-cf",
     "brand": "Bambu Lab",
     "material": "PAHT-CF",
-    "type": "PAHT-CF",
+    "type": "PA-CF",
     "minTemp": 260,
     "maxTemp": 290
   },
@@ -204,7 +203,7 @@
     "id": "support-pla-petg",
     "brand": "Bambu Lab",
     "material": "Support for PLA/PETG",
-    "type": "!!!!!!![TODO] [TODO] [TODO] check the type and add here!!!!!!!!!!!",
+    "type": "PLA-S",
     "minTemp": 190,
     "maxTemp": 220
   },
@@ -212,7 +211,7 @@
     "id": "support-abs",
     "brand": "Bambu Lab",
     "material": "Support for ABS",
-    "type": "!!!!!!![TODO] [TODO] [TODO] check the type and add here!!!!!!!!!!!",
+    "type": "ABS-S",
     "minTemp": 240,
     "maxTemp": 270
   },
@@ -220,7 +219,7 @@
     "id": "support-pa-pet",
     "brand": "Bambu Lab",
     "material": "Support for PA/PET",
-    "type": "!!!!!!![TODO] [TODO] [TODO] check the type and add here!!!!!!!!!!!",
+    "type": "PA-S",
     "minTemp": 280,
     "maxTemp": 300
   },
@@ -269,7 +268,6 @@
     "brand": "Bambu Lab",
     "material": "TPU 95A HF",
     "type": "TPU",
-    "_comment": "!!!!!!![TODO] [TODO] [TODO] check filament type!!!!!!!!!",
     "minTemp": 220,
     "maxTemp": 240
   },
@@ -278,7 +276,6 @@
     "brand": "Bambu Lab",
     "material": "TPU 90A",
     "type": "TPU",
-    "_comment": "!!!!!!![TODO] [TODO] [TODO] check filament type!!!!!!!!!",
     "minTemp": 220,
     "maxTemp": 240
   },
@@ -286,8 +283,7 @@
     "id": "tpu-85a",
     "brand": "Bambu Lab",
     "material": "TPU 85A",
-    "type": "PLA",
-    "_comment": "!!!!!!![TODO] [TODO] [TODO] check filament type!!!!!!!!!",
+    "type": "TPU",
     "minTemp": 220,
     "maxTemp": 240
   },
@@ -296,7 +292,6 @@
     "brand": "Bambu Lab",
     "material": "PC FR",
     "type": "PC",
-    "_comment": "!!!!!!![TODO] [TODO] [TODO] check filament type!!!!!!!!!",
     "minTemp": 260,
     "maxTemp": 280
   },
@@ -304,7 +299,7 @@
     "id": "support-pla",
     "brand": "Bambu Lab",
     "material": "Support for PLA",
-    "type": "!!!!!!!![TODO] [TODO] [TODO] CHECK FILAMENT TYPE!!!!!!!!!",
+    "type": "PLA-S",
     "minTemp": 220,
     "maxTemp": 230
   }

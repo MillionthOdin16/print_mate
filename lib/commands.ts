@@ -72,8 +72,10 @@ export const COMMANDS = {
   },
   filament_load: {
     "print": {
-      "sequence_id": "0",
-      "command": "load"
+      "command": "ams_change_filament",
+      "target": 255,
+      "curr_temp": 250,
+      "tar_temp": 250
     }
   },
   filament_unload: {
@@ -140,6 +142,19 @@ export const COMMANDS = {
       "ams_id": "%s",
       "startup_read_option": "%s",
       "tray_read_option": "%s"
+    }
+  },
+  ams_filament: {
+    "print": {
+      "sequence_id": "0",
+      "command": "ams_filament_setting",
+      "ams_id": "%s",
+      "tray_id": "%s",
+      "tray_info_idx": "",
+      "tray_color": "%s",
+      "nozzle_temp_min": "%s",
+      "nozzle_temp_max": "%s",
+      "tray_type": "%s"
     }
   },
   nozzle_settings: {

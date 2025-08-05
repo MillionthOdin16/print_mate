@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
 
     if (!host || !password || !serial || !payload) {
       return new Response(JSON.stringify({ error: 'Missing required parameters: host, password, serial, payload' }), { 
-        status: 400,
+        status: 400, 
         headers: { 'Content-Type': 'application/json' }
       });
     }

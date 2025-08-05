@@ -231,7 +231,14 @@ export default function MainView({ params }: PrinterPageProps) {
           printerState={printerState}
         />;
       case 'filament':
-        return <FilamentView slug={slug} model={printer.model}/>;
+        return <FilamentView
+          slug={slug}
+          model={printer.model}
+          ip={printer.ip}
+          password={printer.password}
+          serial={printer.serial}
+          printerState={printerState}
+        />;
       case 'control':
         return <ControlView 
           slug={slug} 

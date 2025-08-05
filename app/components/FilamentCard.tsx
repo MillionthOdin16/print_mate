@@ -2,31 +2,48 @@
 
 import { useState, useEffect } from 'react';
 import filamentsData from '@/data/filaments.json';
+import { buildCommand, sendCommand } from '@/lib/commands';
 
 interface FilamentCardProps {
   name: string;
   model: string;
+  ip: string;
+  password: string;
+  serial: string;
+  printerState: any;
 }
 
 interface Filament {
   id: string;
   brand: string;
   material: string;
+  type: string;
   minTemp: number;
   maxTemp: number;
 }
 
-export default function FilamentCard({ name, model }: FilamentCardProps) {
+export default function FilamentCard({ name, model, ip, password, serial, printerState }: FilamentCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [activeView, setActiveView] = useState<'ams' | 'ext'>('ext');
   const [activeAction, setActiveAction] = useState(''); // TODO: retrieve from printer
   const [selectedBrand, setSelectedBrand] = useState(''); // TODO: retrieve from printer
-  const [selectedFilament, setSelectedFilament] = useState('PLA Basic'); // TODO: retrieve from printer
-  const [amsUnits, setAmsUnits] = useState(2); // TODO: retrieve from printer
   const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF', 'PC FR', 'Support for PLA/PETG', 'PLA-CF', 'PLA-CF']); // TODO: retrieve from printer
-  const [selectedColour, setSelectedColour] = useState<string>('#ffaaaa'); // TODO: retrieve from printer
   const [amsColours, setAmsColours] = useState<string[]>(['#000000', '#ffffff', '#abcdef', '#0fab9c', '#000000', '#333333', '#f9a2b8', '#fafafa', '#aaaaaa']) // TODO: retrieve from printer
   
+  const [selectedAms, setSelectedAms] = useState(0);
+  const [selectedSlot, setSelectedSlot] = useState(0);
+  const [filaments, setFilaments] = useState<Filament[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [inColour, setInColour] = useState('');
+  const [inFilament, setInFilament] = useState<Filament>();
+
+  const selectedColour = `#${(printerState.print.vt_tray.tray_color).substring(0, 6)}`;
+  const selectedFilament = printerState.print.vt_tray.tray_type;
+  const amsUnits = (printerState.print.ams.ams).length;
+  const ams = printerState.print.ams;
+
   const updateAmsFilament = (index: number, newValue: string) => {
     setAmsFilaments(prev => {
       const newArray = [...prev];
@@ -43,13 +60,14 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
     });
   };
 
-  const [selectedAms, setSelectedAms] = useState(0);
-  const [selectedSlot, setSelectedSlot] = useState(0);
-  const [loadingFilament, setLoadingFilament] = useState(false);
-  const [unloadingFilament, setUnloadingFilament] = useState(false);
-  const [filaments, setFilaments] = useState<Filament[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  useEffect(() => {
+    ams.ams.forEach((element: { tray: any[]; }) => {
+      element.tray.forEach(tray => {
+        updateAmsFilament(tray.id, tray.tray_type || "Empty")
+        updateAmsColour(tray.id, `#${(tray.tray_color?.substring(0, 6) || '')}`)
+      })
+    })
+  }, [ams])
 
   useEffect(() => {
     const fetchFilaments = async () => {
@@ -57,11 +75,11 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
 
       setFilaments(data);
       
-      const uniqueBrands = Array.from(new Set(data.map(f => f.brand)));
-      setBrands(uniqueBrands);
+      const brands = Array.from(new Set(data.map(f => f.brand)));
+      setBrands(brands);
       
-      if (uniqueBrands.length > 0) {
-        setSelectedBrand(uniqueBrands[0]);
+      if (brands.length > 0) {
+        setSelectedBrand(brands[0]);
       }
     };
 
@@ -106,10 +124,16 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             </div>
           </div>
           <div className="flex flex-col justify-center items-center w-full sm:w-auto">
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%] " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('loading filament');setLoadingFilament(true);}}>
+            <button
+              className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
+              onClick={() => sendCommand(name, ip, password, serial, buildCommand('filament_load'))
+            }>
               Load
             </button>
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%] " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('unloading filament');setUnloadingFilament(true);}}>
+            <button
+              className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
+              onClick={() => sendCommand(name, ip, password, serial, buildCommand('filament_unload'))
+            }>
               Unload
             </button>
             <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]"} onClick={() => handleButtonClick('Edit')}>
@@ -136,7 +160,13 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >
               <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 4]}`}}></section>
+                <section 
+                  className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
+                  style={{
+                    backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 4]}`,
+                    display: (amsFilaments[((selectedAms + 1) * 4) - 4] === "Empty" ? 'none' : 'block')
+                  }}
+                />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-4]}</label>
               </div>
             </div>
@@ -145,7 +175,13 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >              
             <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 3]}`}}></section>
+                <section 
+                  className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
+                  style={{
+                    backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 3]}`,
+                    display: (amsFilaments[((selectedAms + 1) * 4) - 3] === "Empty" ? 'none' : 'block')
+                  }}
+                />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-3]}</label>
               </div>
             </div>
@@ -154,7 +190,13 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >              
               <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 2]}`}}></section>
+                <section 
+                  className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
+                  style={{
+                    backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 2]}`,
+                    display: (amsFilaments[((selectedAms + 1) * 4) - 2] === "Empty" ? 'none' : 'block')
+                  }}
+                />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-2]}</label>
               </div>
             </div>
@@ -163,17 +205,23 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
             >              
               <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
               <div className="flex flex-row items-center">
-                <section className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 1]}`}}></section>
+                <section 
+                  className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
+                  style={{
+                    backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 1]}`,
+                    display: (amsFilaments[((selectedAms + 1) * 4) - 1] === "Empty" ? 'none' : 'block')
+                  }}
+                />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-1]}</label>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-center items-center w-full">
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('loading filament');setLoadingFilament(true);}}>
+            <button className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " onClick={() => alert('loading ams filament')}>
               Load
             </button>
-            <button disabled={loadingFilament || unloadingFilament} className={"flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " + ((loadingFilament || unloadingFilament)? "bg-gray-600" : "bg-gray-800 hover:bg-gray-700")} onClick={() => {alert('unloading filament');setUnloadingFilament(true);}}>
+            <button className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " onClick={() => alert('unloading ams filament')}>
               Unload
             </button>
             <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "} onClick={() => handleButtonClick('Edit')}>
@@ -224,45 +272,27 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
                   ))}
                 </select>
               </div>
-
+              <input 
+                type="text" 
+                className="bg-gray-700 w-full p-2 rounded-md"
+                placeholder='Search...'
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
+              />
               <div className="max-h-60 overflow-y-auto border border-gray-700 rounded">
-                <input 
-                  type="text" 
-                  className="bg-gray-700 w-max p-2 m-2 rounded-md" 
-                  placeholder='Search...'
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                  }}
-                />
                 {filteredFilaments.length > 0 ? (
                   filteredFilaments.filter(f => f.material.toLowerCase().includes(searchTerm.toLowerCase())).map((filament) => (
-                    <div 
+                    <div
                       key={filament.id}
                       className="p-2 transition"
                       onClick={() => {
-                        console.log('Selected:', filament.material);
-                        if (activeView == 'ext') setSelectedFilament(filament.material);
-                        else if (activeView == 'ams') {
-                          switch (selectedSlot) {
-                            case 0:
-                              updateAmsFilament((((selectedAms + 1) * 4) - 4), filament.material)
-                              break;
-                            case 1:
-                              updateAmsFilament((((selectedAms + 1) * 4) - 3), filament.material)
-                              break;
-                            case 2:
-                              updateAmsFilament((((selectedAms + 1) * 4) - 2), filament.material)
-                              break;
-                            case 3:
-                              updateAmsFilament((((selectedAms + 1) * 4) - 1), filament.material)
-                              break;
-                          }
-                        }
+                        setInFilament(filament);
                       }}
                       style={{backgroundColor:
-                        `var(--color-gray-${(((activeView == 'ams')? amsFilaments[((selectedAms + 1) * 4) - (4 - selectedSlot)] : selectedFilament) == filament.material)? '700' : '800'})`}}
+                        `var(--color-gray-${(inFilament?.material == filament.material)? '700' : '800'})`}}
                     >
-                      <div className="font-medium">{filament.material}</div>
+                      <label>{filament.material}</label>
                     </div>
                   ))
                 ) : (
@@ -283,11 +313,46 @@ export default function FilamentCard({ name, model }: FilamentCardProps) {
                   }
                   onChange={() => {
                     let colour = (document.getElementById("edit-colour") as HTMLInputElement).value;
-                    if (activeView == 'ext') setSelectedColour(colour);
-                    else if (activeView == 'ams') updateAmsColour((((selectedAms + 1) * 4) - (4 - selectedSlot)), colour);
+                    setInColour(colour)
                   }}
                 />
               </div>
+
+              <button
+                className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
+                onClick={() => {
+                  if (activeView == 'ext') {
+                    sendCommand(
+                      name,
+                      ip,
+                      password,
+                      serial,
+                      buildCommand('ams_filament', {
+                        "ams_id": 255, // always 255 for ext spool
+                        "tray_id": 254, // always 254 for ext spool
+                        "tray_color": inColour.substring(1).toUpperCase() + "FF",
+                        "nozzle_temp_min": inFilament?.minTemp,
+                        "nozzle_temp_max": inFilament?.maxTemp,
+                        "tray_type": inFilament?.type
+                      })
+                    )
+                  }
+                  else if (activeView == 'ams') {
+                    const trayId = ((selectedAms + 1) * 4) - (4 - selectedSlot);
+                    sendCommand(name, ip, password, serial, buildCommand('ams_filament', {
+                      "ams_id": selectedAms,
+                      "tray_id": trayId,
+                      "tray_color": inColour.substring(1).toUpperCase() + "FF",
+                      "nozzle_temp_min": inFilament?.minTemp,
+                      "nozzle_temp_max": inFilament?.maxTemp,
+                      "tray_type": inFilament?.type
+                    }));
+                  }
+                  setEditOpen(false);
+                }}
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>
