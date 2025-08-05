@@ -14,8 +14,8 @@ H2D - Untested, unlikely to function correctly
 * Control an in-progress print
 * Camera stream for A1/P1 series printers
 * Get Bambu HMS (Health Management System) messages
+* Manage filament settings
 
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
-* Modify the printer configuration
-* Manage filament settings (partially implemented)
+* Modify the printer configuration (partially implemented)
