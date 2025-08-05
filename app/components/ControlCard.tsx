@@ -151,7 +151,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
       <div className="flex flex-col w-full sm:w-[80%] m-1 sm:m-2">
         <img src={previewImage} className="w-[100%]"/>
         <div className="flex flex-row justify-between">
-          <label className="text-sm sm:text-lg">{timeRemaining}</label>
+          <label className="text-sm sm:text-lg">-{timeRemaining}</label>
           <label className="text-sm sm:text-lg">{printProgress}%</label>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2.5">
