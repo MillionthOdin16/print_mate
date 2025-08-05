@@ -9,7 +9,7 @@ import HMSView from '@/app/components/HMSView';
 import SettingsView from '@/app/components/SettingsView';
 import React from 'react';
 import CameraView from '@/app/components/CameraView';
-import { buildCommand, sendCommand } from '@/lib/commands';
+import * as commands from '@/lib/commands';
 
 interface PrinterPageProps {
   params: Promise<{
@@ -114,7 +114,7 @@ export default function MainView({ params }: PrinterPageProps) {
                       setOnline(data.connected);
                       setIsSubscribed(true);
                       console.log('conn')
-                      sendCommand(slug, printer.ip, printer.password, printer.serial, (buildCommand('pushall', {})))
+                      commands.sendCommand(slug, printer.ip, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
                       break;
                     case 'heartbeat':
                       setOnline(data.connected);

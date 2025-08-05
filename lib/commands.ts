@@ -1,194 +1,219 @@
-import { format } from "util";
-
-export function buildCommand(commandType: string, params: any = {}) {
-  const template = COMMANDS[commandType as keyof typeof COMMANDS];
-  if (!template) {
-    console.error('command does not exist')
-    return {};
-  }
-  
-  const paramValues = Object.values(params);
-  
-  try {
-    let command = JSON.stringify(template);
-
-    paramValues.forEach((value, index) => {
-      if (typeof value === "number") {
-        command = command.replace('"%s"', String(value));
-      } else {
-        command = command.replace('"%s"', `"${value}"`);
-      }
-    });
-    
-    return JSON.parse(command);
-  } catch (error) {
-    console.error('error formatting command:', error);
-    return template;
-  }
-}
-
-export const COMMANDS = {
-  pushall: {
+export function pushall(sequence_id: string) {
+  return {
     "pushing": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "pushall",
       "version": 1,
       "push_target": 1
     }
-  },
-  get_version: {
+  }
+}
+
+export function get_version(sequence_id: string) {
+  return {
     "info": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "get_version"
     }
-  },
-  stop_print: {
+  }
+}
+
+export function stop_print(sequence_id: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "stop",
-      "param": "",
+      "param": ""
     }
-  },
-  pause_print: {
+  }
+}
+
+export function pause_print(sequence_id: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "pause",
-      "param": "",
+      "param": ""
     }
-  },
-  resume_print: {
+  }
+}
+
+export function resume_print(sequence_id: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "resume",
-      "param": "",
+      "param": ""
     }
-  },
-  calibration: {
+  }
+}
+
+export function calibration(sequence_id: string, option: number) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "calibration",
-      "option": "%s"
+      "option": option
     }
-  },
-  filament_load: {
+  }
+}
+
+export function filament_load() {
+  return {
     "print": {
       "command": "ams_change_filament",
       "target": 255,
       "curr_temp": 250,
       "tar_temp": 250
     }
-  },
-  filament_unload: {
+  }
+}
+
+export function filament_unload(sequence_id: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "unload_filament"
     }
-  },
-  print_speed: {
+  }
+}
+
+export function print_speed(sequence_id: string, param: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "print_speed",
-      "param": "%s"
+      "param": param
     }
-  },
-  skip_objects: {
+  }
+}
+
+export function skip_objects(sequence_id: string, obj_list: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "skip_objects",
-      "obj_list": "%s"
+      "obj_list": obj_list
     }
-  },
-  print_file: {
+  }
+}
+
+export function print_file(sequence_id: string, param: string, url: string, timelapse: string, bed_levelling: string, flow_cali: string, vibration_cali: string, layer_inspect: string, ams_mapping: string, use_ams: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "project_file",
-      "param": "%s",
+      "param": param,
       "project_id": "0",
       "profile_id": "0",
       "task_id": "0",
       "subtask_id": "0",
       "subtask_name": "",
       "file": "",
-      "url": "%s",
+      "url": url,
       "md5": "",
-      "timelapse": "%s",
+      "timelapse": timelapse,
       "bed_type": "auto",
-      "bed_levelling": "%s",
-      "flow_cali": "%s",
-      "vibration_cali": "%s",
-      "layer_inspect": "%s",
-      "ams_mapping": "%s",
-      "use_ams": "%s"
+      "bed_levelling": bed_levelling,
+      "flow_cali": flow_cali,
+      "vibration_cali": vibration_cali,
+      "layer_inspect": layer_inspect,
+      "ams_mapping": ams_mapping,
+      "use_ams": use_ams
     }
-  },
-  gcode_file: {
+  }
+}
+
+export function gcode_file(sequence_id: string, param: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "gcode_file",
-      "param": "%s"
+      "param": param
     }
-  },
-  gcode_line: {
+  }
+}
+
+export function gcode_line(sequence_id: string, param: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "gcode_line",
-      "param": "%s"
+      "param": param
     }
-  },
-  ams_settings: {
+  }
+}
+
+export function ams_settings(sequence_id: string, ams_id: number, startup_read_option: string, tray_read_option: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "ams_user_setting",
-      "ams_id": "%s",
-      "startup_read_option": "%s",
-      "tray_read_option": "%s"
+      "ams_id": ams_id,
+      "startup_read_option": startup_read_option,
+      "tray_read_option": tray_read_option
     }
-  },
-  ams_filament: {
+  }
+}
+
+export function ams_filament(sequence_id: string, ams_id: number, tray_id: number, tray_color: string, nozzle_temp_min: number, nozzle_temp_max: number, tray_type: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "ams_filament_setting",
-      "ams_id": "%s",
-      "tray_id": "%s",
+      "ams_id": ams_id,
+      "tray_id": tray_id,
       "tray_info_idx": "",
-      "tray_color": "%s",
-      "nozzle_temp_min": "%s",
-      "nozzle_temp_max": "%s",
-      "tray_type": "%s"
+      "tray_color": tray_color,
+      "nozzle_temp_min": nozzle_temp_min,
+      "nozzle_temp_max": nozzle_temp_max,
+      "tray_type": tray_type
     }
-  },
-  nozzle_settings: {
+  }
+}
+
+export function nozzle_settings(nozzle_diameter: string, nozzle_type: string) {
+  return {
     "system": {
       "accessory_type": "nozzle",
       "command": "set_accessories",
-      "nozzle_diameter": "%s",
-      "nozzle_type": "%s"
+      "nozzle_diameter": parseFloat(nozzle_diameter),
+      "nozzle_type": nozzle_type
     }
-  },
-  led_control: {
+  }
+}
+
+export function led_control(sequence_id: string, led_node: string, led_mode: string) {
+  return {
     "system": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "ledctrl",
-      "led_node": "%s",
-      "led_mode": "%s",
+      "led_node": led_node,
+      "led_mode": led_mode,
       "led_on_time": "500",
       "led_off_time": "500",
       "loop_times": "1",
       "interval_time": "1000"
     }
-  },
-  temp_bed: {
+  }
+}
+
+export function temp_bed(sequence_id: string, param: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "gcode_line",
-      "param": "M140 %s"
+      "param": "M140 " + param
     }
-  },
-  temp_nozzle: {
+  }
+}
+
+export function temp_nozzle(sequence_id: string, param: string) {
+  return {
     "print": {
-      "sequence_id": "0",
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "gcode_line",
-      "param": "M104 %s"
+      "param": "M104 " + param
     }
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import filamentsData from '@/data/filaments.json';
-import { buildCommand, sendCommand } from '@/lib/commands';
+import * as commands from '@/lib/commands';
 
 interface FilamentCardProps {
   name: string;
@@ -126,14 +126,14 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
           <div className="flex flex-col justify-center items-center w-full sm:w-auto">
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => sendCommand(name, ip, password, serial, buildCommand('filament_load'))
+              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_load())
             }>
               Load
             </button>
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => sendCommand(name, ip, password, serial, buildCommand('filament_unload'))
-            }>
+              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_unload(printerState.print.sequence_id))}
+            >
               Unload
             </button>
             <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]"} onClick={() => handleButtonClick('Edit')}>
@@ -322,31 +322,32 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                 className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
                 onClick={() => {
                   if (activeView == 'ext') {
-                    sendCommand(
+                    commands.sendCommand(
                       name,
                       ip,
                       password,
                       serial,
-                      buildCommand('ams_filament', {
-                        "ams_id": 255, // always 255 for ext spool
-                        "tray_id": 254, // always 254 for ext spool
-                        "tray_color": inColour.substring(1).toUpperCase() + "FF",
-                        "nozzle_temp_min": inFilament?.minTemp,
-                        "nozzle_temp_max": inFilament?.maxTemp,
-                        "tray_type": inFilament?.type
-                      })
+                      commands.ams_filament(
+                        printerState.print.sequence_id + 1,
+                        255,
+                        254,
+                        inColour.substring(1).toUpperCase() + "FF",
+                        inFilament?.minTemp || 0,
+                        inFilament?.maxTemp || 0,
+                        inFilament?.type || ""
+                      )
                     )
                   }
                   else if (activeView == 'ams') {
-                    const trayId = ((selectedAms + 1) * 4) - (4 - selectedSlot);
-                    sendCommand(name, ip, password, serial, buildCommand('ams_filament', {
-                      "ams_id": selectedAms,
-                      "tray_id": trayId,
-                      "tray_color": inColour.substring(1).toUpperCase() + "FF",
-                      "nozzle_temp_min": inFilament?.minTemp,
-                      "nozzle_temp_max": inFilament?.maxTemp,
-                      "tray_type": inFilament?.type
-                    }));
+                    commands.sendCommand(name, ip, password, serial, commands.ams_filament(
+                      printerState.print.sequence_id + 1,
+                      selectedAms,
+                      ((selectedAms + 1) * 4) - (4 - selectedSlot),
+                      inColour.substring(1).toUpperCase() + "FF",
+                      inFilament?.minTemp || 0,
+                      inFilament?.maxTemp || 0,
+                      inFilament?.type || ""
+                    ));
                   }
                   setEditOpen(false);
                 }}

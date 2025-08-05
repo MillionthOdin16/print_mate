@@ -1,6 +1,6 @@
 'use client';
 
-import { buildCommand, sendCommand } from '@/lib/commands';
+import * as commands from '@/lib/commands';
 import { useState } from 'react';
 
 interface SettingsCardProps {
@@ -320,10 +320,7 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                   e.preventDefault();
                   const type = (document.getElementById("in-type") as HTMLInputElement).value;
                   const diameter = (document.getElementById('in-diameter') as HTMLInputElement).value;
-                  sendCommand(name, ip, password, serial, buildCommand('nozzle_settings', {
-                    "nozzle_diameter": parseFloat(diameter),
-                    "nozzle_type": type
-                  }))
+                  commands.sendCommand(name, ip, password, serial, commands.nozzle_settings(diameter, type));
                   setNozzleOpen(false);
                 }}
               />
@@ -382,7 +379,7 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                 if (bedLevelling) bitmask |= 1 << 1;
                 if (vibrationCompensation) bitmask |= 1 << 2;
                 if (motorCancellation) bitmask |= 1 << 3;
-                sendCommand(name, ip, password, serial, buildCommand('calibration', {'options': bitmask}));
+                commands.sendCommand(name, ip, password, serial, commands.calibration(printerState.print?.sequence_id, bitmask));
                 setCalibrationOpen(false);
               }}/>
             </form>
