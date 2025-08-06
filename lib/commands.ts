@@ -199,23 +199,16 @@ export function led_control(sequence_id: string, led_node: string, led_mode: str
 }
 
 export function temp_bed(sequence_id: string, param: string) {
-  return {
-    "print": {
-      "sequence_id": (parseInt(sequence_id) + 1).toString(),
-      "command": "gcode_line",
-      "param": `M140 S${param}`
-    }
-  }
+  return gcode_line((parseInt(sequence_id) + 1).toString(), `M140 S${param}`)
 }
 
 export function temp_nozzle(sequence_id: string, param: string) {
-  return {
-    "print": {
-      "sequence_id": (parseInt(sequence_id) + 1).toString(),
-      "command": "gcode_line",
-      "param": `M104 S${param}`
-    }
-  }
+  return gcode_line((parseInt(sequence_id) + 1).toString(), `M104 S${param}`)
+}
+
+export function part_fan_speed(sequence_id: string, speed: string) {
+  console.log( gcode_line((parseInt(sequence_id) + 1).toString(), `M106 P1 S${speed}`))
+  return gcode_line((parseInt(sequence_id) + 1).toString(), `M106 P1 S${speed}\n`);
 }
 
 export async function sendCommand(slug: string, host: string, password: string, serial: string, payload: any) {

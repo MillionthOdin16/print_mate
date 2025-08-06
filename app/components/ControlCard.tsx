@@ -24,9 +24,6 @@ export default function ControlCard({ name, ip, password, serial, model, online,
   const [speedOpen, setSpeedOpen] = useState(false);
   const [fanOpen, setFanOpen] = useState(false);
 
-  const [nozzleTargetInput, setNozzleTargetInput] = useState(0);
-  const [bedTargetInput, setBedTargetInput] = useState(0);
-
   const currentPrinterState = printerState || { print: {} };
 
   const rawTimeRemaining = currentPrinterState?.print?.mc_remaining_time || 0;
@@ -49,6 +46,24 @@ export default function ControlCard({ name, ip, password, serial, model, online,
     const percentage = (currentPrinterState.print?.cooling_fan_speed / 15) * 100 // approx, not fully accurate
     return Math.round(percentage / 10) * 10;
   })();
+
+  const [nozzleTargetInput, setNozzleTargetInput] = useState(0);
+  const [bedTargetInput, setBedTargetInput] = useState(0);
+  const [fanTargetInput, setFanTargetInput] = useState(fanPercentage);
+
+  const fanValuePercentage = (percentage: number): number => {
+    const value = Math.max(0, Math.min(100, percentage));
+    
+    const fanValue = Math.round((value / 100) * 255);
+    
+    return fanValue;
+  };
+
+  useEffect(() => {
+    if (fanOpen) {
+      setFanTargetInput(fanPercentage);
+    }
+  }, [fanOpen]);
 
   const retrieveGcodeFile = async (filename: string) => {
     if (!filename || filename === "No print in progress") return;
@@ -197,7 +212,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
         </button>
         <button className="m-2 transition rounded-md p-2" 
           style={{ 
-            backgroundColor: chamberLight ? 'var(--color-gray-700)' : 'var(--color-gray-800)',
+            border: chamberLight ? '1px solid white' : 'none',
           }}
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-gray-700)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = chamberLight ? 'var(--color-gray-700)' : 'var(--color-gray-800)'}
@@ -211,7 +226,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
           </svg>
         </button>
         <button className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2 max-h-[50px]">
-          {gcodeStatus}
+          Move
         </button>
       </div>
       <div className="flex justify-end w-full">
@@ -258,10 +273,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
             <button
-              onClick={() => {
-                commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.sequence_id, nozzleTargetInput.toString()));
-                setNozzleOpen(false);
-              }}
+              onClick={() => setNozzleOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
             >
               <svg
@@ -286,6 +298,15 @@ export default function ControlCard({ name, ip, password, serial, model, online,
               onChange={(e) => setNozzleTargetInput(Number(e.target.value))}
               className="bg-gray-700 text-white p-2 rounded"
             />
+            <button
+              className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
+              onClick={() => {
+                setNozzleOpen(false);
+                commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.sequence_id, nozzleTargetInput.toString()));
+              }}
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
@@ -293,10 +314,7 @@ export default function ControlCard({ name, ip, password, serial, model, online,
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
             <button
-              onClick={() => {
-                commands.sendCommand(name, ip, password, serial, commands.temp_bed(printerState.sequence_id, bedTargetInput.toString()));
-                setBedOpen(false);
-              }}
+              onClick={() => setBedOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
             >
               <svg
@@ -321,6 +339,15 @@ export default function ControlCard({ name, ip, password, serial, model, online,
               onChange={(e) => setBedTargetInput(Number(e.target.value))}
               className="bg-gray-700 text-white p-2 rounded"
             />
+            <button
+              className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
+              onClick={() => {
+                setBedOpen(false);
+                commands.sendCommand(name, ip, password, serial, commands.temp_bed(printerState.sequence_id, bedTargetInput.toString()));
+              }}
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
@@ -451,20 +478,32 @@ export default function ControlCard({ name, ip, password, serial, model, online,
             <div className="flex flex-row items-center">
               <button 
                 onClick={() => {
-                  //TODO
+                  const newPercentage = Math.max(0, fanTargetInput - 10);
+                  setFanTargetInput(newPercentage);
+                  commands.sendCommand(name, ip, password, serial, commands.part_fan_speed(
+                    printerState.print?.sequence_id, 
+                    fanValuePercentage(newPercentage).toString()
+                  ));
                 }}
-                className="p-2 h-[50%] w-[10%] bg-gray-700 hover:bg-gray-600 rounded-md"
+                disabled={fanTargetInput <= 0}
+                className="p-2 h-[50%] w-[10%] bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed rounded-md"
               >
                 -
               </button>
               <div className="flex bg-gray-700 rounded-md flex-1 h-8 sm:h-10 justify-center items-center mx-2">
-                <span className="text-sm sm:text-base">{fanPercentage}</span>
+                <span className="text-sm sm:text-base">{fanTargetInput}%</span>
               </div>
               <button 
                 onClick={() => {
-                  //TODO
+                  const newPercentage = Math.min(100, fanTargetInput + 10);
+                  setFanTargetInput(newPercentage);
+                  commands.sendCommand(name, ip, password, serial, commands.part_fan_speed(
+                    printerState.print?.sequence_id, 
+                    fanValuePercentage(newPercentage).toString()
+                  ));
                 }}
-                className="p-2 h-[50%] w-[10%] bg-gray-700 hover:bg-gray-600 rounded-md"
+                disabled={fanTargetInput >= 100}
+                className="p-2 h-[50%] w-[10%] bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed rounded-md"
               >
                 +
               </button>
