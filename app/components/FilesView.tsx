@@ -3,7 +3,6 @@ import FileGrid from "./FileGrid";
 
 interface PrinterFile {
   filename: string;
-  thumbnail: string;
 }
 
 interface Props {
@@ -19,15 +18,16 @@ interface Props {
   setIsLoading: (loading: boolean) => void;
   error: string | null;
   setError: (error: string | null) => void;
+  online: boolean;
 }
 
-export default function FilesView({ slug, model, host, port, password, serial, files, setFiles, isLoading, setIsLoading, error, setError }: Props) {
+export default function FilesView({ slug, model, host, port, password, serial, files, setFiles, isLoading, setIsLoading, error, setError, online }: Props) {
   return (
     <div className="view" id="files-page">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
         <label className="text-lg sm:text-2xl content-center">Print Files</label>
         <div className="flex content-center justify-center items-center">
-          <span className="text-sm sm:text-xl text-white m-1 sm:m-2">{slug}</span>
+          <span className="text-sm sm:text-xl text-white m-1 sm:m-2">{slug} ⋅ {online? "Online" : "Offline"}</span>
           <button onClick={() => {window.location.reload()}}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

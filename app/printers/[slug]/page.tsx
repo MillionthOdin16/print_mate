@@ -19,7 +19,6 @@ interface PrinterPageProps {
 
 interface PrinterFile {
   filename: string;
-  thumbnail: string;
 }
 
 interface Printer {
@@ -220,6 +219,7 @@ export default function MainView({ params }: PrinterPageProps) {
           setIsLoading={setFilesLoading} 
           error={filesError} 
           setError={setFilesError}
+          online={online}
         />;
       case 'settings':
         return <SettingsView
@@ -229,6 +229,7 @@ export default function MainView({ params }: PrinterPageProps) {
           ip={printer.ip}
           password={printer.password}
           printerState={printerState}
+          online={online}
         />;
       case 'filament':
         return <FilamentView
@@ -238,6 +239,7 @@ export default function MainView({ params }: PrinterPageProps) {
           password={printer.password}
           serial={printer.serial}
           printerState={printerState}
+          online={online}
         />;
       case 'control':
         return <ControlView 
@@ -255,9 +257,10 @@ export default function MainView({ params }: PrinterPageProps) {
           slug={slug}
           model={printer.model}
           printerState={printerState}
+          online={online}
         />;
       case 'camera':
-        return <CameraView slug={slug} ip={printer.ip} password={printer.password} model={printer.model}/>
+        return <CameraView slug={slug} ip={printer.ip} password={printer.password} model={printer.model} online={online}/>
       default:
         return <ControlView 
           slug={slug} 
