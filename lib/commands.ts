@@ -203,7 +203,7 @@ export function temp_bed(sequence_id: string, param: string) {
     "print": {
       "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "gcode_line",
-      "param": "M140 " + param
+      "param": `M140 S${param}`
     }
   }
 }
@@ -213,7 +213,7 @@ export function temp_nozzle(sequence_id: string, param: string) {
     "print": {
       "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "gcode_line",
-      "param": "M104 " + param
+      "param": `M104 S${param}`
     }
   }
 }
