@@ -224,6 +224,15 @@ export function power_loss_recovery(on: boolean) {
   return `M1003 S${on? '1' : '2'}`
 }
 
+export function firmware_update() {
+  return {
+    "upgrade": {
+        "command": "upgrade_confirm",
+        "src_id": 1,
+    }
+  }
+}
+
 export async function sendCommand(slug: string, host: string, password: string, serial: string, payload: any) {
   try {
     const res = await fetch(`/api/printers/${slug}/mqtt/publish`, {

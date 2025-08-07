@@ -387,6 +387,21 @@ export interface PrinterState {
     };
     xcam_status?: string;
   };
+  info?: {
+    command?: string;
+    sequence_id?: string;
+    module?: Array<{
+      name: string;
+      project_name: string;
+      sw_ver: string;
+      hw_ver: string;
+      sn: string;
+      flag: number;
+      loader_ver?: string;
+    }>;
+    result?: string;
+    reason?: string;
+  }
 }
 
 const PrinterContext = createContext<PrinterContextType | undefined>(undefined);

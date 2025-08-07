@@ -208,12 +208,10 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             <rect width="24" height="24" fill="currentColor" />
           </svg>
         </button>
-        <button className="m-2 transition rounded-md p-2" 
+        <button className="bg-gray-800 hover:bg-gray-700 m-2 transition rounded-md p-2" 
           style={{ 
             border: chamberLight ? '1px solid white' : 'none',
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-gray-700)'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = chamberLight ? 'var(--color-gray-700)' : 'var(--color-gray-800)'}
           onClick={(e) => {
             commands.sendCommand(name, ip, password, serial, commands.led_control(printerState.sequence_id, 'chamber_light', (chamberLight ? 'off' : 'on')));
           }}
@@ -299,7 +297,8 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             <button
               className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
               onClick={() => {
-                if (nozzleTargetInput < 0) setNozzleTargetInput(0);
+                let temp = nozzleTargetInput;
+                if (temp < 0) temp = 0;
                  switch(model) {
                   case "A1M":
                   case "A1":
@@ -307,16 +306,17 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                   case "P1S":
                   case "X1":
                   case "X1C":
-                    if (nozzleTarget > 300) setNozzleTargetInput(300);
+                    if (temp > 300) temp = 300;
                     break;
                   case "X1E":
-                    if (nozzleTarget > 320) setNozzleTargetInput(320);
+                    if (temp > 320) setNozzleTargetInput(320);
                   case "H2D":
-                    if (nozzleTarget > 350) setNozzleTargetInput(350);
+                    if (temp > 350) setNozzleTargetInput(350);
                     break;
                 }
                 setNozzleOpen(false);
-                commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.sequence_id, nozzleTargetInput.toString()));
+                alert(temp)
+                commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.sequence_id, temp.toString()));
               }}
             >
               Done

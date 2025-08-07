@@ -21,8 +21,6 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
   const [vibrationCompensation, setVibrationCompensation] = useState(true);
   const [bedLevelling, setBedLevelling] = useState(true);
   
-  const [firmware, setFirmware] = useState('01.04.01.00'); //TODO: get from printer
-  
   const network = printerState.print?.wifi_signal;
   const amsStartupRead = printerState.print?.ams?.power_on_flag || false;
   const amsInsertRead = printerState.print?.ams?.insert_flag || false;
@@ -146,7 +144,6 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
           <div className="flex flex-col">
             <label>Device ID: {name}</label>
             <label>Model: {model}</label>
-            <label>Firmware version: {firmware}</label>
             <label>Serial number: {serial}</label>
 
             <div className="flex flex-row items-center" onClick={() => setCalibrationOpen(true)}>
@@ -209,16 +206,29 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
             </button>
             <h2 className="text-xl m-2">Firmware</h2>
           </div>
-          <div className="flex flex-col">
-            <label>Current firmware version: {firmware}</label>
-            <button className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min">Update</button> {/* TODO: add function */}
+          <div className="grid grid-cols-1 gap-4">
+            {printerState.info?.module.map((module: any) => {
+              return (
+                <div className="flex flex-col" key={module.hw_ver}>
+                  <label>Module: {module.hw_ver}</label>
+                  <label>Version: {module.sw_ver}</label>
+                  <label>SN: {module.sn}</label>
+                  <button
+                    className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
+                    style={{display: module.hw_ver === "OTA"? "block" : "none"}}
+                    onClick={() => commands.sendCommand(name, ip, password, serial, commands.firmware_update())}
+                  >
+                    Update
+                  </button>
+                </div>
+              )
+            })}
           </div>
           <div className="flex flex-col">
-            <label>Firmware history:</label>
+            <h2 className="text-xl my-8">Firmware history</h2>
             <div>
               {/* TODO */}
             </div>
-            <button className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min">Get</button> {/* TODO: add function */}
           </div>
         </div>
       )}
