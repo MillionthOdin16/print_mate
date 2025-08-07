@@ -213,8 +213,6 @@ export default function ControlCard({ name, ip, password, serial, model, printer
           style={{ 
             border: chamberLight ? '1px solid white' : 'none',
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-gray-700)'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = chamberLight ? 'var(--color-gray-700)' : 'var(--color-gray-800)'}
           onClick={() => {
             commands.sendCommand(name, ip, password, serial, commands.led_control(printerState.sequence_id, 'chamber_light', (chamberLight ? 'off' : 'on')));
           }}
