@@ -16,8 +16,8 @@ interface FileGridProps {
   serial: string;
   files: PrinterFile[];
   setFiles: (files: PrinterFile[]) => void;
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
   error: string | null;
   setError: (error: string | null) => void;
 }
@@ -31,8 +31,8 @@ export default function FileGrid({
   serial,
   files,
   setFiles,
-  isLoading,
-  setIsLoading,
+  loading,
+  setLoading,
   error,
   setError
 }: FileGridProps) {
@@ -40,7 +40,7 @@ export default function FileGrid({
     async function fetchFiles() {
       if (files.length === 0) {
         try {
-          setIsLoading(true);
+          setLoading(true);
           const res = await fetch(`/api/printers/${printer}/files`, {
             method: 'POST',
             headers: {
@@ -63,15 +63,15 @@ export default function FileGrid({
         } catch (err: any) {
           setError(err.message || 'Failed to fetch files');
         } finally {
-          setIsLoading(false);
+          setLoading(false);
         }
       }
     }
 
     fetchFiles();
-  }, [printer, host, port, password, serial, files.length, setFiles, setIsLoading, setError]);
+  }, [printer, host, port, password, serial, files.length, setFiles, setLoading, setError]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex space-x-2 justify-center items-end h-8">
         <div className="h-2 w-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>

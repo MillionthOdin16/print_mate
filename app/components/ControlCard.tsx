@@ -16,6 +16,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
   const [previewImage, setPreviewImage] = useState<string>("/no_image.png");
   const [skipImage, setSkipImage] = useState<string>("/no_image.png");
   
+  const [moveOpen, setMoveOpen] = useState(false);
   const [nozzleOpen, setNozzleOpen] = useState(false);
   const [bedOpen, setBedOpen] = useState(false);
   const [skipOpen, setSkipOpen] = useState(false);
@@ -212,7 +213,9 @@ export default function ControlCard({ name, ip, password, serial, model, printer
           style={{ 
             border: chamberLight ? '1px solid white' : 'none',
           }}
-          onClick={(e) => {
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-gray-700)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = chamberLight ? 'var(--color-gray-700)' : 'var(--color-gray-800)'}
+          onClick={() => {
             commands.sendCommand(name, ip, password, serial, commands.led_control(printerState.sequence_id, 'chamber_light', (chamberLight ? 'off' : 'on')));
           }}
         >
@@ -221,8 +224,8 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             <path d="M9.5 19a2 2 0 104 0h-4z"/>
           </svg>
         </button>
-        <button className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2 max-h-[50px]">
-          Move
+        <button className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2" onClick={() => setMoveOpen(true)}>
+            <img src="/move.png" className="h-10 w-10"/>
         </button>
       </div>
       <div className="flex justify-end w-full">
@@ -264,7 +267,81 @@ export default function ControlCard({ name, ip, password, serial, model, printer
           </div>
         </div>
       </div>
+      
+      {moveOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">
+            <button
+              onClick={() => setMoveOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <h2 className="text-lg sm:text-xl mb-4 text-white">Move Axes</h2>
+            <div className="flex flex-row items-center space-y-4 justify-between">
+              <div className="grid grid-cols-3 grid-rows-3 gap-2">
+                <div/>
+                <button
+                  className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                >
+                  Y+
+                </button>
+                <div/>
 
+                <button
+                  className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                >
+                  X-
+                </button>
+                <button
+                  className="bg-blue-600 rounded-md hover:bg-blue-700 text-sm sm:text-md p-3 flex items-center justify-center"
+                >
+                  Home
+                </button>
+                <button
+                  className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                >
+                  X+
+                </button>
+                
+                <div/>
+                <button
+                  className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                >
+                  Y-
+                </button>
+                <div/>
+              </div>
+              
+              <div className="flex flex-col items-center space-y-2">
+                <button
+                  className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md px-4 py-2"
+                >
+                  Z+
+                </button>
+                <button
+                  className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md px-4 py-2"
+                >
+                  Z-
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {nozzleOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md relative border border-gray-700 mx-2">

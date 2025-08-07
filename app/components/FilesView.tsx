@@ -14,21 +14,56 @@ interface Props {
   serial: string;
   files: PrinterFile[];
   setFiles: (files: PrinterFile[]) => void;
-  isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
   error: string | null;
   setError: (error: string | null) => void;
   online: boolean;
+  onReload?: () => void;
 }
 
-export default function FilesView({ slug, model, host, port, password, serial, files, setFiles, isLoading, setIsLoading, error, setError, online }: Props) {
+export default function FilesView({ slug, model, host, port, password, serial, files, setFiles, loading, setLoading, error, setError, online, onReload }: Props) {
+  const handleReload = async () => {
+    if (onReload) {
+      onReload();
+    } else {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(`/api/printers/${slug}/files`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            host,
+            port,
+            password,
+            serial
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          setError(errData.detail || 'unknown error');
+          return;
+        }
+        const data = await res.json();
+        setFiles(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch files');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="view" id="files-page">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
         <label className="text-lg sm:text-2xl content-center">Print Files</label>
         <div className="flex content-center justify-center items-center">
           <span className="text-sm sm:text-xl text-white m-1 sm:m-2">{slug} ⋅ {online? "Online" : "Offline"}</span>
-          <button onClick={() => {window.location.reload()}}>
+          <button onClick={handleReload}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -55,8 +90,8 @@ export default function FilesView({ slug, model, host, port, password, serial, f
         serial={serial}
         files={files} 
         setFiles={setFiles} 
-        isLoading={isLoading} 
-        setIsLoading={setIsLoading} 
+        loading={loading} 
+        setLoading={setLoading} 
         error={error} 
         setError={setError}
       />
