@@ -58,26 +58,6 @@ export function calibration(sequence_id: string, option: number) {
   }
 }
 
-export function filament_load() {
-  return {
-    "print": {
-      "command": "ams_change_filament",
-      "target": 255,
-      "curr_temp": 250,
-      "tar_temp": 250
-    }
-  }
-}
-
-export function filament_unload(sequence_id: string) {
-  return {
-    "print": {
-      "sequence_id": (parseInt(sequence_id) + 1).toString(),
-      "command": "unload_filament"
-    }
-  }
-}
-
 export function print_speed(sequence_id: string, param: string) {
   return {
     "print": {
@@ -172,6 +152,31 @@ export function ams_filament(sequence_id: string, ams_id: number, tray_id: numbe
   }
 }
 
+export function ams_change_filament(target: number, curr_temp: number, tar_temp: number) {
+  return {
+    "print": {
+        "sequence_id": "0",
+        "command": "ams_change_filament",
+        "target": target,
+        "curr_temp": curr_temp,
+        "tar_temp": tar_temp
+    }
+  }
+}
+
+export function filament_load() {
+  return ams_change_filament(255, 250, 250);
+}
+
+export function filament_unload(sequence_id: string) {
+  return {
+    "print": {
+      "sequence_id": (parseInt(sequence_id) + 1).toString(),
+      "command": "unload_filament"
+    }
+  }
+}
+
 export function nozzle_settings(nozzle_diameter: string, nozzle_type: string) {
   return {
     "system": {
@@ -211,37 +216,45 @@ export function part_fan_speed(sequence_id: string, speed: string) {
   return gcode_line((parseInt(sequence_id) + 1).toString(), `M106 P1 S${speed}\n`);
 }
 
+export function auto_home(sequence_id: string) {
+  return gcode_line((parseInt(sequence_id) + 1).toString(), "G28")
+}
+
+export function power_loss_recovery(on: boolean) {
+  return `M1003 S${on? '1' : '2'}`
+}
+
 export async function sendCommand(slug: string, host: string, password: string, serial: string, payload: any) {
-    try {
-      const res = await fetch(`/api/printers/${slug}/mqtt/publish`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          host,
-          password,
-          serial,
-          payload
-        })
-      });
+  try {
+    const res = await fetch(`/api/printers/${slug}/mqtt/publish`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        host,
+        password,
+        serial,
+        payload
+      })
+    });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to send command');
-      }
-
-      const data = await res.json();
-      return {
-        success: true,
-        message: 'successfully sent command',
-        data
-      };
-  
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message
-      };
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Failed to send command');
     }
+
+    const data = await res.json();
+    return {
+      success: true,
+      message: 'successfully sent command',
+      data
+    };
+
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message
+    };
   }
+}
