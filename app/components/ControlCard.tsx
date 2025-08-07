@@ -306,6 +306,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 </button>
                 <button
                   className="bg-blue-600 rounded-md hover:bg-blue-700 text-sm sm:text-md p-3 flex items-center justify-center"
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.auto_home(printerState?.print.sequence_id))}
                 >
                   Home
                 </button>

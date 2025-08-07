@@ -215,8 +215,8 @@ export default function MainView({ params }: PrinterPageProps) {
           serial={printer.serial}
           files={files} 
           setFiles={setFiles} 
-          isLoading={filesLoading} 
-          setIsLoading={setFilesLoading} 
+          loading={filesLoading} 
+          setLoading={setFilesLoading} 
           error={filesError} 
           setError={setFilesError}
           online={online}
