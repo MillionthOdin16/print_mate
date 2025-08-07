@@ -28,8 +28,6 @@ export default function ControlView({ slug, ip, password, serial, model, printer
           password={password} 
           serial={serial} 
           model={model} 
-          online={online} 
-          setOnline={setOnline}
           printerState={printerState}
         />
       </div>

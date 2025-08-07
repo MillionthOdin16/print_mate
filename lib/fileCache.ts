@@ -1,9 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import crypto from 'crypto';
 
-const CACHE_DIR = path.join(process.cwd(), '.cache', '3mf-files');
-const MAX_CACHE_AGE = 1 * 24 * 60 * 60 * 1000; // 1d
+const FILE_CACHE_DIR = path.join(process.cwd(), '.cache', '3mf-files');
 
 export interface CachedFile {
   filePath: string;
@@ -15,36 +13,9 @@ export interface CachedFile {
 
 async function ensureCacheDir(): Promise<void> {
   try {
-    await fs.mkdir(CACHE_DIR, { recursive: true });
+    await fs.mkdir(FILE_CACHE_DIR, { recursive: true });
   } catch (error) {
     console.error('Failed to create cache directory:', error);
-  }
-}
-
-function getCacheKey(printerKey: string, filename: string): string {
-  const hash = crypto.createHash('md5');
-  hash.update(`${printerKey}:${filename}`);
-  return hash.digest('hex');
-}
-
-function getCacheFilePath(cacheKey: string): string {
-  return path.join(CACHE_DIR, `${cacheKey}.3mf`);
-}
-
-async function getFileMetadata(filePath: string): Promise<CachedFile | null> {
-  try {
-    const stats = await fs.stat(filePath);
-    const filename = path.basename(filePath, '.3mf');
-    
-    return {
-      filePath,
-      originalFilename: filename,
-      printerKey: '',
-      timestamp: stats.mtime.getTime(),
-      size: stats.size
-    };
-  } catch (error) {
-    return null;
   }
 }
 
@@ -52,25 +23,11 @@ export async function getCachedFile(printerKey: string, filename: string): Promi
   try {
     await ensureCacheDir();
     
-    const cacheKey = getCacheKey(printerKey, filename);
-    const cacheFilePath = getCacheFilePath(cacheKey);
+    const cacheFilePath = `.cache/3mf-files/${filename}`;
 
     try {
       await fs.access(cacheFilePath);
     } catch {
-      return null;
-    }
-
-    const metadata = await getFileMetadata(cacheFilePath);
-    if (!metadata) {
-      return null;
-    }
-
-    const age = Date.now() - metadata.timestamp;
-    
-    if (age > MAX_CACHE_AGE) {
-      // clean up expired cache
-      await fs.unlink(cacheFilePath).catch(() => {});
       return null;
     }
 
@@ -89,8 +46,7 @@ export async function cacheFile(
   try {
     await ensureCacheDir();
     
-    const cacheKey = getCacheKey(printerKey, filename);
-    const cacheFilePath = getCacheFilePath(cacheKey);
+    const cacheFilePath = `.cache/3mf-files/${filename}`;
 
     await fs.writeFile(cacheFilePath, fileBuffer);
 
@@ -103,8 +59,7 @@ export async function cacheFile(
 
 export async function cleanupPrintCache(printerKey: string, filename: string): Promise<void> {
   try {
-    const cacheKey = getCacheKey(printerKey, filename);
-    const cacheFilePath = getCacheFilePath(cacheKey);
+    const cacheFilePath = `.cache/3mf-files/${filename}`;
     
     console.log(`attempting to delete cache file: ${cacheFilePath}`);
     
@@ -124,33 +79,5 @@ export async function cleanupPrintCache(printerKey: string, filename: string): P
     }
   } catch (error) {
     console.error('error cleaning up cache:', error);
-  }
-}
-
-export async function cleanupExpiredCache(): Promise<void> {
-  try {
-    await ensureCacheDir();
-    
-    const files = await fs.readdir(CACHE_DIR);
-    const cacheFiles = files.filter(f => f.endsWith('.3mf'));
-
-    for (const cacheFile of cacheFiles) {
-      try {
-        const cacheFilePath = path.join(CACHE_DIR, cacheFile);
-        const metadata = await getFileMetadata(cacheFilePath);
-        
-        if (metadata) {
-          const age = Date.now() - metadata.timestamp;
-          
-          if (age > MAX_CACHE_AGE) {
-            await fs.unlink(cacheFilePath).catch(() => {});
-          }
-        }
-      } catch (error) {
-        console.error(`error processing cache file ${cacheFile}:`, error);
-      }
-    }
-  } catch (error) {
-    console.error('error cleaning up expired cache:', error);
   }
 }
