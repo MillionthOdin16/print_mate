@@ -9,12 +9,10 @@ interface ControlCardProps {
   password: string;
   serial: string;
   model: string;
-  online: boolean;
-  setOnline: React.Dispatch<React.SetStateAction<boolean>>;
   printerState?: any;
 }
 
-export default function ControlCard({ name, ip, password, serial, model, online, setOnline, printerState }: ControlCardProps) {
+export default function ControlCard({ name, ip, password, serial, model, printerState }: ControlCardProps) {
   const [previewImage, setPreviewImage] = useState<string>("/no_image.png");
   const [skipImage, setSkipImage] = useState<string>("/no_image.png");
   
@@ -301,6 +299,22 @@ export default function ControlCard({ name, ip, password, serial, model, online,
             <button
               className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
               onClick={() => {
+                if (nozzleTargetInput < 0) setNozzleTargetInput(0);
+                 switch(model) {
+                  case "A1M":
+                  case "A1":
+                  case "P1P":
+                  case "P1S":
+                  case "X1":
+                  case "X1C":
+                    if (nozzleTarget > 300) setNozzleTargetInput(300);
+                    break;
+                  case "X1E":
+                    if (nozzleTarget > 320) setNozzleTargetInput(320);
+                  case "H2D":
+                    if (nozzleTarget > 350) setNozzleTargetInput(350);
+                    break;
+                }
                 setNozzleOpen(false);
                 commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.sequence_id, nozzleTargetInput.toString()));
               }}
@@ -342,6 +356,23 @@ export default function ControlCard({ name, ip, password, serial, model, online,
             <button
               className="p-2 m-1 bg-blue-600 rounded-md hover:bg-blue-700"
               onClick={() => {
+                if (bedTargetInput < 0) setBedTargetInput(0);
+                switch(model) {
+                  case "A1M":
+                    if (bedTargetInput > 80) setBedTargetInput(80);
+                    break;
+                  case "A1":
+                  case "P1P":
+                  case "P1S":
+                    if (bedTargetInput > 100) setBedTargetInput(100);
+                    break;
+                  case "X1":
+                  case "X1C": 
+                  case "X1E":
+                  case "H2D":
+                    if (bedTargetInput > 120) setBedTargetInput(120);
+                    break;
+                }
                 setBedOpen(false);
                 commands.sendCommand(name, ip, password, serial, commands.temp_bed(printerState.sequence_id, bedTargetInput.toString()));
               }}
