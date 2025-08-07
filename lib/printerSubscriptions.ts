@@ -1,5 +1,4 @@
 import mqttManager from '@/lib/mqtt';
-import { cleanupPrintCache } from '@/lib/fileCache';
 
 interface SubscriptionData {
   host: string;
@@ -12,7 +11,7 @@ interface SubscriptionData {
   cleanup?: () => void;
 }
 
-let globalPrintersState: { [printerKey: string]: any } = {};
+let printersState: { [printerKey: string]: any } = {};
 let activeSubscriptions: { [key: string]: SubscriptionData } = {};
 
 function getPrinterKey(host: string, serial: string): string {
@@ -34,7 +33,7 @@ function deepMerge(target: any, source: any): any {
 }
 
 export function getCurrentPrinterState(printerKey: string): any {
-  return globalPrintersState[printerKey] || { print: {} };
+  return printersState[printerKey] || { print: {} };
 }
 
 export function createSubscription(
@@ -47,16 +46,14 @@ export function createSubscription(
   const key = getPrinterKey(host, serial);
   const subscriptionKey = `${key}-${subscriberId}`;
 
-  if (!globalPrintersState[key]) {
-    globalPrintersState[key] = { print: {} };
+  if (!printersState[key]) {
+    printersState[key] = { print: {} };
   }
 
   return new Promise(async (resolve, reject) => {
     let heartbeatInterval: NodeJS.Timeout | null = null;
     let isStreamActive = true;
     let cleanupCalled = false;
-    let lastPrintFile = '';
-    let lastPrintState = '';
 
     const enqueue = (data: string) => {
       if (!isStreamActive || cleanupCalled) {
@@ -109,7 +106,7 @@ export function createSubscription(
     // send cached data
     enqueue(`data: ${JSON.stringify({
       type: 'initial',
-      data: globalPrintersState[key],
+      data: printersState[key],
       connected: mqttManager.isConnected(host, serial)
     })}\n\n`);
 
@@ -119,37 +116,23 @@ export function createSubscription(
         
         try {
           const messageData = JSON.parse(message.toString());
-          const currentPrintFile = globalPrintersState[key]?.print?.gcode_file || '';
-          const currentPrintState = globalPrintersState[key]?.print?.gcode_state || '';
-                    
-          if ((lastPrintState !== 'FINISH' && currentPrintState === 'FINISH') ||
-              (lastPrintState !== 'FAILED' && currentPrintState === 'FAILED')) {
-            console.log(`cleaning up cache for: ${lastPrintFile}`);
-            cleanupPrintCache(key, lastPrintFile).catch(err => 
-              console.error('failed to cleanup print cache:', err)
-            );
-            console.log(`cleaned up cache for: ${lastPrintFile}`);
-          }
           
-          lastPrintFile = currentPrintFile;
-          lastPrintState = currentPrintState;
-          
-          globalPrintersState[key].print = deepMerge(
-            globalPrintersState[key].print, 
+          printersState[key].print = deepMerge(
+            printersState[key].print, 
             messageData.print
           );
    
           const { print, ...otherProps } = messageData;
           if (Object.keys(otherProps).length > 0) {
-            globalPrintersState[key] = deepMerge(
-              globalPrintersState[key], 
+            printersState[key] = deepMerge(
+              printersState[key], 
               otherProps
             );
           }
 
           enqueue(`data: ${JSON.stringify({
             type: 'update',
-            data: globalPrintersState[key],
+            data: printersState[key],
             connected: mqttManager.isConnected(host, serial)
           })}\n\n`);
           

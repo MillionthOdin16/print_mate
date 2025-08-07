@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const FILE_CACHE_DIR = path.join(process.cwd(), '.cache', '3mf-files');
+const IMG_CACHE_DIR = path.join(process.cwd(), '.cache', 'img-files');
 
 export interface CachedFile {
   filePath: string;
@@ -23,7 +24,7 @@ export async function getCachedFile(printerKey: string, filename: string): Promi
   try {
     await ensureCacheDir();
     
-    const cacheFilePath = `.cache/3mf-files/${filename}`;
+    const cacheFilePath = path.join(FILE_CACHE_DIR, filename)
 
     try {
       await fs.access(cacheFilePath);
@@ -46,7 +47,7 @@ export async function cacheFile(
   try {
     await ensureCacheDir();
     
-    const cacheFilePath = `.cache/3mf-files/${filename}`;
+    const cacheFilePath = path.join(FILE_CACHE_DIR, filename)
 
     await fs.writeFile(cacheFilePath, fileBuffer);
 
@@ -54,30 +55,5 @@ export async function cacheFile(
   } catch (error) {
     console.error('error caching file:', error);
     throw error;
-  }
-}
-
-export async function cleanupPrintCache(printerKey: string, filename: string): Promise<void> {
-  try {
-    const cacheFilePath = `.cache/3mf-files/${filename}`;
-    
-    console.log(`attempting to delete cache file: ${cacheFilePath}`);
-    
-    try {
-      await fs.access(cacheFilePath);
-    } catch (accessError) {
-      console.log(`cache file does not exist: ${cacheFilePath}`);
-      return;
-    }
-
-    try {
-      await fs.unlink(cacheFilePath);
-      console.log(`successfully deleted cache file: ${cacheFilePath}`);
-    } catch (unlinkError) {
-      console.error(`failed to delete cache file: ${cacheFilePath}`, unlinkError);
-      throw unlinkError;
-    }
-  } catch (error) {
-    console.error('error cleaning up cache:', error);
   }
 }
