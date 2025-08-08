@@ -3,6 +3,7 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import JSZip from 'jszip';
+import * as commands from "@/lib/commands"
 
 interface FilePageProps {
   params: {
@@ -48,6 +49,11 @@ export default function MainView({ params }: FilePageProps) {
       if (printer == null) {
         return;
       }
+      
+      if (!(filename.toLowerCase().endsWith('.3mf'))) {
+        return;
+      }
+
       const res = await fetch(`/api/printers/${slug}/files?filename=${encodeURIComponent(filename)}`, {
         method: 'POST',
         headers: {
@@ -143,7 +149,7 @@ export default function MainView({ params }: FilePageProps) {
   }, [slug]);
 
   useEffect(() => {
-    retrieveGcodeFile(filename);
+    retrieveGcodeFile(filename.replace('cache/', ''));
   }, [printer])
 
   const handleStartPrint = async () => {
@@ -153,39 +159,16 @@ export default function MainView({ params }: FilePageProps) {
     }
 
     try {
-      const res = await fetch(`/api/printers/${slug}/mqtt/command`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          slug: printer.name,
-          host: printer.ip,
-          password: printer.password,
-          serial: printer.serial,
-          command: 'print_file',
-          params: {
-            param: `Metadata/plate_2.gcode`,
-            url: `ftp://${filename}`,
-            timelapse: timelapse,
-            bed_levelling: leveling,
-            flow_cali: flowcali,
-            vibration_cali: true,
-            layer_inspect: layerins,
-            ams_mapping: '',
-            use_ams: ams
-          }
-        })
-      });
-    
-      if (!res.ok) {
-        const errorData = await res.json();
-        console.error(`failed to start print: ${errorData}`);
-        return;
+      const res = await commands.sendCommand(printer.slug, printer.ip, printer.password, printer.serial, commands.print_file(
+        "0", `Metadata/plate_${plate}.gcode`, `ftp:///${filename}`, timelapse, leveling, flowcali, true, layerins, '', ams
+      ))
+
+      if (!res.success) {
+        console.log(`error starting print: ${res.message || 'unknown error'}`)
       }
 
       console.log('print started successfully');
-            window.location.href = pathname.split('/').slice(0, -2).join('/');
+      window.location.href = pathname.split('/').slice(0, -2).join('/');
     } catch (error) {
       console.error(`error starting print: ${error || 'unknown error'}`);
     }
@@ -228,32 +211,35 @@ export default function MainView({ params }: FilePageProps) {
         <img src={previewImage} className="w-[40%]"/>
         <div className="flex flex-col m-4">
           <div onClick={() => setAms(!ams)}
-            className="flex m-1 p-2 transition rounded-md justify-center"
-            style={{backgroundColor: `var(--color-gray-${ams? '700' : '800'})`}}
+            className="flex bg-gray-800 hover:bg-gray-700 m-1 p-2 transition rounded-md justify-center"
+            style={{border: ams? '1px solid white': ''}}
           >
             <label>Use AMS</label>
           </div>
           <div onClick={() => setLeveling(!leveling)}
-            className="flex m-1 p-2 transition rounded-md justify-center"
-            style={{backgroundColor: `var(--color-gray-${leveling? '700' : '800'})`}}
+            className="flex bg-gray-800 hover:bg-gray-700 m-1 p-2 transition rounded-md justify-center"
+            style={{border: leveling? '1px solid white': ''}}
           >
             <label>Bed Leveling</label>
           </div>
           <div onClick={() => setFlowcali(!flowcali)}
-            className="flex m-1 p-2 transition rounded-md justify-center"
-            style={{backgroundColor: `var(--color-gray-${flowcali? '700' : '800'})`}}
+            className="flex bg-gray-800 hover:bg-gray-700 m-1 p-2 transition rounded-md justify-center"
+            style={{border: flowcali? '1px solid white': ''}}
           >
             <label>Dynamic Flow Calibration</label>
           </div>
           <div onClick={() => setLayerins(!layerins)} 
-            className={((model == "X1" || model == "X1C" || model == "X1E" || model == "H2D")? "" : "hidden ") + "flex m-1 p-2 transition rounded-md justify-center"}
-            style={{backgroundColor: `var(--color-gray-${layerins? '700' : '800'})`}}
+            className="flex bg-gray-800 hover:bg-gray-700 m-1 p-2 transition rounded-md justify-center"
+            style={{
+              display: ((model == "X1" || model == "X1C" || model == "X1E" || model == "H2D")? 'flex' : 'none'),
+              border: layerins? '1px solid white': '',
+            }}
           >
             <label>Layer Inspect</label>
           </div>
           <div onClick={() => setTimelapse(!timelapse)} 
-            className="flex m-1 p-2 transition rounded-md justify-center"
-            style={{backgroundColor: `var(--color-gray-${timelapse? '700' : '800'})`}}
+            className="flex bg-gray-800 hover:bg-gray-700 m-1 p-2 transition rounded-md justify-center"
+            style={{border: timelapse? '1px solid white': ''}}
           >
             <label>Timelapse</label>
           </div>

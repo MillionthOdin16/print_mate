@@ -151,18 +151,22 @@ export async function POST(req: NextRequest) {
     const rootList = await client.list('/');
     const cacheList = await client.list('/cache');
     
-    const exclude = [ 'logger', 'recorder', 'image', 'ipcam', 'cache', 'model', 'timelapse', 'verify_job' ]
+    const exclude = [ 'logger', 'recorder', 'image', 'ipcam', 'cache', 'model', 'timelapse', 'verify_job', 'corelogger' ]
 
     const mapped = [
       ...rootList
       .filter(item => !exclude.includes(item.name))
+      .filter(item => !item.name.endsWith('.gcode'))
+      .filter(item => !item.name.endsWith('.bbl'))
       .map((item) => ({
         filename: `${item.name}`,
         thumbnail: 'nonexistant.png',
       })),
       ...cacheList
+      .filter(item => !item.name.endsWith('.gcode'))
+      .filter(item => !item.name.endsWith('.bbl'))
       .map((item) => ({
-        filename: `${item.name}`,
+        filename: `cache/${item.name}`,
         thumbnail: 'nonexistant.png',
       }))
     ];

@@ -391,7 +391,6 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                     break;
                 }
                 setNozzleOpen(false);
-                alert(temp)
                 commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.sequence_id, temp.toString()));
               }}
             >

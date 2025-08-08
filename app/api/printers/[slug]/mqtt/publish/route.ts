@@ -11,7 +11,8 @@ export async function POST(req: NextRequest) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
-
+    
+    console.log(JSON.stringify(payload))
     await mqttManager.publish(host, password, serial, JSON.stringify(payload));
 
     return new Response(JSON.stringify({ success: true }), { 

@@ -78,7 +78,7 @@ export function skip_objects(sequence_id: string, obj_list: string) {
   }
 }
 
-export function print_file(sequence_id: string, param: string, url: string, timelapse: string, bed_levelling: string, flow_cali: string, vibration_cali: string, layer_inspect: string, ams_mapping: string, use_ams: string) {
+export function print_file(sequence_id: string, param: string, url: string, timelapse: boolean, bed_levelling: boolean, flow_cali: boolean, vibration_cali: boolean, layer_inspect: boolean, ams_mapping: string, use_ams: boolean) {
   return {
     "print": {
       "sequence_id": (parseInt(sequence_id) + 1).toString(),
