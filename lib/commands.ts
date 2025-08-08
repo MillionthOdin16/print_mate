@@ -165,7 +165,7 @@ export function ams_change_filament(target: number, curr_temp: number, tar_temp:
 }
 
 export function filament_load() {
-  return ams_change_filament(255, 250, 250);
+  return ams_change_filament(254, 250, 250);
 }
 
 export function filament_unload(sequence_id: string) {

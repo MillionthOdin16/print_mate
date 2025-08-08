@@ -218,10 +218,20 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
           </div>
 
           <div className="flex flex-col sm:flex-row justify-center items-center w-full">
-            <button className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " onClick={() => alert('loading ams filament')}>
+            <button 
+              className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
+              onClick={() => commands.sendCommand(name, ip, password, serial, commands.ams_change_filament(
+                (((selectedAms + 1) * 4) - (4 - selectedSlot)),
+                250,
+                250
+              ))}
+            >
               Load
             </button>
-            <button className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto " onClick={() => alert('unloading ams filament')}>
+            <button 
+              className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
+              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_unload(printerState.print?.sequence_id))}
+            >
               Unload
             </button>
             <button className={"flex bg-gray-800 rounded-lg hover:bg-gray-700 text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "} onClick={() => handleButtonClick('Edit')}>
