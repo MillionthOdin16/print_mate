@@ -12,9 +12,16 @@ interface ControlCardProps {
   printerState?: any;
 }
 
+interface PrintObject {
+  id: string;
+  name: string;
+  bbox: number[];
+}
+
 export default function ControlCard({ name, ip, password, serial, model, printerState }: ControlCardProps) {
   const [previewImage, setPreviewImage] = useState<string>("/no_image.png");
   const [skipImage, setSkipImage] = useState<string>("/no_image.png");
+  const [objects, setObjects] = useState<PrintObject[]>([])
   
   const [moveOpen, setMoveOpen] = useState(false);
   const [nozzleOpen, setNozzleOpen] = useState(false);
@@ -49,6 +56,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
   const [nozzleTargetInput, setNozzleTargetInput] = useState(0);
   const [bedTargetInput, setBedTargetInput] = useState(0);
   const [fanTargetInput, setFanTargetInput] = useState(fanPercentage);
+  const [skipObjectsInput, setSkipObjectsInput] = useState<number[]>([])
 
   const fanValuePercentage = (percentage: number): number => {
     const value = Math.max(0, Math.min(100, percentage));
@@ -113,8 +121,34 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             }
             
             const metadataFile = zipContent.file(`Metadata/plate_${plate}.json`); // object bbox data
+            const sliceFile = zipContent.file(`Metadata/slice_info.config`); // object id data
             const previewFile = zipContent.file(`Metadata/plate_${plate}.png`); // print banner image
             const skipFile = zipContent.file(`Metadata/top_${plate}.png`); // skip objects top view
+
+            if (sliceFile && metadataFile) {
+              try {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(await sliceFile.async('text'), 'text/xml')
+                const json = JSON.parse(await metadataFile.async('text')).bbox_objects || {};
+
+                const elements = xml.getElementsByTagName('object');
+                const tempObjects: PrintObject[] = []
+
+                for (let i = 0; i < Math.min(elements.length, json.length); i++) {
+                  const element = elements[i];
+                  const object = json[i];
+                  tempObjects.push({
+                    id: element.getAttribute('identify_id') || '0',
+                    name: element.getAttribute('name') || '',
+                    bbox: object.bbox
+                  })
+                }
+
+                setObjects(tempObjects);
+              } catch (e) {
+                console.error(`failed to get slice info: ${e || 'unknown error'}`)
+              }
+            }
 
             if (previewFile) {
               const imageBlob = await previewFile.async('blob');
@@ -516,22 +550,35 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             </button>
             <h2 className="text-xl mb-4 text-white">Skip Objects {objectsSkipped} skipped</h2>
             <div className="flex flex-row">
-              <img src={skipImage} className="w-[60%] m-2"/>
+              <img src={skipImage} className="w-[60%] h-[60%] m-2"/>
               <div className="flex flex-col w-[30%] justify-between">
                 <div>
                   <span className="text-sm sm:text-lg m-1 sm:m-2">Skip</span>
-                  {/* TODO: [BEGIN] REPLACE REAL DATA */}
-                  <div className="flex flex-row">
-                    <input type="checkbox"></input>
-                    <label className="m-1 sm:m-2 text-sm sm:text-base">something.stl</label>
-                  </div>
-                  {/* TODO: [END] REPLACE REAL DATA */}
+                  {objects.map(object => {
+                    return (
+                      <div key={object.id}>
+                        <input type="checkbox" 
+                          defaultChecked={(currentPrinterState.print?.s_obj).some((e: number) => e.toString() === object.id)}
+                          disabled={(currentPrinterState.print?.s_obj).some((e: number) => e.toString() === object.id)}
+                          onClick={(e) => {
+                            setSkipObjectsInput(
+                              (e.target as HTMLInputElement).checked ?
+                                [...skipObjectsInput, Number.parseInt(object.id)]:
+                                skipObjectsInput.filter(item => item !== Number.parseInt(object.id))
+                            );
+                          }}
+                          readOnly
+                        />
+                        {object.name}
+                      </div>
+                    )
+                  })}
                 </div>
                 <div className="flex flex-col">
                   <button 
                     className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md m-1 p-2"
                     onClick={() => {
-                      //TODO: ADD THE ACTUAL PROCESSING LOGIC
+                      commands.sendCommand(name, ip, password, serial, commands.skip_objects(printerState.print?.sequence_id, skipObjectsInput))
                       setSkipOpen(false);
                     }}>Finish</button>
                   <button 

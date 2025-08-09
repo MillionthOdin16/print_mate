@@ -68,7 +68,7 @@ export function print_speed(sequence_id: string, param: string) {
   }
 }
 
-export function skip_objects(sequence_id: string, obj_list: string) {
+export function skip_objects(sequence_id: string, obj_list: number[]) {
   return {
     "print": {
       "sequence_id": (parseInt(sequence_id) + 1).toString(),
