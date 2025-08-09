@@ -294,6 +294,12 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 <div/>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                    printerState?.print.sequence_id,
+                    "Y",
+                    "5",
+                    "3000"
+                  ))}
                 >
                   Y+
                 </button>
@@ -301,7 +307,12 @@ export default function ControlCard({ name, ip, password, serial, model, printer
 
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
-                >
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                    printerState?.print.sequence_id,
+                    "X",
+                    "-5",
+                    "3000"
+                  ))}                >
                   X-
                 </button>
                 <button
@@ -312,6 +323,12 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 </button>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                    printerState?.print.sequence_id,
+                    "X",
+                    "5",
+                    "3000"
+                  ))}
                 >
                   X+
                 </button>
@@ -319,6 +336,12 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 <div/>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                    printerState?.print.sequence_id,
+                    "Y",
+                    "-5",
+                    "3000"
+                  ))}
                 >
                   Y-
                 </button>
@@ -328,11 +351,23 @@ export default function ControlCard({ name, ip, password, serial, model, printer
               <div className="flex flex-col items-center space-y-2">
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md px-4 py-2"
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                    printerState?.print.sequence_id,
+                    "Z",
+                    "5",
+                    "900"
+                  ))}
                 >
                   Z+
                 </button>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md px-4 py-2"
+                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                    printerState?.print.sequence_id,
+                    "Z",
+                    "-5",
+                    "900"
+                  ))}
                 >
                   Z-
                 </button>

@@ -220,6 +220,18 @@ export function auto_home(sequence_id: string) {
   return gcode_line((parseInt(sequence_id) + 1).toString(), "G28")
 }
 
+export function manual_move(sequence_id: string, axis: string, distance: string, speed: string) {
+  if (axis != "X" && axis != "Y" && axis != "Z") {
+    console.error(`invalid movement axis: ${axis}`)
+    return {}
+  }
+
+  return gcode_line(
+    (parseInt(sequence_id) + 1).toString(),
+    `M211 S\nM211 X1 Y1 Z1\nM1002 push_ref_mode\nG91 \nG1 ${axis}${distance}.0 F${speed}\nM1002 pop_ref_mode\nM211 R\n`
+  )
+}
+
 export function power_loss_recovery(on: boolean) {
   return `M1003 S${on? '1' : '2'}`
 }
