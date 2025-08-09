@@ -2,6 +2,7 @@ import mqtt from "@/lib/mqtt";
 import { useEffect, useState } from "react";
 import JSZip from "jszip";
 import * as commands from "@/lib/commands"
+import SkipCard from "@/app/components/SkipCard"
 
 interface ControlCardProps {
   name: string;
@@ -550,7 +551,20 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             </button>
             <h2 className="text-xl mb-4 text-white">Skip Objects {objectsSkipped} skipped</h2>
             <div className="flex flex-row">
-              <img src={skipImage} className="w-[60%] h-[60%] m-2"/>
+              <div className="w-[70%]">
+                <SkipCard
+                  imageUrl={skipImage}
+                  objects={objects}
+                  skippedObjects={skipObjectsInput}
+                  onClick={(id) => {
+                    setSkipObjectsInput(prev =>
+                      prev.includes(parseInt(id))
+                        ? prev.filter(prevId => prevId !== parseInt(id))
+                        : [...prev, parseInt(id)]
+                    );
+                  }}
+                />
+              </div>
               <div className="flex flex-col w-[30%] justify-between">
                 <div>
                   <span className="text-sm sm:text-lg m-1 sm:m-2">Skip</span>
@@ -558,7 +572,10 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                     return (
                       <div key={object.id}>
                         <input type="checkbox" 
-                          defaultChecked={(currentPrinterState.print?.s_obj).some((e: number) => e.toString() === object.id)}
+                          checked={
+                            (currentPrinterState.print?.s_obj).some((e: number) => e.toString() === object.id) ||
+                            skipObjectsInput.some(obj => obj == Number.parseInt(object.id))                            
+                          }
                           disabled={(currentPrinterState.print?.s_obj).some((e: number) => e.toString() === object.id)}
                           onClick={(e) => {
                             setSkipObjectsInput(
