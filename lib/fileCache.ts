@@ -27,7 +27,7 @@ export async function getCachedFile(printerKey: string, filename: string): Promi
   try {
     await ensureCacheDir();
     
-    const cacheFilePath = path.join(CACHE_DIR,sanitize(printerKey), filename)
+    const cacheFilePath = path.join(CACHE_DIR, sanitize(printerKey), filename)
 
     try {
       await fs.access(cacheFilePath);

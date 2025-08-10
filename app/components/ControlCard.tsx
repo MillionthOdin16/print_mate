@@ -1,4 +1,3 @@
-import mqtt from "@/lib/mqtt";
 import { useEffect, useState } from "react";
 import JSZip from "jszip";
 import * as commands from "@/lib/commands"
@@ -152,18 +151,37 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             }
 
             if (previewFile) {
-              const imageBlob = await previewFile.async('blob');
-              const imageUrl = URL.createObjectURL(imageBlob);
+              const blob = await previewFile.async('blob');
+              const buffer = Buffer.from(await blob.arrayBuffer());
+
+              const imageUrl = URL.createObjectURL(blob);
               setPreviewImage(imageUrl);
+
+              // cache preview image
+              const res = await fetch(`/api/printers/${name}/files/cache`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  filename: `${filename.replace(/[<>:"|?*\\/]/g, '_').replace(/\s+/g, '_')}_plate_${plate}.png`,
+                  fileBuffer: buffer.toString('base64'),
+                  printerKey: `${ip}:${serial}`
+                })
+              });
+
+              if (!res.ok) {
+                throw new Error(`Failed to cache preview image: ${res.statusText}`);
+              }
             } else {
               // no image found
               setPreviewImage("/no_image.png");
             }
 
             if (skipFile) {
-              const imageBlob = await skipFile.async('blob');
-              const imageUrl = URL.createObjectURL(imageBlob);
-              setSkipImage(imageUrl);
+              const blob = await skipFile.async('blob');
+              const imgUrl = URL.createObjectURL(blob);
+              setSkipImage(imgUrl);
             } else {
               // no skip image found
               setSkipImage("/no_image.png");
