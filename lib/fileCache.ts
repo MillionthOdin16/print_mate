@@ -1,8 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const FILE_CACHE_DIR = path.join(process.cwd(), '.cache', '3mf-files');
-const IMG_CACHE_DIR = path.join(process.cwd(), '.cache', 'img-files');
+const CACHE_DIR = path.join(process.cwd(), '.cache');
 
 export interface CachedFile {
   filePath: string;
@@ -12,9 +11,13 @@ export interface CachedFile {
   size: number;
 }
 
+function sanitize(input: string): string {
+  return input.replace(/[<>:"|?*\\/]/g, '_').replace(/\s+/g, '_');
+}
+
 async function ensureCacheDir(): Promise<void> {
   try {
-    await fs.mkdir(FILE_CACHE_DIR, { recursive: true });
+    await fs.mkdir(CACHE_DIR, { recursive: true });
   } catch (error) {
     console.error('Failed to create cache directory:', error);
   }
@@ -24,7 +27,7 @@ export async function getCachedFile(printerKey: string, filename: string): Promi
   try {
     await ensureCacheDir();
     
-    const cacheFilePath = path.join(FILE_CACHE_DIR, filename)
+    const cacheFilePath = path.join(CACHE_DIR,sanitize(printerKey), filename)
 
     try {
       await fs.access(cacheFilePath);
@@ -47,7 +50,11 @@ export async function cacheFile(
   try {
     await ensureCacheDir();
     
-    const cacheFilePath = path.join(FILE_CACHE_DIR, filename)
+    const printerCacheDir = path.join(CACHE_DIR, sanitize(printerKey));
+    
+    await fs.mkdir(printerCacheDir, { recursive: true });
+    
+    const cacheFilePath = path.join(printerCacheDir, filename);
 
     await fs.writeFile(cacheFilePath, fileBuffer);
 

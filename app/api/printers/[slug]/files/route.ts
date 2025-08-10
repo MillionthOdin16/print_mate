@@ -42,11 +42,11 @@ export async function POST(req: NextRequest) {
     client.ftp.verbose = true;
 
     try {
-      const cachedFilePath = await getCachedFile(printerKey, filename);
+      const cachedPath = await getCachedFile(printerKey, filename);
       
-      if (cachedFilePath) {
+      if (cachedPath) {
         const fs = require('fs');
-        const fileBuffer = fs.readFileSync(cachedFilePath);
+        const fileBuffer = fs.readFileSync(cachedPath);
         
         return new Response(fileBuffer, {
           status: 200,
@@ -75,25 +75,31 @@ export async function POST(req: NextRequest) {
 
       try {
         const timelapseList = await client.list('/timelapse');
-        fileExists = timelapseList.some(item => item.name === filename && item.type === 1);
-        if (fileExists) {
+        if (timelapseList.some(item => item.name === filename && item.type === 1)) {
           filePath = `/timelapse/${filename}`;
+          fileExists = true;
         }
-      } catch (error) {
+      } catch (error) {}
+
+      if (!fileExists) {
         try {
           const rootList = await client.list('/');
-          fileExists = rootList.some(item => item.name === filename && item.type === 1);
-          filePath = `/${filename}`;
-        } catch (error2) {
-          try {
-            const cacheList = await client.list('/cache');
-            fileExists = cacheList.some(item => item.name === filename && item.type === 1);
-            if (fileExists) {
-              filePath = `/cache/${filename}`;
-            }
-          } catch (error3) {
-            console.error('file does not exist in any directory');
+          if (rootList.some(item => item.name === filename && item.type === 1)) {
+            filePath = `/${filename}`;
+            fileExists = true;
           }
+        } catch (error) {}
+      }
+
+      if (!fileExists) {
+        try {
+          const cacheList = await client.list('/cache');
+          if (cacheList.some(item => item.name === filename && item.type === 1)) {
+            filePath = `/cache/${filename}`;
+            fileExists = true;
+          }
+        } catch (error) {
+          console.error('file does not exist in any directory');
         }
       }
 
@@ -254,7 +260,7 @@ async function downloadFileWithProgress(
       return;
     }
 
-    console.log(`downloading with progress: ${filename}`);
+    console.log(`downloading: ${filename}`);
     
     await client.access({
       host: host,
@@ -272,25 +278,36 @@ async function downloadFileWithProgress(
 
     try {
       const timelapseList = await client.list('/timelapse');
-      fileExists = timelapseList.some(item => item.name === filename && item.type === 1);
-      if (fileExists) {
+      const foundInTimelapse = timelapseList.some(item => item.name === filename && item.type === 1);
+      if (foundInTimelapse) {
         filePath = `/timelapse/${filename}`;
+        fileExists = true;
       }
     } catch (error) {
+    }
+
+    if (!fileExists) {
       try {
         const rootList = await client.list('/');
-        fileExists = rootList.some(item => item.name === filename && item.type === 1);
-        filePath = `/${filename}`;
-      } catch (error2) {
-        try {
-          const cacheList = await client.list('/cache');
-          fileExists = cacheList.some(item => item.name === filename && item.type === 1);
-          if (fileExists) {
-            filePath = `/cache/${filename}`;
-          }
-        } catch (error3) {
-          console.error('file does not exist in any directory');
+        const foundInRoot = rootList.some(item => item.name === filename && item.type === 1);
+        if (foundInRoot) {
+          filePath = `/${filename}`;
+          fileExists = true;
         }
+      } catch (error2) {
+      }
+    }
+
+    if (!fileExists) {
+      try {
+        const cacheList = await client.list('/cache');
+        const foundInCache = cacheList.some(item => item.name === filename && item.type === 1);
+        if (foundInCache) {
+          filePath = `/cache/${filename}`;
+          fileExists = true;
+        }
+      } catch (error3) {
+        console.error('file does not exist in any directory');
       }
     }
 
