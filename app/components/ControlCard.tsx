@@ -56,7 +56,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
   const [nozzleTargetInput, setNozzleTargetInput] = useState(0);
   const [bedTargetInput, setBedTargetInput] = useState(0);
   const [fanTargetInput, setFanTargetInput] = useState(fanPercentage);
-  const [skipObjectsInput, setSkipObjectsInput] = useState<number[]>([])
+  const [skipObjectsInput, setSkipObjectsInput] = useState<number[]>([]);
 
   const fanValuePercentage = (percentage: number): number => {
     const value = Math.max(0, Math.min(100, percentage));
@@ -76,6 +76,28 @@ export default function ControlCard({ name, ip, password, serial, model, printer
     if (!filename || filename === "No print in progress") return;
     
     try {
+      const url = new URL(window.location.href);
+
+      if (url.searchParams.get('delete') != 'false') {
+        const res1 = await fetch(`/api/printers/${name}/files/cache`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            printerKey: `${ip}:${serial}`,
+            filename: filename
+          })
+        });
+
+        if (!res1.ok) {
+          console.error(`failed to delete file: ${filename}, there may be unexpected behaviour`);
+        }
+      }
+
+      url.searchParams.delete("delete");
+      window.history.pushState({}, '', url.toString())
+
       // get 3mf
       const res = await fetch(`/api/printers/${name}/files?filename=${encodeURIComponent(filename)}`, {
         method: 'POST',
@@ -101,7 +123,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             const zipContent = await zip.loadAsync(arrayBuffer);
             
             const infoFile = zipContent.file('Metadata/slice_info.config'); // slicer info, plate & object ids
-            let plate = '1'; // default
+            let plate = '1';
             
             if (infoFile) {
               const sliceInfo = await infoFile.async('text');
@@ -159,7 +181,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
 
               // cache preview image
               const res = await fetch(`/api/printers/${name}/files/cache`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
                 },

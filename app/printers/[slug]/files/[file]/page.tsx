@@ -209,7 +209,7 @@ export default function MainView({ params }: FilePageProps) {
       }
 
       console.log('print started successfully');
-      window.location.href = pathname.split('/').slice(0, -2).join('/');
+      window.location.href = pathname.split('/').slice(0, -2).join('/') + "?delete=false";
     } catch (error) {
       console.error(`error starting print: ${error || 'unknown error'}`);
     }

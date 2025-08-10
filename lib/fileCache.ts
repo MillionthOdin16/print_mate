@@ -49,18 +49,40 @@ export async function cacheFile(
 ): Promise<string> {
   try {
     await ensureCacheDir();
-    
-    const printerCacheDir = path.join(CACHE_DIR, sanitize(printerKey));
-    
-    await fs.mkdir(printerCacheDir, { recursive: true });
-    
-    const cacheFilePath = path.join(printerCacheDir, filename);
+    const cacheDir = path.join(CACHE_DIR, sanitize(printerKey));
+    const filePath = path.join(cacheDir, filename);
 
-    await fs.writeFile(cacheFilePath, fileBuffer);
+    await fs.mkdir(cacheDir, { recursive: true });
+    await fs.writeFile(filePath, fileBuffer);
 
-    return cacheFilePath;
+    return filePath;
   } catch (error) {
-    console.error('error caching file:', error);
+    console.error(`failed to cache file: ${error || 'unknown error'}`);
     throw error;
+  }
+}
+
+export async function deleteCacheFile(
+  printerKey: string,
+  filename: string
+): Promise<boolean> {
+  try {
+    await ensureCacheDir();
+
+    const cacheDir = path.join(CACHE_DIR, sanitize(printerKey));
+    const filePath = path.join(cacheDir, filename)
+    
+    await fs.unlink(filePath);
+    try {
+      await fs.access(filePath)
+    } catch {
+      console.log(`successfully deleted ${filePath}`)
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error(`failed to delete file: ${error || 'unknown error'}`)
+    return false;
   }
 }
