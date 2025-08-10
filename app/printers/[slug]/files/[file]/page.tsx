@@ -40,6 +40,8 @@ export default function MainView({ params }: FilePageProps) {
 
   const [previewImage, setPreviewImage] = useState('/no_image.png');
   const [plate, setPlate] = useState('1');
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const retrieveGcodeFile = async (filename: string) => {
     if (!filename || filename === "No print in progress") return;
@@ -54,7 +56,10 @@ export default function MainView({ params }: FilePageProps) {
         return;
       }
 
-      const res = await fetch(`/api/printers/${slug}/files?filename=${encodeURIComponent(filename)}`, {
+      setIsDownloading(true);
+      setDownloadProgress(0);
+
+      const response = await fetch(`/api/printers/${slug}/files?filename=${encodeURIComponent(filename)}&progress=true`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,65 +72,101 @@ export default function MainView({ params }: FilePageProps) {
         })
       });
 
-      if (res.ok) {
-        const blob = await res.blob();
-        console.log(`successfully retrieved file: ${filename}`);
-        
-        if (filename.toLowerCase().endsWith('.3mf')) {
-          try {
-            const arrayBuffer = await blob.arrayBuffer();
-            const zip = new JSZip();
-            const zipContent = await zip.loadAsync(arrayBuffer);
-            
-            const infoFile = zipContent.file('Metadata/slice_info.config'); // slicer info, plate & object ids
-            let plate = '1'; // default
-            
-            if (infoFile) {
-              const sliceInfo = await infoFile.async('text');
-              
-              const parser = new DOMParser();
-              const xmlDoc = parser.parseFromString(sliceInfo, 'text/xml');
-              const metadataElements = xmlDoc.getElementsByTagName('metadata');
-              
-              for (let i = 0; i < metadataElements.length; i++) {
-                const element = metadataElements[i];
-                if (element.getAttribute('key') === 'index') {
-                  plate = element.getAttribute('value') || '1';
-                  setPlate(plate);
-                  console.log(`extracted plate index: ${plate}`);
-                  break;
-                }
-              }
-            }
-            
-            const previewFile = zipContent.file(`Metadata/plate_${plate}.png`); // print banner image
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-            if (previewFile) {
-              const imageBlob = await previewFile.async('blob');
-              const imageUrl = URL.createObjectURL(imageBlob);
-              setPreviewImage(imageUrl);
-            } else {
-              // no image found
-              setPreviewImage("/no_image.png");
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No reader available');
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'progress') {
+                setDownloadProgress(data.progress);
+              } else if (data.type === 'complete') {
+                console.log(`successfully retrieved file: ${filename}`);
+                
+                if (filename.toLowerCase().endsWith('.3mf')) {
+                  try {
+                    const binaryString = atob(data.data);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                      bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    
+                    const zip = new JSZip();
+                    const zipContent = await zip.loadAsync(bytes.buffer);
+                    
+                    const infoFile = zipContent.file('Metadata/slice_info.config');
+                    let plate = '1';
+                    
+                    if (infoFile) {
+                      const sliceInfo = await infoFile.async('text');
+                      
+                      const parser = new DOMParser();
+                      const xmlDoc = parser.parseFromString(sliceInfo, 'text/xml');
+                      const metadataElements = xmlDoc.getElementsByTagName('metadata');
+                      
+                      for (let i = 0; i < metadataElements.length; i++) {
+                        const element = metadataElements[i];
+                        if (element.getAttribute('key') === 'index') {
+                          plate = element.getAttribute('value') || '1';
+                          setPlate(plate);
+                          console.log(`extracted plate index: ${plate}`);
+                          break;
+                        }
+                      }
+                    }
+                    
+                    const previewFile = zipContent.file(`Metadata/plate_${plate}.png`);
+
+                    if (previewFile) {
+                      const imageBlob = await previewFile.async('blob');
+                      const imageUrl = URL.createObjectURL(imageBlob);
+                      setPreviewImage(imageUrl);
+                    } else {
+                      setPreviewImage("/no_image.png");
+                    }
+                  } catch (error) {
+                    console.error(`error extracting 3mf, file may be corrupt: ${error || 'unknown error'}`);
+                    setPreviewImage("/no_image.png");
+                  }
+                } else {
+                  setPreviewImage("/no_image.png");
+                }
+                setIsDownloading(false);
+                return;
+              } else if (data.type === 'error') {
+                throw new Error(data.error);
+              }
+            } catch (error) {
+              console.error(`error parsing sse data: ${error || 'unknown error'}`);
             }
-          } catch (error) {
-            console.error(`error extracting 3mf, file may be corrrupt: ${error || 'unknown error'}`);
-            setPreviewImage("/no_image.png");
           }
-        } else {
-          // file is not a 3mf
-          setPreviewImage("/no_image.png");
         }
-      } else {
-        // http or ftp error
-        const error = await res.json();
-        console.error(`failed to retrieve file ${filename}: ${error || 'unknown error'}`); 
-        setPreviewImage("/no_image.png");
       }
     } catch (error) {
-      // other error
       console.log(`failed to retrieve file ${filename}: ${error || 'unknown error'}`);
       setPreviewImage("/no_image.png");
+      setIsDownloading(false);
     }
   };
 
@@ -208,7 +249,23 @@ export default function MainView({ params }: FilePageProps) {
         <span className="m-2">{filename}</span>
       </header>
       <div className="flex flex-row justify-between">
-        <img src={previewImage} className="w-[40%]"/>
+        <div className="flex flex-col w-[40%]">
+          <img src={previewImage} className="w-full"/>
+          {isDownloading && (
+            <div className="mt-2">
+              <div className="flex justify-between text-sm text-gray-300 mb-1">
+                <span>Downloading...</span>
+                <span>{downloadProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  style={{ width: `${downloadProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="flex flex-col m-4">
           <div onClick={() => setAms(!ams)}
             className="flex bg-gray-800 hover:bg-gray-700 m-1 p-2 transition rounded-md justify-center"
@@ -245,9 +302,13 @@ export default function MainView({ params }: FilePageProps) {
           </div>
           <div className="h-[50%]"/>
           <button 
-            className="bg-gray-800 m-1 p-2 hover:bg-gray-700 transition rounded-md" 
+            className={`m-1 p-2 transition rounded-md ${
+              isDownloading 
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                : 'bg-gray-800 hover:bg-gray-700 cursor-pointer'
+            }`}
             onClick={handleStartPrint}
-            disabled={isLoading || !printer}
+            disabled={isLoading || !printer || isDownloading}
           >
             Start Print
           </button>
