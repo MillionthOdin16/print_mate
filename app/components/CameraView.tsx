@@ -1,6 +1,7 @@
 'use client';
 
 import CameraCard from "./CameraCard";
+import TimelapseCard from "./TimelapseCard";
 
 interface Props {
   slug: string;
@@ -17,8 +18,9 @@ export default function CameraView({ slug, ip, password, model, online }: Props)
         <h2 className="text-xl text-white ml-4">Camera</h2>
         <span className="text-xl text-white m-2">{slug} ⋅ {online? "Online" : "Offline"}</span>
       </header>
-      <div className="flex">
+      <div className="flex justify-between">
         <CameraCard slug={slug} ip={ip} password={password} model={model}/>
+        <TimelapseCard slug={slug} ip={ip} password={password} model={model}/>
       </div>
     </div>
   );
