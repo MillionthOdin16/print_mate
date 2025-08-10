@@ -16,8 +16,8 @@ H2D - Untested, unlikely to function correctly
 * Get Bambu HMS (Health Management System) messages
 * Manage filament settings
 * Skip objects during print
+* Download timelapse files from the printer
 
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
 * Modify the printer configuration (partially implemented)
-* Get timelapse files from the printer
