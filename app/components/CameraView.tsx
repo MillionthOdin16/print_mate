@@ -9,9 +9,10 @@ interface Props {
   password: string;
   model: string;
   online: boolean;
+  serial: string;
 }
 
-export default function CameraView({ slug, ip, password, model, online }: Props) {
+export default function CameraView({ slug, ip, password, model, online, serial }: Props) {
   return (
     <div className="view" id="camera-page">
       <header className="flex flex-row items-center justify-between">
@@ -20,7 +21,7 @@ export default function CameraView({ slug, ip, password, model, online }: Props)
       </header>
       <div className="flex justify-between">
         <CameraCard slug={slug} ip={ip} password={password} model={model}/>
-        <TimelapseCard slug={slug} ip={ip} password={password} model={model}/>
+        <TimelapseCard slug={slug} ip={ip} password={password} serial={serial}/>
       </div>
     </div>
   );

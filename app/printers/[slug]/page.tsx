@@ -260,7 +260,14 @@ export default function MainView({ params }: PrinterPageProps) {
           online={online}
         />;
       case 'camera':
-        return <CameraView slug={slug} ip={printer.ip} password={printer.password} model={printer.model} online={online}/>
+        return <CameraView 
+          slug={slug}
+          ip={printer.ip}
+          password={printer.password}
+          model={printer.model}
+          online={online}
+          serial={printer.serial}
+        />
       default:
         return <ControlView 
           slug={slug} 

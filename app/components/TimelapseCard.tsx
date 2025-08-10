@@ -6,7 +6,7 @@ interface TimelapseCardProps {
   slug: string;
   ip: string;
   password: string;
-  model: string;
+  serial: string;
 }
 
 interface TimelapseFile {
@@ -17,7 +17,7 @@ interface TimelapseFile {
   modifiedAt: Date;
 }
 
-export default function TimelapseCard({ slug, ip, password, model }: TimelapseCardProps) {
+export default function TimelapseCard({ slug, ip, password, serial }: TimelapseCardProps) {
   const [timelapses, setTimelapses] = useState<TimelapseFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +76,7 @@ export default function TimelapseCard({ slug, ip, password, model }: TimelapseCa
           host: ip,
           port: 990,
           password: password,
-          serial: slug
+          serial: serial
         }),
       });
 
