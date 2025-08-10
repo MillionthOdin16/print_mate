@@ -8,7 +8,7 @@ interface Props {
   ip: string;
   password: string;
   serial: string;
-  printerState: string;
+  printerState: any;
   online: boolean;
 }
 

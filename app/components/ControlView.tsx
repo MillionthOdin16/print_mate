@@ -19,7 +19,9 @@ export default function ControlView({ slug, ip, password, serial, model, printer
     <div className="view" id="control-page">
       <header className="flex flex-row items-center justify-between">
         <h2 className="text-xl text-white ml-4">Control</h2>
-        <span className="text-xl text-white m-2">{slug} ⋅ {online? "Online" : "Offline"}</span>
+        <span className="text-xl text-white m-2">
+          {slug} ⋅ {online? printerState.print?.gcode_state : "Offline"}
+        </span>
       </header>
       <div>
         <ControlCard 
