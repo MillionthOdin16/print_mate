@@ -232,10 +232,6 @@ export function manual_move(sequence_id: string, axis: string, distance: string,
   )
 }
 
-export function power_loss_recovery(on: boolean) {
-  return `M1003 S${on? '1' : '2'}`
-}
-
 export function firmware_update() {
   return {
     "upgrade": {
@@ -243,6 +239,73 @@ export function firmware_update() {
         "src_id": 1,
     }
   }
+}
+
+export function set_sound_enable(sequence_id: string, enable: boolean) {
+  return {
+    "print": {
+      "sequence_id": (parseInt(sequence_id) + 1),
+      "command": "print_option",
+      "sound_enable": enable
+    }
+  }
+}
+
+export function set_blob_detect(sequence_id: string, enable: boolean) {
+  return {
+    "print": {
+      "sequence_id": (parseInt(sequence_id) + 1),
+      "command": "print_option",
+      "nozzle_blob_detect": enable
+    }
+  }
+}
+
+export function set_tangle_detect(sequence_id: string, enable: boolean) {
+  return {
+    "print": {
+      "sequence_id": (parseInt(sequence_id) + 1),
+      "command": "print_option",
+      "filament_tangle_detect": enable
+    }
+  }
+}
+
+export function air_print_detect(sequence_id: string, enable: boolean) {
+  return {
+    "print": {
+      "sequence_id": (parseInt(sequence_id) + 1),
+      "command": "print_option",
+      "air_print_detect": enable
+    }
+  }
+}
+
+export function set_autorecovery_step_loss(sequence_id: string, enable: boolean) {
+  return {
+    "print": {
+      "sequence_id": (parseInt(sequence_id) + 1),
+      "command": "print_option",
+      "auto_recovery": enable
+    }
+  }
+}
+
+export function xcam_control(sequence_id: string, module: string, enable: boolean) {
+  return {
+    "xcam": {
+      "sequence_id": (parseInt(sequence_id) + 1),
+      "command": "xcam_control_set",
+      "module_name": module,
+      "control": enable,
+      "enable": enable,
+      "print_halt": true,
+    }
+  }
+}
+
+export function set_plate_detect(sequence_id: string, enable: boolean) {
+  return xcam_control(sequence_id, "buildplate_marker_detector", enable);
 }
 
 export async function sendCommand(slug: string, host: string, password: string, serial: string, payload: any) {
