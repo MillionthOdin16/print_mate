@@ -124,14 +124,15 @@ export function gcode_line(sequence_id: string, param: string) {
   }
 }
 
-export function ams_settings(sequence_id: string, ams_id: number, startup_read_option: string, tray_read_option: string) {
+export function ams_settings(sequence_id: string, ams_id: number, startup_read_option: boolean, tray_read_option: boolean) {
   return {
     "print": {
       "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "ams_user_setting",
       "ams_id": ams_id,
       "startup_read_option": startup_read_option,
-      "tray_read_option": tray_read_option
+      "tray_read_option": tray_read_option,
+      "calibrate_remain_flag": true
     }
   }
 }
@@ -232,11 +233,15 @@ export function manual_move(sequence_id: string, axis: string, distance: string,
   )
 }
 
-export function firmware_update() {
+export function firmware_update(sequence_id: string, module: string, url: string) {
   return {
     "upgrade": {
-        "command": "upgrade_confirm",
+        "sequence_id": (parseInt(sequence_id) + 1),
+        "command": "start",
         "src_id": 1,
+        "url": url,
+        "module": module,
+        "version": "01.04.00.00"
     }
   }
 }

@@ -241,10 +241,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
         <img src={previewImage} className="w-[100%]"/>
         <div className="flex flex-row justify-between">
           <label className="text-sm sm:text-lg">-{timeRemaining}</label>
-          <label 
-                      onClick={() => commands.sendCommand(name, ip, password, serial, commands.set_autorecovery_step_loss('512', true))}
-
-          className="text-sm sm:text-lg">{printProgress}%</label>
+          <label className="text-sm sm:text-lg">{printProgress}%</label>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div

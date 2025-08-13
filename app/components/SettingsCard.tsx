@@ -13,7 +13,7 @@ interface SettingsCardProps {
 }
 
 export default function SettingsCard({ name, model, serial, ip, password, printerState }: SettingsCardProps) {
-  const [activeView, setActiveView] = useState<'main' | 'device' | 'network' | 'firmware' | 'ams'>('main');
+  const [activeView, setActiveView] = useState<'main' | 'device' | 'print' | 'firmware' | 'ams'>('main');
   const [nozzleOpen, setNozzleOpen] = useState(false);
   const [calibrationOpen, setCalibrationOpen] = useState(false);
 
@@ -22,8 +22,17 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
   const [bedLevelling, setBedLevelling] = useState(true);
   
   const network = printerState.print?.wifi_signal;
+
+  const clumpingDetection = printerState.print.nozzle_blob_detect;
+  const plateDetect = printerState.print.xcam.buildplate_marker_detector;
+  const soundEnable = printerState.print.sound_enable;
+  const tangleDetection = printerState.print.filament_tangle_detect;
+  const autoRecovery = printerState.print.auto_recovery;
+
   const amsStartupRead = printerState.print?.ams?.power_on_flag || false;
   const amsInsertRead = printerState.print?.ams?.insert_flag || false;
+  const airPrintingDetection = printerState.print?.air_print_detect || false;
+
   const nozzleDiameter = printerState.print?.nozzle_diameter;
   const nozzleType = printerState.print?.nozzle_type;
 
@@ -55,9 +64,9 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
           </div>
           <div 
             className="flex items-center justify-between bg-gray-900 rounded-lg shadow p-4 hover:shadow-lg transition hover:bg-gray-800 m-2"
-            onClick={() => setActiveView('network')}
+            onClick={() => setActiveView('print')}
           >
-            <span>Network</span>
+            <span>Print</span>
             <svg
               width="16"
               height="16"
@@ -145,6 +154,7 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
             <label>Device ID: {name}</label>
             <label>Model: {model}</label>
             <label>Serial number: {serial}</label>
+            <label>Signal strength: {network}</label>
 
             <div className="flex flex-row items-center" onClick={() => setCalibrationOpen(true)}>
               <button className="bg-gray-800 rounded-md hover:bg-gray-700 p-2 m-2 w-min">Calibration</button>
@@ -161,7 +171,7 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
           </div>
         </div>
       )}
-      {activeView == 'network' && (
+      {activeView == 'print' && (
         <div>
           <div className="flex flex-row items-center">
             <button 
@@ -179,10 +189,54 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                 />
               </svg>
             </button>
-            <h2 className="text-xl m-2">Network</h2>
+            <h2 className="text-xl m-2">Print</h2>
           </div>
-          <div>
-            <label>Signal strength: {network}</label>
+          <div className="flex flex-col">
+            <label 
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={clumpingDetection? {border: '1px solid white'} : {}}
+              onClick={() => {
+                commands.sendCommand(name, ip, password, serial, commands.set_blob_detect(printerState.print?.sequence_id, !clumpingDetection))
+              }}
+            >
+              Nozzle Clumping Detection
+            </label>
+            <label 
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={plateDetect? {border: '1px solid white'} : {}}
+              onClick={() => {
+                commands.sendCommand(name, ip, password, serial, commands.set_plate_detect(printerState.print?.sequence_id, !plateDetect))
+              }}
+            >
+              Build Plate Detection
+            </label>
+            <label 
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={soundEnable? {border: '1px solid white'} : {}}
+              onClick={() => {
+                commands.sendCommand(name, ip, password, serial, commands.set_sound_enable(printerState.print?.sequence_id, !soundEnable))
+              }}
+            >
+              Sound
+            </label>
+            <label 
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={tangleDetection? {border: '1px solid white'} : {}}
+              onClick={() => {
+                commands.sendCommand(name, ip, password, serial, commands.set_tangle_detect(printerState.print?.sequence_id, !tangleDetection))
+              }}
+            >
+              Filament Tangle Detection
+            </label>
+            <label 
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={autoRecovery? {border: '1px solid white'} : {}}
+              onClick={() => {
+                commands.sendCommand(name, ip, password, serial, commands.set_autorecovery_step_loss(printerState.print?.sequence_id, !autoRecovery))
+              }}
+            >
+              Auto-Recovery from Step Loss
+            </label>
           </div>
         </div>
       )}
@@ -215,8 +269,7 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                   <label>SN: {module.sn}</label>
                   <button
                     className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
-                    style={{display: module.hw_ver === "OTA"? "block" : "none"}}
-                    onClick={() => commands.sendCommand(name, ip, password, serial, commands.firmware_update())}
+                    //TODO
                   >
                     Update
                   </button>
@@ -227,7 +280,7 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
           <div className="flex flex-col">
             <h2 className="text-xl my-8">Firmware history</h2>
             <div>
-              {/* TODO */}
+              TODO
             </div>
           </div>
         </div>
@@ -257,7 +310,12 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={amsStartupRead? {border: '1px solid white'} : {}}
               onClick={() => {
-                //TODO
+                commands.sendCommand(name, ip, password, serial, commands.ams_settings(
+                  printerState.print?.sequence_id,
+                  0,
+                  !amsStartupRead,
+                  amsInsertRead
+                ))
               }}
             >
               Read RFID on startup
@@ -266,10 +324,24 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={amsInsertRead? {border: '1px solid white'} : {}}
               onClick={() => {
-                //TODO
+                commands.sendCommand(name, ip, password, serial, commands.ams_settings(
+                  printerState.print?.sequence_id,
+                  0,
+                  amsStartupRead,
+                  !amsInsertRead
+                ))
               }}
             >
               Read RFID on insertion
+            </label>
+            <label
+              className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
+              style={airPrintingDetection? {border: '1px solid white'} : {}}
+              onClick={() => {
+                commands.sendCommand(name, ip, password, serial, commands.air_print_detect(printerState.print?.sequence_id, !airPrintingDetection));
+              }}
+            >
+              Air Printing Detection
             </label>
           </div>
         </div>
