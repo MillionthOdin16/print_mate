@@ -20,4 +20,4 @@ H2D - Untested, unlikely to function correctly
 
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
-* Modify the printer configuration (partially implemented)
+* Firmware Update
