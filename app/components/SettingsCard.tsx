@@ -1,7 +1,7 @@
 'use client';
 
 import * as commands from '@/lib/commands';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SettingsCardProps {
   name: string;
@@ -23,11 +23,11 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
   
   const network = printerState.print?.wifi_signal;
 
-  const clumpingDetection = printerState.print.nozzle_blob_detect;
-  const plateDetect = printerState.print.xcam.buildplate_marker_detector;
-  const soundEnable = printerState.print.sound_enable;
-  const tangleDetection = printerState.print.filament_tangle_detect;
-  const autoRecovery = printerState.print.auto_recovery;
+  const clumpingDetection = printerState.print?.nozzle_blob_detect;
+  const plateDetect = printerState.print?.xcam.buildplate_marker_detector;
+  const soundEnable = printerState.print?.sound_enable;
+  const tangleDetection = printerState.print?.filament_tangle_detect;
+  const autoRecovery = printerState.print?.auto_recovery;
 
   const amsStartupRead = printerState.print?.ams?.power_on_flag || false;
   const amsInsertRead = printerState.print?.ams?.insert_flag || false;
@@ -35,6 +35,11 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
 
   const nozzleDiameter = printerState.print?.nozzle_diameter;
   const nozzleType = printerState.print?.nozzle_type;
+
+  useEffect(() => {
+    commands.sendCommand(name, ip, password, serial, commands.get_version(printerState.print.sequence_id));
+    commands.sendCommand(name, ip, password, serial, commands.get_history(printerState.print.sequence_id));
+  }, [name])
 
   return (
     <div>
@@ -269,7 +274,9 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                   <label>SN: {module.sn}</label>
                   <button
                     className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
-                    //TODO
+                    onClick={() => {
+                      alert('update not supported');
+                    }}
                   >
                     Update
                   </button>
@@ -277,12 +284,18 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
               )
             })}
           </div>
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <h2 className="text-xl my-8">Firmware history</h2>
             <div>
-              TODO
+              {printerState.upgrade.firmware_optional.map((firmware: any) => {
+                return (
+                  <div className="flex flex-col" key={firmware}>
+
+                  </div>
+                )
+              })}
             </div>
-          </div>
+          </div> */}
         </div>
       )}
       {activeView == 'ams' && (

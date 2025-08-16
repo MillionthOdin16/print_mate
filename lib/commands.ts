@@ -18,6 +18,15 @@ export function get_version(sequence_id: string) {
   }
 }
 
+export function get_history(sequence_id: string) {
+  return {
+    "ugprade": {
+      "sequence_id": parseInt(sequence_id) + 1,
+      "command": "get_history"
+    }
+  }
+}
+
 export function stop_print(sequence_id: string) {
   return {
     "print": {
