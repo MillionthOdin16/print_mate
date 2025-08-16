@@ -3,6 +3,9 @@ import { TLSSocket, connect as tlsConnect } from 'tls';
 import fs from 'fs';
 import path from 'path';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 interface Printer {
   slug: string;
   name: string;
@@ -20,6 +23,7 @@ interface Connection {
   subscribers: Set<ReadableStreamDefaultController>;
   timeout: NodeJS.Timeout | null;
   reconnect: boolean;
+  retries: number;
 }
 
 class CameraManager {
@@ -63,11 +67,11 @@ class CameraManager {
     packet.writeUInt32LE(0, 8);
     packet.writeUInt32LE(0, 12);
     
-    const usernameBuffer = Buffer.from(username, 'ascii');
-    usernameBuffer.copy(packet, 16);
+    const uBuffer = Buffer.from(username, 'ascii');
+    uBuffer.copy(packet, 16);
     
-    const passwordBuffer = Buffer.from(password, 'ascii');
-    passwordBuffer.copy(packet, 48);
+    const pBuffer = Buffer.from(password, 'ascii');
+    pBuffer.copy(packet, 48);
     
     return packet;
   }
@@ -81,6 +85,22 @@ class CameraManager {
     };
   }
 
+  private scheduleReconnect(slug: string) {
+    const connection = this.connections.get(slug);
+    if (!connection) return;
+    if (!connection.reconnect) return;
+
+    if (connection.timeout) {
+      clearTimeout(connection.timeout);
+      connection.timeout = null;
+    }
+
+    const delay = Math.min(30000, Math.max(1000, 2 ** Math.min(connection.retries, 6) * 250));
+    connection.timeout = setTimeout(() => {
+      this.connect(slug);
+    }, delay);
+  }
+
   private connect(slug: string): void {
     const printers = this.loadPrinters();
     const printer = printers.find(p => p.slug === slug);
@@ -89,7 +109,13 @@ class CameraManager {
     const connection = this.connections.get(slug);
     if (!connection || connection.connecting) return;
 
+    if (connection.socket) {
+      // already connected
+      return;
+    }
+
     connection.connecting = true;
+    connection.retries = (connection.retries || 0) + 1;
 
     let headerBuffer = Buffer.alloc(0);
     let imageBuffer = Buffer.alloc(0);
@@ -97,7 +123,7 @@ class CameraManager {
     let receiving = false;
 
     try {
-      console.log(`connecting to camera at ${printer.ip}:6000`);
+      console.log(`connect camera ${printer.ip}:6000`);
       connection.socket = tlsConnect({
         host: printer.ip,
         port: 6000,
@@ -106,8 +132,9 @@ class CameraManager {
       });
 
       connection.socket.on('connect', () => {
-        console.log(`connected to camera on ${printer.ip}:6000`);
+        console.log(`connected, ${printer.ip}:6000`);
         connection.connecting = false;
+        connection.retries = 0;
         
         const auth = this.createAuthPacket('bblp', printer.password);
         connection.socket?.write(auth);
@@ -168,22 +195,22 @@ class CameraManager {
       });
 
       connection.socket.on('error', (error) => {
-        console.error(`camera connection error for ${slug}:`, error);
+        console.error(`camera connection error: ${slug}:`, error);
         this.disconnect(slug);
       });
 
       connection.socket.on('close', () => {
-        console.log(`camera connection closed for ${slug}`);
+        console.log(`camera connection closed: ${slug}`);
         this.disconnect(slug);
       });
 
       connection.socket.on('timeout', () => {
-        console.log(`camera connection timeout for ${slug}`);
+        console.log(`camera connection timeout: ${slug}`);
         this.disconnect(slug);
       });
 
     } catch (error) {
-      console.error(`failed to connect to camera ${slug}:`, error);
+      console.error(`failed to connect to ${slug} camera:`, error);
       this.disconnect(slug);
     }
   }
@@ -193,29 +220,19 @@ class CameraManager {
     if (!connection) return;
 
     connection.connecting = false;
+    if (connection.timeout) {
+      clearTimeout(connection.timeout);
+      connection.timeout = null;
+    }
     if (connection.socket) {
-      connection.socket.destroy();
+      try {
+        connection.socket.destroy();
+      } catch {}
       connection.socket = null;
     }
 
-    if (connection.reconnect) {
-      this.scheduleReconnect(slug);
-    }
-  }
-
-  private scheduleReconnect(slug: string): void {
-    const connection = this.connections.get(slug);
-    if (!connection || !connection.reconnect) return;
-    
-    if (connection.timeout) {
-      clearTimeout(connection.timeout);
-    }
-    
-    connection.timeout = setTimeout(() => {
-      if (connection.reconnect) {
-        this.connect(slug);
-      }
-    }, 3000);
+    // schedule reconnect if enabled
+    this.scheduleReconnect(slug);
   }
 
   private broadcast(slug: string, frame: Buffer): void {
@@ -248,7 +265,8 @@ class CameraManager {
         lastFrameTime: 0,
         subscribers: new Set(),
         timeout: null,
-        reconnect: true
+        reconnect: true,
+        retries: 0
       };
       
       this.connections.set(slug, connection);
@@ -261,6 +279,11 @@ class CameraManager {
   subscribe(slug: string, controller: ReadableStreamDefaultController): () => void {
     const connection = this.getConnection(slug);
     connection.subscribers.add(controller);
+
+    // trigger reconnect if needed
+    if (!connection.socket && !connection.connecting && connection.reconnect) {
+      this.connect(slug);
+    }
 
     if (connection.lastFrame && Date.now() - connection.lastFrameTime < 5000) {
       try {
@@ -308,9 +331,10 @@ function loadPrinters(): Printer[] {
   return JSON.parse(fileContents);
 }
 
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ) {
   const { slug } = await params;
   
@@ -321,13 +345,32 @@ export async function GET(
     return NextResponse.json({ error: 'Printer not found' }, { status: 404 });
   }
 
-  const stream = new ReadableStream({
-    start(controller) {
+  const stream = new ReadableStream<Uint8Array>({
+    start: (controller) => {
       const unsubscribe = cameraManager.subscribe(slug, controller);
-      
-      return () => {
-        unsubscribe();
+
+      // close stream when client disconnects
+      const close = () => {
+        try { unsubscribe(); } catch {}
+        try { controller.close(); } catch {}
       };
+
+      // Attach to request abort if available
+      const signal = (request as any).signal as AbortSignal | undefined;
+      if (signal) {
+        if (signal.aborted) {
+          close();
+        } else {
+          const onAbort = () => {
+            signal.removeEventListener('abort', onAbort);
+            close();
+          };
+          signal.addEventListener('abort', onAbort);
+        }
+      }
+    },
+    cancel: () => {
+      // Reader cancelled; subscriber cleanup happens via unsubscribe in start's close
     }
   });
 
@@ -335,9 +378,9 @@ export async function GET(
     headers: {
       'Content-Type': 'multipart/x-mixed-replace; boundary=mjpegboundary',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'Connection': 'keep-alive'
-    },
+      Pragma: 'no-cache',
+      Expires: '0',
+      Connection: 'keep-alive'
+    }
   });
 }

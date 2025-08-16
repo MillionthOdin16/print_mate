@@ -19,11 +19,8 @@ export default function PrinterCard({ name, model, ip, password, status }: Print
         ·
         <span className="text-sm font-bold text-gray-300"> {model}</span>
       </div>
-      <span className={status === 'Printing' ? 'text-green-600' : 'text-gray-300'}>
-        {status}
-      </span>
-      <div className="bg-gray-800 my-4 rounded">
-        <CameraCard slug={name} ip={ip} password={password} model={model}/>
+      <div className="bg-gray-800 my-4 rounded" onClick={(e) => e.preventDefault()}>
+        <CameraCard slug={name} />
       </div>
     </div>
   );
