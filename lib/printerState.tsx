@@ -69,25 +69,6 @@ class PrinterStateManager {
     this.notifySubscribers(key);
   }
 
-  updatePrintData(host: string, serial: string, data: Partial<PrinterState['print']>): void {
-    const key = this.getStateKey(host, serial);
-    const stateInfo = this.statePool.get(key);
-
-    if (stateInfo) {
-      stateInfo.state.print = { ...stateInfo.state.print, ...data };
-      stateInfo.lastUpdated = Date.now();
-    } else {
-      this.statePool.set(key, {
-        state: { print: data },
-        lastUpdated: Date.now(),
-        subscribers: new Set()
-      });
-      this.updateCallbacks.set(key, new Map());
-    }
-
-    this.notifySubscribers(key);
-  }
-
   subscribe(host: string, serial: string, subscriberId: string, callback: (state: PrinterState) => void): void {
     const key = this.getStateKey(host, serial);
     
@@ -214,7 +195,6 @@ interface PrinterContextType {
   manager: PrinterStateManager;
   getState: (host: string, serial: string) => PrinterState;
   updateState: (host: string, serial: string, data: Partial<PrinterState>) => void;
-  updatePrintData: (host: string, serial: string, data: Partial<PrinterState['print']>) => void;
   subscribe: (host: string, serial: string, subscriberId: string, callback: (state: PrinterState) => void) => void;
   unsubscribe: (host: string, serial: string, subscriberId: string) => void;
 }
@@ -387,21 +367,6 @@ export interface PrinterState {
     };
     xcam_status?: string;
   };
-  info?: {
-    command?: string;
-    sequence_id?: string;
-    module?: Array<{
-      name: string;
-      project_name: string;
-      sw_ver: string;
-      hw_ver: string;
-      sn: string;
-      flag: number;
-      loader_ver?: string;
-    }>;
-    result?: string;
-    reason?: string;
-  }
 }
 
 const PrinterContext = createContext<PrinterContextType | undefined>(undefined);
@@ -411,7 +376,6 @@ export function PrinterStateProvider({ children }: { children: ReactNode }) {
 
   const getState = (host: string, serial: string) => manager.getState(host, serial);
   const updateState = (host: string, serial: string, data: Partial<PrinterState>) => manager.updateState(host, serial, data);
-  const updatePrintData = (host: string, serial: string, data: Partial<PrinterState['print']>) => manager.updatePrintData(host, serial, data);
   const subscribe = (host: string, serial: string, subscriberId: string, callback: (state: PrinterState) => void) => manager.subscribe(host, serial, subscriberId, callback);
   const unsubscribe = (host: string, serial: string, subscriberId: string) => manager.unsubscribe(host, serial, subscriberId);
 
@@ -420,7 +384,6 @@ export function PrinterStateProvider({ children }: { children: ReactNode }) {
       manager,
       getState,
       updateState,
-      updatePrintData,
       subscribe,
       unsubscribe
     }}>

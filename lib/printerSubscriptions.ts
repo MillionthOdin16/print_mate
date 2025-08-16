@@ -115,14 +115,14 @@ export function createSubscription(
         if (!isStreamActive || cleanupCalled) return;
         
         try {
-          const messageData = JSON.parse(message.toString());
+          const data = JSON.parse(message.toString());
           
           printersState[key].print = deepMerge(
             printersState[key].print, 
-            messageData.print
+            data.print
           );
    
-          const { print, ...otherProps } = messageData;
+          const { print, ...otherProps } = data;
           if (Object.keys(otherProps).length > 0) {
             printersState[key] = deepMerge(
               printersState[key], 

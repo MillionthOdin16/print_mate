@@ -242,15 +242,23 @@ export function manual_move(sequence_id: string, axis: string, distance: string,
   )
 }
 
-export function firmware_update(sequence_id: string, module: string, url: string) {
+export function firmware_update(sequence_id: string, url: string, version: string) {
   return {
+    "user_id": "0",
     "upgrade": {
-        "sequence_id": (parseInt(sequence_id) + 1),
-        "command": "start",
-        "src_id": 1,
-        "url": url,
-        "module": module,
-        "version": "01.04.00.00"
+      "sequence_id": parseInt(sequence_id) + 1,
+      "command": "upgrade_history",
+      "src_id": 2,
+      "firmware_optional": {
+        "firmware": {
+          "version": version,
+          "url": url,
+          "force_update": false,
+          "description": "",
+          "status": "release"
+        },
+        "ams": []
+      }
     }
   }
 }

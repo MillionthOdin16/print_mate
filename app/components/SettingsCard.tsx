@@ -272,14 +272,25 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                   <label>Module: {module.hw_ver}</label>
                   <label>Version: {module.sw_ver}</label>
                   <label>SN: {module.sn}</label>
-                  <button
-                    className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
-                    onClick={() => {
-                      alert('update not supported');
-                    }}
-                  >
-                    Update
-                  </button>
+                  {module.hw_ver == "OTA" && (
+                    <div className="flex flex-row items-center">
+                      <button
+                        className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
+                        onClick={() => {
+                          commands.sendCommand(name, ip, password, serial, commands.firmware_update(printerState.print?.sequence_id, "https://public-cdn.bblmw.com/upgrade/device/N2S/01.04.00.00/product/1496eccbb7/ota-n2s_v01.04.00.00-20241210144933.json.sig", "01.04.00.00"))
+                        }}
+                      >
+                        Update
+                      </button>
+                      {printerState.print.upgrade_state.status && (
+                        <div>
+                          <label>Updating: {printerState.print.upgrade_state.progress}%</label>
+                          <br/>
+                          <label>{printerState.print.upgrade_state.status}: {printerState.print.upgrade_state.message}</label>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )
             })}
