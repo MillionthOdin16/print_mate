@@ -3,7 +3,7 @@ A react/next.js based controller for Bambu Lab 3D printers.
 
 ## Printer Compatibility
 A1 series - Tested and working\
-P1 series - Untested, most likely will work\
+P1 series - Tested and working\
 X1 series - Untested, most likely will work\
 H2D - Untested, unlikely to function correctly
 
@@ -17,6 +17,7 @@ H2D - Untested, unlikely to function correctly
 * Manage filament settings
 * Skip objects during print
 * Download timelapse files from the printer
+* Change printer settings
 
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
