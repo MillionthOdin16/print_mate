@@ -20,7 +20,7 @@ export function get_version(sequence_id: string) {
 
 export function get_history(sequence_id: string) {
   return {
-    "ugprade": {
+    "upgrade": {
       "sequence_id": (parseInt(sequence_id) + 1).toString(),
       "command": "get_history"
     }
