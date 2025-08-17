@@ -272,18 +272,6 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                   <label>Module: {module.hw_ver}</label>
                   <label>Version: {module.sw_ver}</label>
                   <label>SN: {module.sn}</label>
-                  {module.hw_ver == "OTA" && (
-                    <div className="flex flex-row items-center">
-                      <button
-                        className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
-                        onClick={() => {
-                          commands.sendCommand(name, ip, password, serial, commands.firmware_update(printerState.print?.sequence_id, "https://public-cdn.bblmw.com/upgrade/device/N2S/01.04.00.00/product/1496eccbb7/ota-n2s_v01.04.00.00-20241210144933.json.sig", "01.04.00.00"))
-                        }}
-                      >
-                        Update
-                      </button>
-                    </div>
-                  )}
                 </div>
               )
             })}
@@ -305,14 +293,19 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
           )}
           {printerState.upgrade?.firmware_optional && printerState.upgrade.firmware_optional.length > 1 && (
             <div className="flex flex-col my-4">
-              <h2 className="text-2xl font-semibold">Firmware history</h2>
+              <h2 className="text-2xl font-semibold">Firmware (Printer)</h2>
               {printerState.upgrade.firmware_optional.map((firmware: any) => {
                 return (
-                  <div className="flex flex-col" key={firmware.firmware.version}>
+                  <div className="flex flex-col my-4" key={firmware.firmware.version}>
                     <label>Version: {firmware.firmware.version}</label>
-                    <label>
-                      URL: {firmware.firmware.url}
-                    </label>
+                    <button
+                      className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
+                      onClick={() => {
+                        commands.sendCommand(name, ip, password, serial, commands.firmware_update(printerState.print?.sequence_id, firmware.firmware.url, firmware.firmware.version))
+                      }}
+                    >
+                      Install
+                    </button>
                   </div>
                 )
               })}
