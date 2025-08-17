@@ -85,22 +85,6 @@ class CameraManager {
     };
   }
 
-  private scheduleReconnect(slug: string) {
-    const connection = this.connections.get(slug);
-    if (!connection) return;
-    if (!connection.reconnect) return;
-
-    if (connection.timeout) {
-      clearTimeout(connection.timeout);
-      connection.timeout = null;
-    }
-
-    const delay = Math.min(30000, Math.max(1000, 2 ** Math.min(connection.retries, 6) * 250));
-    connection.timeout = setTimeout(() => {
-      this.connect(slug);
-    }, delay);
-  }
-
   private connect(slug: string): void {
     const printers = this.loadPrinters();
     const printer = printers.find(p => p.slug === slug);
@@ -230,9 +214,6 @@ class CameraManager {
       } catch {}
       connection.socket = null;
     }
-
-    // schedule reconnect if enabled
-    this.scheduleReconnect(slug);
   }
 
   private broadcast(slug: string, frame: Buffer): void {
