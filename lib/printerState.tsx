@@ -367,6 +367,11 @@ export interface PrinterState {
     };
     xcam_status?: string;
   };
+  event: {
+    event: string,
+    disconnected_at: string,
+    connected_at: string,
+  };
 }
 
 const PrinterContext = createContext<PrinterContextType | undefined>(undefined);
