@@ -282,31 +282,42 @@ export default function SettingsCard({ name, model, serial, ip, password, printe
                       >
                         Update
                       </button>
-                      {printerState.print.upgrade_state.status && (
-                        <div>
-                          <label>Updating: {printerState.print.upgrade_state.progress}%</label>
-                          <br/>
-                          <label>{printerState.print.upgrade_state.status}: {printerState.print.upgrade_state.message}</label>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
               )
             })}
           </div>
-          {/* <div className="flex flex-col">
-            <h2 className="text-xl my-8">Firmware history</h2>
-            <div>
+          {printerState.print?.upgrade_state?.progress && (
+            <div className="flex flex-col mt-4">
+              <h2 className="text-2xl font-semibold">Upgrade State</h2>
+              <label>Updating: {printerState.print?.upgrade_state?.progress}%</label>
+              <br/>
+              <label>Module: {printerState.print?.upgrade_state?.module}</label>
+              <br/>
+              <label>
+                {printerState.print?.upgrade_state?.status} 
+                {(printerState.print?.upgrade_state?.status !== "UPGRADE_SUCCESS" && printerState.print?.upgrade_state?.status !== "UPGRADE_FAIL") && (
+                  <>: {printerState.print?.upgrade_state?.message}</>
+                )}
+              </label>
+            </div>
+          )}
+          {printerState.upgrade?.firmware_optional && printerState.upgrade.firmware_optional.length > 1 && (
+            <div className="flex flex-col my-4">
+              <h2 className="text-2xl font-semibold">Firmware history</h2>
               {printerState.upgrade.firmware_optional.map((firmware: any) => {
                 return (
-                  <div className="flex flex-col" key={firmware}>
-
+                  <div className="flex flex-col" key={firmware.firmware.version}>
+                    <label>Version: {firmware.firmware.version}</label>
+                    <label>
+                      URL: {firmware.firmware.url}
+                    </label>
                   </div>
                 )
               })}
             </div>
-          </div> */}
+          )}
         </div>
       )}
       {activeView == 'ams' && (
