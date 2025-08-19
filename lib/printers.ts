@@ -8,6 +8,7 @@ export async function addPrinter(printerData: {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
   serial: string;
 }) {

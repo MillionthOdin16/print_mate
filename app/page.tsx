@@ -32,7 +32,8 @@ export default function Home() {
         slug: data.name.toLowerCase().replaceAll(' ', '-'),
         name: data.name, 
         model: data.model, 
-        ip: data.ip, 
+        ip: data.ip,
+        username: "bblp",
         password: data.pwd, 
         serial: data.serial});
       setLanOpen(false);
@@ -58,19 +59,85 @@ export default function Home() {
         serial: (document.getElementById('in-sn1') as HTMLInputElement).value
       };
 
+      let token = '';
+      let user = '';
+
       const url = '/api/cloud/auth';
-      let body = {
+      const body = {
         "account": data.email,
         "password": data.pwd
-      }
+      };
 
       const res = await fetch(url, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(body)
-      })
+      });
 
-      alert(await res.text());
+      const json = await res.json();
+
+      if (json.error) {
+        setError(json.error);
+        return;
+      }
+
+      if (json.loginType === 'verifyCode') {
+        const code = prompt('Please enter the 6-digit 2FA code sent to your email. If the code does not arrive, please request a code by signing in to your Bambu account in a browser window and providing the code from that request.');
+        if (code?.length != 6) {
+          setError("Invalid code");
+          return;
+        }
+
+        const body1 = {
+          "account": data.email,
+          "code": code
+        }
+
+        const res1 = await fetch(url, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body1)
+        });
+
+        const json1 = await res1.json();
+        if (json1.accessToken) token = json1.accessToken;
+        else {
+          if (json1.error) {
+            setError(json1.error);
+            return;
+          }
+        }
+      } else {
+        token = json.accessToken;
+      }
+
+      const params = {
+        token: token
+      }
+
+      const res1 = await fetch('/api/cloud/user', {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(params)
+      });
+
+      const json1 = await res1.json();
+      if (json1.uid) user = json1.uid;
+      else {
+        setError("Failed to fetch user id from api");
+        return;
+      }
+
+      await addPrinter({
+        slug: data.name.toLowerCase().replaceAll(' ', '-'),
+        name: data.name, 
+        model: data.model, 
+        ip: 'us.mqtt.bambulab.com',
+        username: 'bblp',
+        password: token, 
+        serial: data.serial});
+      setLanOpen(false);
+      location.reload();
     } catch (err) {
       setError(err instanceof Error? err.message: 'Failed to add printer');
     } finally {
@@ -255,7 +322,7 @@ export default function Home() {
                   placeholder="Serial Number"
                   required
                 />
-                <label className="text-sm text-gray-300">This information is only stored locally to use the cloud services</label>
+                <label className="text-sm text-gray-300">Please note: For security, the authentication data is not stored. When the token expires, you will have to log in again.</label>
               </div>
               {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
               <button 
