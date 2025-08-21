@@ -37,7 +37,10 @@ export async function editPrinter(printerData: {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
+  code: string;
+  cloud: boolean;
   serial: string;
 }) {
   const res = await fetch('/api/printers', {

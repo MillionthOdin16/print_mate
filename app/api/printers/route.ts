@@ -82,7 +82,7 @@ async function removePrinter(slug: string) {
   await fs.writeFile(filePath, JSON.stringify(newPrinters, null, 2));
 }
 
-async function editPrinter(oldSlug: string, slug: string, name: string, model: string, ip: string, username: string, code: string, cloud: boolean, password: string, serial: string) {
+async function editPrinter(oldSlug: string, slug: string, name: string, model: string, ip: string, username: string, password: string, code: string, cloud: boolean, serial: string) {
   await removePrinter(oldSlug);
   await addPrinter(slug, name, model, ip, username, password, code, cloud, serial);
 }
