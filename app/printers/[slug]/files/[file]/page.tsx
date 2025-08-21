@@ -17,7 +17,10 @@ interface Printer {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
+  code: boolean;
+  cloud: string;
   serial: string;
 }
 
@@ -67,7 +70,7 @@ export default function MainView({ params }: FilePageProps) {
         body: JSON.stringify({
           host: printer.ip,
           port: '990',
-          password: printer.password,
+          password: printer.code,
           serial: printer.serial
         })
       });
@@ -200,7 +203,7 @@ export default function MainView({ params }: FilePageProps) {
     }
 
     try {
-      const res = await commands.sendCommand(printer.slug, printer.ip, printer.password, printer.serial, commands.print_file(
+      const res = await commands.sendCommand(printer.slug, printer.cloud? 'us.mqtt.bambulab.com' : printer.ip, printer.username, printer.password, printer.serial, commands.print_file(
         "0", `Metadata/plate_${plate}.gcode`, `ftp:///${filename}`, timelapse, leveling, flowcali, true, layerins, '', ams
       ))
 
