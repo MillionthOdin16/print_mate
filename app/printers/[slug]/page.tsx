@@ -229,6 +229,7 @@ export default function MainView({ params }: PrinterPageProps) {
           model={printer.model}
           serial={printer.serial}
           ip={printer.ip}
+          username={printer.username}
           password={printer.password}
           printerState={printerState}
           online={online}
@@ -238,6 +239,7 @@ export default function MainView({ params }: PrinterPageProps) {
           slug={slug}
           model={printer.model}
           ip={printer.ip}
+          username={printer.username}
           password={printer.password}
           serial={printer.serial}
           printerState={printerState}

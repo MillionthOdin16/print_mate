@@ -8,6 +8,7 @@ interface FilamentCardProps {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
   serial: string;
   printerState: any;
@@ -22,7 +23,7 @@ interface Filament {
   maxTemp: number;
 }
 
-export default function FilamentCard({ name, model, ip, password, serial, printerState }: FilamentCardProps) {
+export default function FilamentCard({ name, model, username, ip, password, serial, printerState }: FilamentCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [activeView, setActiveView] = useState<'ams' | 'ext'>('ext');
   const [activeAction, setActiveAction] = useState(''); // TODO: retrieve from printer
@@ -126,13 +127,13 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
           <div className="flex flex-col justify-center items-center w-full sm:w-auto">
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_load())
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_load())
             }>
               Load
             </button>
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_unload(printerState.print.sequence_id))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState.print.sequence_id))}
             >
               Unload
             </button>
@@ -220,7 +221,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
           <div className="flex flex-col sm:flex-row justify-center items-center w-full">
             <button 
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.ams_change_filament(
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.ams_change_filament(
                 (((selectedAms + 1) * 4) - (4 - selectedSlot)),
                 250,
                 250
@@ -230,7 +231,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
             </button>
             <button 
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_unload(printerState.print?.sequence_id))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState.print?.sequence_id))}
             >
               Unload
             </button>
@@ -335,6 +336,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                     commands.sendCommand(
                       name,
                       ip,
+                      username,
                       password,
                       serial,
                       commands.ams_filament(
@@ -349,7 +351,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                     )
                   }
                   else if (activeView == 'ams') {
-                    commands.sendCommand(name, ip, password, serial, commands.ams_filament(
+                    commands.sendCommand(name, ip, username, password, serial, commands.ams_filament(
                       printerState.print.sequence_id + 1,
                       selectedAms,
                       ((selectedAms + 1) * 4) - (4 - selectedSlot),
