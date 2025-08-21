@@ -28,6 +28,8 @@ interface Printer {
   ip: string;
   username: string;
   password: string;
+  code: string;
+  cloud: boolean;
   serial: string;
   status: string;
   port?: number;
@@ -62,7 +64,7 @@ export default function MainView({ params }: PrinterPageProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          host: printer.ip,
+          host: printer.cloud? 'us.mqtt.bambulab.com' : printer.ip,
           username: printer.username,
           password: printer.password,
           serial: printer.serial,
@@ -115,7 +117,7 @@ export default function MainView({ params }: PrinterPageProps) {
                       setOnline(data.connected);
                       setIsSubscribed(true);
                       console.log('conn')
-                      commands.sendCommand(slug, printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
+                      commands.sendCommand(slug, printer.cloud? 'us.mqtt.bambulab.com' : printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
                       break;
                     case 'heartbeat':
                       setOnline(data.connected);
@@ -212,8 +214,8 @@ export default function MainView({ params }: PrinterPageProps) {
           slug={slug} 
           model={printer.model} 
           host={printer.ip}
-          port={printer.port || 990}
-          password={printer.password}
+          port={990}
+          password={printer.code}
           serial={printer.serial}
           files={files} 
           setFiles={setFiles} 
@@ -228,7 +230,7 @@ export default function MainView({ params }: PrinterPageProps) {
           slug={slug}
           model={printer.model}
           serial={printer.serial}
-          ip={printer.ip}
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
           username={printer.username}
           password={printer.password}
           printerState={printerState}
@@ -238,7 +240,7 @@ export default function MainView({ params }: PrinterPageProps) {
         return <FilamentView
           slug={slug}
           model={printer.model}
-          ip={printer.ip}
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
           username={printer.username}
           password={printer.password}
           serial={printer.serial}
@@ -248,7 +250,7 @@ export default function MainView({ params }: PrinterPageProps) {
       case 'control':
         return <ControlView 
           slug={slug} 
-          ip={printer.ip} 
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
           username={printer.username}
           password={printer.password} 
           serial={printer.serial} 
@@ -268,7 +270,7 @@ export default function MainView({ params }: PrinterPageProps) {
         return <CameraView 
           slug={slug}
           ip={printer.ip}
-          password={printer.password}
+          password={printer.code}
           model={printer.model}
           online={online}
           serial={printer.serial}
@@ -276,7 +278,7 @@ export default function MainView({ params }: PrinterPageProps) {
       default:
         return <ControlView 
           slug={slug} 
-          ip={printer.ip} 
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
           username={printer.username}
           password={printer.password} 
           serial={printer.serial} 

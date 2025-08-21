@@ -35,6 +35,8 @@ export default function Home() {
         ip: data.ip,
         username: "bblp",
         password: data.pwd, 
+        code: data.pwd,
+        cloud: false,
         serial: data.serial});
       setLanOpen(false);
       location.reload();
@@ -56,7 +58,9 @@ export default function Home() {
         model: (document.getElementById('in-model1') as HTMLSelectElement).value,
         email: (document.getElementById('in-email') as HTMLInputElement).value,
         pwd: (document.getElementById('in-pwd1') as HTMLInputElement).value,
-        serial: (document.getElementById('in-sn1') as HTMLInputElement).value
+        serial: (document.getElementById('in-sn1') as HTMLInputElement).value,
+        ip: (document.getElementById('in-ip1') as HTMLInputElement).value,
+        code: (document.getElementById('in-pwd2') as HTMLInputElement).value
       };
 
       let token = '';
@@ -132,9 +136,11 @@ export default function Home() {
         slug: data.name.toLowerCase().replaceAll(' ', '-'),
         name: data.name, 
         model: data.model, 
-        ip: 'us.mqtt.bambulab.com',
-        username: `u_${json1.uid}`,
+        ip: data.ip,
+        username: `u_${user}`,
         password: token, 
+        code: data.code,
+        cloud: true,
         serial: data.serial});
       setLanOpen(false);
       location.reload();
@@ -322,7 +328,19 @@ export default function Home() {
                   placeholder="Serial Number"
                   required
                 />
-                <label className="text-sm text-gray-300">Please note: For security, the authentication data is not stored. When the token expires, you will have to log in again.</label>
+                <label className="text-sm text-gray-300">If you would like to use the FTP and camera functions please provide the local access details.</label>
+                <input
+                  type="text"
+                  id="in-ip1"
+                  className="m-1 bg-gray-700 rounded-sm p-2"
+                  placeholder="Local IP Address (optional)"
+                />
+                <input
+                  type="password"
+                  id="in-pwd2"
+                  className="m-1 bg-gray-700 rounded-sm p-2"
+                  placeholder="Local Access Code (optional)"
+                />
               </div>
               {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
               <button 

@@ -10,6 +10,8 @@ export async function addPrinter(printerData: {
   ip: string;
   username: string;
   password: string;
+  code: string;
+  cloud: boolean;
   serial: string;
 }) {
   const res = await fetch('/api/printers', {
