@@ -252,6 +252,8 @@ export default function MainView({ params }: PrinterPageProps) {
         return <ControlView 
           slug={slug} 
           ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
+          host={printer.ip}
+          code={printer.code}
           username={printer.username}
           password={printer.password} 
           serial={printer.serial} 
@@ -280,6 +282,8 @@ export default function MainView({ params }: PrinterPageProps) {
         return <ControlView 
           slug={slug} 
           ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
+          host={printer.ip}
+          code={printer.code}
           username={printer.username}
           password={printer.password} 
           serial={printer.serial} 

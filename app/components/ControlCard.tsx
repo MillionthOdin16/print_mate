@@ -6,6 +6,8 @@ import SkipCard from "@/app/components/SkipCard"
 interface ControlCardProps {
   name: string;
   ip: string;
+  host: string;
+  code: string;
   username: string,
   password: string;
   serial: string;
@@ -19,7 +21,7 @@ interface PrintObject {
   bbox: number[];
 }
 
-export default function ControlCard({ name, ip, username, password, serial, model, printerState }: ControlCardProps) {
+export default function ControlCard({ name, ip, host, code, username, password, serial, model, printerState }: ControlCardProps) {
   const [previewImage, setPreviewImage] = useState<string>("/no_image.png");
   const [skipImage, setSkipImage] = useState<string>("/no_image.png");
   const [objects, setObjects] = useState<PrintObject[]>([])
@@ -86,7 +88,7 @@ export default function ControlCard({ name, ip, username, password, serial, mode
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            printerKey: `${ip}:${serial}`,
+            printerKey: `${host}:${serial}`,
             filename: filename
           })
         });
@@ -106,9 +108,9 @@ export default function ControlCard({ name, ip, username, password, serial, mode
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          host: ip,
+          host: host,
           port: '990',
-          password: password,
+          password: code,
           serial: serial
         })
       });
