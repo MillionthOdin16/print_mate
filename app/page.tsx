@@ -133,7 +133,7 @@ export default function Home() {
         name: data.name, 
         model: data.model, 
         ip: 'us.mqtt.bambulab.com',
-        username: 'bblp',
+        username: `u_${json1.uid}`,
         password: token, 
         serial: data.serial});
       setLanOpen(false);

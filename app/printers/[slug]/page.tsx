@@ -26,6 +26,7 @@ interface Printer {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
   serial: string;
   status: string;
@@ -62,6 +63,7 @@ export default function MainView({ params }: PrinterPageProps) {
         },
         body: JSON.stringify({
           host: printer.ip,
+          username: printer.username,
           password: printer.password,
           serial: printer.serial,
           subscriberId: subscriberId.current
@@ -113,7 +115,7 @@ export default function MainView({ params }: PrinterPageProps) {
                       setOnline(data.connected);
                       setIsSubscribed(true);
                       console.log('conn')
-                      commands.sendCommand(slug, printer.ip, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
+                      commands.sendCommand(slug, printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
                       break;
                     case 'heartbeat':
                       setOnline(data.connected);
@@ -245,6 +247,7 @@ export default function MainView({ params }: PrinterPageProps) {
         return <ControlView 
           slug={slug} 
           ip={printer.ip} 
+          username={printer.username}
           password={printer.password} 
           serial={printer.serial} 
           model={printer.model}
@@ -272,6 +275,7 @@ export default function MainView({ params }: PrinterPageProps) {
         return <ControlView 
           slug={slug} 
           ip={printer.ip} 
+          username={printer.username}
           password={printer.password} 
           serial={printer.serial} 
           model={printer.model}

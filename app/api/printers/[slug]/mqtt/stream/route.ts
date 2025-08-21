@@ -7,7 +7,7 @@ function getPrinterKey(host: string, serial: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { host, password, serial, subscriberId } = await req.json();
+    const { host, username, password, serial, subscriberId } = await req.json();
 
     if (!host || !password || !serial || !subscriberId) {
       return new Response(JSON.stringify({ 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
           connected: false
         })}\n\n`);
 
-        createSubscription(host, password, serial, subscriberId, controller)
+        createSubscription(host, username, password, serial, subscriberId, controller)
           .then(cleanup => {
             // cleanup func
             (controller as any).cleanup = cleanup;

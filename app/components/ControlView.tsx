@@ -6,6 +6,7 @@ import ControlCard from "./ControlCard";
 interface Props {
   slug: string;
   ip: string;
+  username: string;
   password: string;
   serial: string;
   model: string;
@@ -14,7 +15,7 @@ interface Props {
   setOnline: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ControlView({ slug, ip, password, serial, model, printerState, online, setOnline }: Props) {
+export default function ControlView({ slug, ip, username, password, serial, model, printerState, online, setOnline }: Props) {
   return (
     <div className="view" id="control-page">
       <header className="flex flex-row items-center justify-between">
@@ -27,6 +28,7 @@ export default function ControlView({ slug, ip, password, serial, model, printer
         <ControlCard 
           name={slug} 
           ip={ip} 
+          username={username}
           password={password} 
           serial={serial} 
           model={model} 
