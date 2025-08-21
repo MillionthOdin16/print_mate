@@ -2,6 +2,7 @@ import mqttManager from '@/lib/mqtt';
 
 interface SubscriptionData {
   host: string;
+  username: string;
   password: string;
   serial: string;
   subscriberId: string;
@@ -38,6 +39,7 @@ export function getCurrentPrinterState(printerKey: string): any {
 
 export function createSubscription(
   host: string, 
+  username: string,
   password: string, 
   serial: string, 
   subscriberId: string, 
@@ -94,6 +96,7 @@ export function createSubscription(
 
     activeSubscriptions[subscriptionKey] = {
       host,
+      username,
       password,
       serial,
       subscriberId,
@@ -111,7 +114,7 @@ export function createSubscription(
     })}\n\n`);
 
     try {
-      await mqttManager.subscribe(host, password, serial, subscriberId, (topic, message) => {
+      await mqttManager.subscribe(host, username, password, serial, subscriberId, (topic, message) => {
         if (!isStreamActive || cleanupCalled) return;
         
         try {

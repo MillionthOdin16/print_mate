@@ -6,6 +6,7 @@ import SkipCard from "@/app/components/SkipCard"
 interface ControlCardProps {
   name: string;
   ip: string;
+  username: string,
   password: string;
   serial: string;
   model: string;
@@ -18,7 +19,7 @@ interface PrintObject {
   bbox: number[];
 }
 
-export default function ControlCard({ name, ip, password, serial, model, printerState }: ControlCardProps) {
+export default function ControlCard({ name, ip, username, password, serial, model, printerState }: ControlCardProps) {
   const [previewImage, setPreviewImage] = useState<string>("/no_image.png");
   const [skipImage, setSkipImage] = useState<string>("/no_image.png");
   const [objects, setObjects] = useState<PrintObject[]>([])
@@ -256,7 +257,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
         <button 
           className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2" 
           style={{ display: (gcodeStatus === "PAUSE"? 'block' : 'none') }}
-          onClick={() => commands.sendCommand(name, ip, password, serial, commands.resume_print(printerState.print.sequence_id))}
+          onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.resume_print(printerState.print.sequence_id))}
         >
           <svg className="w-10 h-10 text-green-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M8 5v14l11-7z"/>
@@ -265,7 +266,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
         <button 
           className="m-2 bg-gray-800 hover:bg-gray-700 transition rounded-md p-2" 
           style={{ display: (gcodeStatus === "RUNNING"? 'block' : 'none') }}
-          onClick={() => commands.sendCommand(name, ip, password, serial, commands.pause_print((printerState.print.sequence_id)))}
+          onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.pause_print((printerState.print.sequence_id)))}
         >
           <svg className="w-10 h-10 text-orange-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 5h4v14H6zm8 0h4v14h-4z"/>
@@ -277,7 +278,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
           onClick={
             () => {
               if (confirm('Are you sure you want to cancel the print?')) 
-                commands.sendCommand(name, ip, password, serial, commands.stop_print(printerState.print.sequence_id))
+                commands.sendCommand(name, ip, username, password, serial, commands.stop_print(printerState.print.sequence_id))
             }
           }>
           <svg className="w-5 h-5 m-2.5 text-red-600" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -289,7 +290,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             border: chamberLight ? '1px solid white' : 'none',
           }}
           onClick={() => {
-            commands.sendCommand(name, ip, password, serial, commands.led_control(printerState.print.sequence_id, 'chamber_light', (chamberLight ? 'off' : 'on')));
+            commands.sendCommand(name, ip, username, password, serial, commands.led_control(printerState.print.sequence_id, 'chamber_light', (chamberLight ? 'off' : 'on')));
           }}
         >
           <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -369,7 +370,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 <div/>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.manual_move(
                     printerState?.print.sequence_id,
                     "Y",
                     "5",
@@ -382,7 +383,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
 
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.manual_move(
                     printerState?.print.sequence_id,
                     "X",
                     "-5",
@@ -393,13 +394,13 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 </button>
                 <button
                   className="bg-blue-600 rounded-md hover:bg-blue-700 text-sm sm:text-md p-3 flex items-center justify-center"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.auto_home(printerState?.print.sequence_id))}
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.auto_home(printerState?.print.sequence_id))}
                 >
                   Home
                 </button>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.manual_move(
                     printerState?.print.sequence_id,
                     "X",
                     "5",
@@ -412,7 +413,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 <div/>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md p-3 flex items-center justify-center"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.manual_move(
                     printerState?.print.sequence_id,
                     "Y",
                     "-5",
@@ -427,7 +428,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
               <div className="flex flex-col items-center space-y-2">
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md px-4 py-2"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.manual_move(
                     printerState?.print.sequence_id,
                     "Z",
                     "5",
@@ -438,7 +439,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 </button>
                 <button
                   className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md px-4 py-2"
-                  onClick={() => commands.sendCommand(name, ip, password, serial, commands.manual_move(
+                  onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.manual_move(
                     printerState?.print.sequence_id,
                     "Z",
                     "-5",
@@ -502,7 +503,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                     break;
                 }
                 setNozzleOpen(false);
-                commands.sendCommand(name, ip, password, serial, commands.temp_nozzle(printerState.print.sequence_id, temp.toString()));
+                commands.sendCommand(name, ip, username, password, serial, commands.temp_nozzle(printerState.print.sequence_id, temp.toString()));
               }}
             >
               Done
@@ -560,7 +561,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                     break;
                 }
                 setBedOpen(false);
-                commands.sendCommand(name, ip, password, serial, commands.temp_bed(printerState.print.sequence_id, bedTargetInput.toString()));
+                commands.sendCommand(name, ip, username, password, serial, commands.temp_bed(printerState.print.sequence_id, bedTargetInput.toString()));
               }}
             >
               Done
@@ -636,7 +637,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                   <button 
                     className="bg-gray-700 rounded-md hover:bg-gray-600 text-sm sm:text-md m-1 p-2"
                     onClick={() => {
-                      commands.sendCommand(name, ip, password, serial, commands.skip_objects(printerState.print?.sequence_id, skipObjectsInput))
+                      commands.sendCommand(name, ip, username, password, serial, commands.skip_objects(printerState.print?.sequence_id, skipObjectsInput))
                       setSkipOpen(false);
                     }}>Finish</button>
                   <button 
@@ -673,25 +674,25 @@ export default function ControlCard({ name, ip, password, serial, model, printer
             <h2 className="text-xl mb-4 text-white">Print Speed</h2>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.print_speed(printerState.print?.sequence_id, "1"))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.print_speed(printerState.print?.sequence_id, "1"))}
             >
               Silent 50%
             </button>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.print_speed(printerState.print?.sequence_id, "2"))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.print_speed(printerState.print?.sequence_id, "2"))}
             >
               Standard 100%
             </button>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.print_speed(printerState.print?.sequence_id, "3"))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.print_speed(printerState.print?.sequence_id, "3"))}
             >
               Sport 124%
             </button>
             <button
               className="bg-gray-700 rounded-md hover:bg-gray-600 text-md m-1 p-2"
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.print_speed(printerState.print?.sequence_id, "4"))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.print_speed(printerState.print?.sequence_id, "4"))}
             >
               Ludicrous 166%
             </button>
@@ -726,7 +727,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 onClick={() => {
                   const newPercentage = Math.max(0, fanTargetInput - 10);
                   setFanTargetInput(newPercentage);
-                  commands.sendCommand(name, ip, password, serial, commands.part_fan_speed(
+                  commands.sendCommand(name, ip, username, password, serial, commands.part_fan_speed(
                     printerState.print?.sequence_id, 
                     fanValuePercentage(newPercentage).toString()
                   ));
@@ -743,7 +744,7 @@ export default function ControlCard({ name, ip, password, serial, model, printer
                 onClick={() => {
                   const newPercentage = Math.min(100, fanTargetInput + 10);
                   setFanTargetInput(newPercentage);
-                  commands.sendCommand(name, ip, password, serial, commands.part_fan_speed(
+                  commands.sendCommand(name, ip, username, password, serial, commands.part_fan_speed(
                     printerState.print?.sequence_id, 
                     fanValuePercentage(newPercentage).toString()
                   ));

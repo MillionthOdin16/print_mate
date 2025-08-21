@@ -12,6 +12,7 @@ interface Printer {
   model: string;
   ip: string;
   password: string;
+  code: string;
   serial: string;
 }
 
@@ -120,7 +121,7 @@ class CameraManager {
         connection.connecting = false;
         connection.retries = 0;
         
-        const auth = this.createAuthPacket('bblp', printer.password);
+        const auth = this.createAuthPacket('bblp', printer.code);
         connection.socket?.write(auth);
       });
 

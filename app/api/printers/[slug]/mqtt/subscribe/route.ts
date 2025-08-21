@@ -3,7 +3,7 @@ import mqttManager from '@/lib/mqtt';
 
 export async function POST(req: NextRequest) {
   try {
-    const { host, password, serial, subscriberId } = await req.json();
+    const { host, username, password, serial, subscriberId } = await req.json();
 
     if (!host || !password || !serial || !subscriberId) {
       return new Response(JSON.stringify({ 
@@ -14,9 +14,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Simple subscription without data handling (data is now handled in stream API)
-    await mqttManager.subscribe(host, password, serial, subscriberId, () => {
-      // Empty handler - actual data processing is now in the stream API
+    await mqttManager.subscribe(host, username, password, serial, subscriberId, () => {
+      
     });
 
     return new Response(JSON.stringify({ 

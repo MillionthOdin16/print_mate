@@ -26,7 +26,10 @@ interface Printer {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
+  code: string;
+  cloud: boolean;
   serial: string;
   status: string;
   port?: number;
@@ -40,6 +43,7 @@ export default function MainView({ params }: PrinterPageProps) {
   const [filesError, setFilesError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [regenOpen, setRegenOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -61,7 +65,8 @@ export default function MainView({ params }: PrinterPageProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          host: printer.ip,
+          host: printer.cloud? 'us.mqtt.bambulab.com' : printer.ip,
+          username: printer.username,
           password: printer.password,
           serial: printer.serial,
           subscriberId: subscriberId.current
@@ -113,7 +118,7 @@ export default function MainView({ params }: PrinterPageProps) {
                       setOnline(data.connected);
                       setIsSubscribed(true);
                       console.log('conn')
-                      commands.sendCommand(slug, printer.ip, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
+                      commands.sendCommand(slug, printer.cloud? 'us.mqtt.bambulab.com' : printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
                       break;
                     case 'heartbeat':
                       setOnline(data.connected);
@@ -210,8 +215,8 @@ export default function MainView({ params }: PrinterPageProps) {
           slug={slug} 
           model={printer.model} 
           host={printer.ip}
-          port={printer.port || 990}
-          password={printer.password}
+          port={990}
+          password={printer.code}
           serial={printer.serial}
           files={files} 
           setFiles={setFiles} 
@@ -226,7 +231,8 @@ export default function MainView({ params }: PrinterPageProps) {
           slug={slug}
           model={printer.model}
           serial={printer.serial}
-          ip={printer.ip}
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
+          username={printer.username}
           password={printer.password}
           printerState={printerState}
           online={online}
@@ -235,7 +241,8 @@ export default function MainView({ params }: PrinterPageProps) {
         return <FilamentView
           slug={slug}
           model={printer.model}
-          ip={printer.ip}
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
+          username={printer.username}
           password={printer.password}
           serial={printer.serial}
           printerState={printerState}
@@ -244,7 +251,8 @@ export default function MainView({ params }: PrinterPageProps) {
       case 'control':
         return <ControlView 
           slug={slug} 
-          ip={printer.ip} 
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
+          username={printer.username}
           password={printer.password} 
           serial={printer.serial} 
           model={printer.model}
@@ -263,7 +271,7 @@ export default function MainView({ params }: PrinterPageProps) {
         return <CameraView 
           slug={slug}
           ip={printer.ip}
-          password={printer.password}
+          password={printer.code}
           model={printer.model}
           online={online}
           serial={printer.serial}
@@ -271,7 +279,8 @@ export default function MainView({ params }: PrinterPageProps) {
       default:
         return <ControlView 
           slug={slug} 
-          ip={printer.ip} 
+          ip={printer.cloud? 'us.mqtt.bambulab.com' : printer.ip}
+          username={printer.username}
           password={printer.password} 
           serial={printer.serial} 
           model={printer.model}
@@ -309,7 +318,10 @@ export default function MainView({ params }: PrinterPageProps) {
         name: data.name, 
         model: data.model, 
         ip: data.ip, 
-        password: data.pwd, 
+        username: 'bblp',
+        password: data.pwd,
+        code: data.pwd,
+        cloud: false, 
         serial: data.serial});
       setEditOpen(false);
       location.href = "/";
@@ -319,6 +331,83 @@ export default function MainView({ params }: PrinterPageProps) {
       setIsSubmitting(false);
     }
   };
+
+  const handleRegenerate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = {
+      name: slug,
+      model: printer.model,
+      email: (document.getElementById('in-email') as HTMLInputElement).value,
+      pwd: (document.getElementById('in-pwd1') as HTMLInputElement).value,
+      serial: printer.serial,
+      ip: printer.ip,
+      code: printer.code,
+    };
+
+    let token = '';
+
+    const url = '/api/cloud/auth';
+    const body = {
+      "account": data.email,
+      "password": data.pwd
+    };
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    });
+
+    const json = await res.json();
+
+    if (json.error) {
+      setError(json.error);
+      return;
+    }
+
+    if (json.loginType === 'verifyCode') {
+      const code = prompt('Please enter the 6-digit 2FA code sent to your email. If the code does not arrive, please request a code by signing in to your Bambu account in a browser window and providing the code from that request.');
+      if (code?.length != 6) {
+        setError("Invalid code");
+        return;
+      }
+
+      const body1 = {
+        "account": data.email,
+        "code": code
+      }
+
+      const res1 = await fetch(url, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body1)
+      });
+
+      const json1 = await res1.json();
+      if (json1.accessToken) token = json1.accessToken;
+      else {
+        if (json1.error) {
+          setError(json1.error);
+          return;
+        }
+      }
+    } else {
+      token = json.accessToken;
+    }
+    await editPrinter({
+      oldSlug: slug,
+      slug: slug,
+      name: printer.name,
+      model: printer.model,
+      ip: printer.ip,
+      username: printer.username,
+      password: token,
+      code: printer.code,
+      cloud: printer.cloud,
+      serial: printer.serial
+    })
+    setRegenOpen(false);
+  }
 
   return (
     <div className="flex h-screen bg-gray-900">
@@ -390,6 +479,17 @@ export default function MainView({ params }: PrinterPageProps) {
             >
               Edit Printer
             </div>
+            {printer.cloud && (
+              <div 
+                className="bg-gray-700 hover:bg-gray-600 rounded-md p-2"
+                onClick={async () => {
+                  setMenuOpen(false);
+                  setRegenOpen(true);
+                }}
+              >
+                Regenerate Access Token
+              </div>
+            )}
             <div 
               className="bg-gray-700 text-red-600 hover:bg-gray-600 rounded-md p-2"
               onClick={async () => {
@@ -477,6 +577,57 @@ export default function MainView({ params }: PrinterPageProps) {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Editing...' : 'Finish'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {regenOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md relative border border-gray-700">
+            <button
+              onClick={() => setRegenOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            
+            <h2 className="text-xl mb-4 text-white">Regenerate {slug} Token</h2>
+
+            <form onSubmit={handleRegenerate}>
+              <input 
+                type="email" 
+                id="in-email" 
+                className="m-1 bg-gray-700 rounded-sm p-2 w-full" 
+                placeholder="Bambu Account Email"
+                required
+              />
+              <input 
+                type="password" 
+                id="in-pwd1" 
+                className="m-1 bg-gray-700 rounded-sm p-2 w-full" 
+                placeholder="Bambu Account Password"
+                required
+              />
+              <button 
+                type="submit" 
+                className="m-1 bg-blue-600 hover:bg-blue-500 rounded-sm p-2"
+                disabled={isSubmitting}
+              >
+                Finish
               </button>
             </form>
           </div>

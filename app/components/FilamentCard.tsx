@@ -8,6 +8,7 @@ interface FilamentCardProps {
   name: string;
   model: string;
   ip: string;
+  username: string;
   password: string;
   serial: string;
   printerState: any;
@@ -22,13 +23,13 @@ interface Filament {
   maxTemp: number;
 }
 
-export default function FilamentCard({ name, model, ip, password, serial, printerState }: FilamentCardProps) {
+export default function FilamentCard({ name, model, ip, username, password, serial, printerState }: FilamentCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [activeView, setActiveView] = useState<'ams' | 'ext'>('ext');
-  const [activeAction, setActiveAction] = useState(''); // TODO: retrieve from printer
-  const [selectedBrand, setSelectedBrand] = useState(''); // TODO: retrieve from printer
-  const [amsFilaments, setAmsFilaments] = useState<String[]>(['PLA Basic', 'PLA Matte', 'PETG HF', 'ABS-GF', 'PC FR', 'Support for PLA/PETG', 'PLA-CF', 'PLA-CF']); // TODO: retrieve from printer
-  const [amsColours, setAmsColours] = useState<string[]>(['#000000', '#ffffff', '#abcdef', '#0fab9c', '#000000', '#333333', '#f9a2b8', '#fafafa', '#aaaaaa']) // TODO: retrieve from printer
+  const [activeAction, setActiveAction] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('');
+  const [amsFilaments, setAmsFilaments] = useState<string[]>([]);
+  const [amsColours, setAmsColours] = useState<string[]>([]);
   
   const [selectedAms, setSelectedAms] = useState(0);
   const [selectedSlot, setSelectedSlot] = useState(0);
@@ -63,7 +64,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
   useEffect(() => {
     ams.ams.forEach((element: { tray: any[]; }) => {
       element.tray.forEach(tray => {
-        updateAmsFilament(tray.id, tray.tray_type || "Empty")
+        updateAmsFilament(tray.id, tray.tray_type || (tray.cols? "?" : "Empty"))
         updateAmsColour(tray.id, `#${(tray.tray_color?.substring(0, 6) || '')}`)
       })
     })
@@ -126,13 +127,13 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
           <div className="flex flex-col justify-center items-center w-full sm:w-auto">
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_load())
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_load())
             }>
               Load
             </button>
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_unload(printerState.print.sequence_id))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState.print.sequence_id))}
             >
               Unload
             </button>
@@ -164,7 +165,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
                   style={{
                     backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 4]}`,
-                    display: (amsFilaments[((selectedAms + 1) * 4) - 4] === "Empty" ? 'none' : 'block')
+                    display: ((amsFilaments[((selectedAms + 1) * 4) - 4] === "Empty" || amsFilaments[((selectedAms + 1) * 4) - 4] === "?") ? 'none' : 'block')
                   }}
                 />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-4]}</label>
@@ -179,7 +180,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
                   style={{
                     backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 3]}`,
-                    display: (amsFilaments[((selectedAms + 1) * 4) - 3] === "Empty" ? 'none' : 'block')
+                    display: ((amsFilaments[((selectedAms + 1) * 4) - 3] === "Empty" || amsFilaments[((selectedAms + 1) * 4) - 3] === "?") ? 'none' : 'block')
                   }}
                 />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-3]}</label>
@@ -194,7 +195,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
                   style={{
                     backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 2]}`,
-                    display: (amsFilaments[((selectedAms + 1) * 4) - 2] === "Empty" ? 'none' : 'block')
+                    display: ((amsFilaments[((selectedAms + 1) * 4) - 2] === "Empty" || amsFilaments[((selectedAms + 1) * 4) - 2] === "?") ? 'none' : 'block')
                   }}
                 />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-2]}</label>
@@ -209,7 +210,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
                   style={{
                     backgroundColor: `${amsColours[((selectedAms + 1) * 4) - 1]}`,
-                    display: (amsFilaments[((selectedAms + 1) * 4) - 1] === "Empty" ? 'none' : 'block')
+                    display: ((amsFilaments[((selectedAms + 1) * 4) - 1] === "Empty" || amsFilaments[((selectedAms + 1) * 4) - 1] === "?") ? 'none' : 'block')
                   }}
                 />
                 <label className="text-sm sm:text-3xl">{amsFilaments[(selectedAms+1)*4-1]}</label>
@@ -220,7 +221,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
           <div className="flex flex-col sm:flex-row justify-center items-center w-full">
             <button 
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.ams_change_filament(
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.ams_change_filament(
                 (((selectedAms + 1) * 4) - (4 - selectedSlot)),
                 250,
                 250
@@ -230,7 +231,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
             </button>
             <button 
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
-              onClick={() => commands.sendCommand(name, ip, password, serial, commands.filament_unload(printerState.print?.sequence_id))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState.print?.sequence_id))}
             >
               Unload
             </button>
@@ -335,6 +336,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                     commands.sendCommand(
                       name,
                       ip,
+                      username,
                       password,
                       serial,
                       commands.ams_filament(
@@ -349,7 +351,7 @@ export default function FilamentCard({ name, model, ip, password, serial, printe
                     )
                   }
                   else if (activeView == 'ams') {
-                    commands.sendCommand(name, ip, password, serial, commands.ams_filament(
+                    commands.sendCommand(name, ip, username, password, serial, commands.ams_filament(
                       printerState.print.sequence_id + 1,
                       selectedAms,
                       ((selectedAms + 1) * 4) - (4 - selectedSlot),

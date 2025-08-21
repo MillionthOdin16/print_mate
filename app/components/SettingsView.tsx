@@ -7,12 +7,13 @@ interface Props {
   model: string;
   serial: string;
   ip: string;
+  username: string;
   password: string;
   printerState?: any;
   online: boolean;
 }
 
-export default function SettingsView({ slug, model, serial, ip, password, printerState, online }: Props) {
+export default function SettingsView({ slug, model, serial, ip, username, password, printerState, online }: Props) {
   return (
     <div className="view" id="settings-page">
       <header className="flex flex-row items-center justify-between">
@@ -24,6 +25,7 @@ export default function SettingsView({ slug, model, serial, ip, password, printe
         model={model}
         serial={serial}
         ip={ip}
+        username={username}
         password={password}
         printerState={printerState}
       />

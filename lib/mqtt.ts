@@ -2,6 +2,7 @@ import mqtt, { MqttClient } from 'mqtt';
 
 interface ConnectionConfig {
   host: string;
+  username: string;
   password: string;
   serial: string;
 }
@@ -70,10 +71,12 @@ class MQTTConnectionManager {
 
   private async createConnection(config: ConnectionConfig): Promise<MqttClient> {
     const key = this.getConnectionKey(config.host, config.serial);
+
+    console.log(config.username);
     
     return new Promise((resolve, reject) => {
       const client = mqtt.connect(`mqtts://${config.host}:8883`, {
-        username: 'bblp',
+        username: config.username,
         password: config.password,
         rejectUnauthorized: false,
         connectTimeout: 10000,
@@ -179,8 +182,8 @@ class MQTTConnectionManager {
     this.connectionPromises.delete(key);
   }
 
-  async publish(host: string, password: string, serial: string, payload: string): Promise<void> {
-    const client = await this.getConnection({ host, password, serial });
+  async publish(host: string, username: string, password: string, serial: string, payload: string): Promise<void> {
+    const client = await this.getConnection({ host, username, password, serial });
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -200,6 +203,7 @@ class MQTTConnectionManager {
 
   async subscribe(
     host: string, 
+    username: string,
     password: string, 
     serial: string, 
     subscriberId: string, 
@@ -213,7 +217,7 @@ class MQTTConnectionManager {
       return;
     }
     
-    const client = await this.getConnection({ host, password, serial });
+    const client = await this.getConnection({ host, username, password, serial });
     
     const handlers = this.messageHandlers.get(key);
     const isFirstSubscriber = !handlers || handlers.size === 0;
