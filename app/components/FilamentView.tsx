@@ -1,5 +1,6 @@
 'use client';
 
+import { PrinterState } from "@/lib/printerState";
 import FilamentCard from "./FilamentCard";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   username: string;
   password: string;
   serial: string;
-  printerState: any;
+  printerState: PrinterState;
   online: boolean;
 }
 

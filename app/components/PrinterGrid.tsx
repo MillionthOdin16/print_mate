@@ -9,6 +9,9 @@ interface Printer {
   slug: string;
   name: string;
   model: string;
+  ip: string;
+  password: string;
+  serial: string;
   status: string;
 }
 
@@ -30,7 +33,7 @@ export default function PrinterGrid() {
   }, []);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {printers.map((printer: any) => (
+      {printers.map((printer: Printer) => (
           <Link key={printer.slug} href={`/printers/${printer.slug}`} className='block'>
             <PrinterCard
               key={printer.name}

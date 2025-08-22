@@ -330,7 +330,7 @@ export function set_plate_detect(sequence_id: string, enable: boolean) {
   return xcam_control(sequence_id, "buildplate_marker_detector", enable);
 }
 
-export async function sendCommand(slug: string, host: string, username: string, password: string, serial: string, payload: any) {
+export async function sendCommand(slug: string, host: string, username: string, password: string, serial: string, payload: Object) {
   try {
     const res = await fetch(`/api/printers/${slug}/mqtt/publish`, {
       method: 'POST',
@@ -357,7 +357,7 @@ export async function sendCommand(slug: string, host: string, username: string, 
       message: 'successfully sent command',
       data
     };
-
+    // eslint-disable-next-line
   } catch (error: any) {
     return {
       success: false,

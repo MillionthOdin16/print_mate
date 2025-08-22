@@ -1,11 +1,12 @@
 'use client';
+import { PrinterState } from '@/lib/printerState';
 import HMSCard from './HMSCard';
 import hmsData from '@/data/hms.json';
 
 interface HMSGridProps {
   name: string;
   model: string;
-  printerState: any;
+  printerState: PrinterState;
 }
 
 export default function HMSGrid({ printerState }: HMSGridProps) {  

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
-  
+    // eslint-disable-next-line
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500,

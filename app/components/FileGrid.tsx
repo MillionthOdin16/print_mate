@@ -60,6 +60,7 @@ export default function FileGrid({
           }
           const data = await res.json();
           setFiles(data);
+          // eslint-disable-next-line
         } catch (err: any) {
           setError(err.message || 'Failed to fetch files');
         } finally {

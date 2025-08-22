@@ -78,7 +78,7 @@ async function addPrinter(slug: string, name: string, model: string, ip: string,
 
 async function removePrinter(slug: string) {
   const printers = await getPrinters();
-  const newPrinters = printers.filter(printer => printer.slug !== slug);
+  const newPrinters = printers.filter((printer: { slug: string; }) => printer.slug !== slug);
   await fs.writeFile(filePath, JSON.stringify(newPrinters, null, 2));
 }
 

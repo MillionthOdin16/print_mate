@@ -1,10 +1,11 @@
 'use client';
+import { PrinterState } from "@/lib/printerState";
 import HMSGrid from "./HMSGrid";
 
 interface Props {
   slug: string;
   model: string;
-  printerState: any;
+  printerState: PrinterState;
   online: boolean;
 }
 

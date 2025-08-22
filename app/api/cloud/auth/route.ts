@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
+    // eslint-disable-next-line
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
         'Access-Control-Allow-Headers': 'Cache-Control'
       }
     });
-    
+    // eslint-disable-next-line
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500,

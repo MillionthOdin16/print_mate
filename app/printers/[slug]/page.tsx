@@ -10,6 +10,7 @@ import SettingsView from '@/app/components/SettingsView';
 import React from 'react';
 import CameraView from '@/app/components/CameraView';
 import * as commands from '@/lib/commands';
+import { PrinterState } from '@/lib/printerState';
 
 interface PrinterPageProps {
   params: Promise<{
@@ -47,7 +48,11 @@ export default function MainView({ params }: PrinterPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const [printerState, setPrinterState] = useState<any>({ print: {} });
+  const [printerState, setPrinterState] = useState<PrinterState>({ print: {}, event: {
+    event: '',
+    disconnected_at: '',
+    connected_at: ''
+  } });
   const [online, setOnline] = useState(false);
   const subscriberId = useRef(`printer-page-${Date.now()}`);
 
@@ -426,16 +431,16 @@ export default function MainView({ params }: PrinterPageProps) {
 
           <nav className="flex flex-col">
             {[
-              { id: 'files', icon: '/file.svg' },
-              { id: 'control', icon: '/control.png' },
-              { id: 'filament', icon: '/filament.png' },
-              { id: 'settings', icon: '/settings.png' },
-              { id: 'hms', label: 'HMS', icon: '/hms.png' },
-              { id: 'camera', icon: '/camera.png' }
+              { id: 'files' as const, icon: '/file.svg' },
+              { id: 'control' as const, icon: '/control.png' },
+              { id: 'filament' as const, icon: '/filament.png' },
+              { id: 'settings' as const, icon: '/settings.png' },
+              { id: 'hms' as const, label: 'HMS', icon: '/hms.png' },
+              { id: 'camera' as const, icon: '/camera.png' }
             ].map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveView(item.id as any)}
+                onClick={() => setActiveView(item.id)}
                 className={`flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
                   activeView === item.id? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
                 }`}

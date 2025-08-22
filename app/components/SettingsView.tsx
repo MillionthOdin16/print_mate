@@ -1,5 +1,6 @@
 'use client';
 
+import { PrinterState } from "@/lib/printerState";
 import SettingsCard from "./SettingsCard";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   ip: string;
   username: string;
   password: string;
-  printerState?: any;
+  printerState?: PrinterState;
   online: boolean;
 }
 

@@ -1,4 +1,5 @@
 import mqttManager from '@/lib/mqtt';
+import { PrinterState } from './printerState';
 
 interface SubscriptionData {
   host: string;
@@ -6,13 +7,13 @@ interface SubscriptionData {
   password: string;
   serial: string;
   subscriberId: string;
-  controller?: ReadableStreamDefaultController<any>;
+  controller?: ReadableStreamDefaultController<string>;
   heartbeatInterval?: NodeJS.Timeout;
   isActive: boolean;
   cleanup?: () => void;
 }
 
-const printersState: { [printerKey: string]: any } = {};
+const printersState: { [printerKey: string]: PrinterState } = {};
 const activeSubscriptions: { [key: string]: SubscriptionData } = {};
 
 function getPrinterKey(host: string, serial: string): string {
@@ -33,7 +34,7 @@ function deepMerge(target: any, source: any): any {
   return result;
 }
 
-export function getCurrentPrinterState(printerKey: string): any {
+export function getCurrentPrinterState(printerKey: string): PrinterState {
   return printersState[printerKey] || { print: {} };
 }
 
@@ -43,7 +44,7 @@ export function createSubscription(
   password: string, 
   serial: string, 
   subscriberId: string, 
-  controller: ReadableStreamDefaultController<any>
+  controller: ReadableStreamDefaultController<string>
 ): Promise<() => void> {
   const key = getPrinterKey(host, serial);
   const subscriptionKey = `${key}-${subscriberId}`;
@@ -171,7 +172,7 @@ export function createSubscription(
       }
 
       resolve(cleanup);
-
+      // eslint-disable-next-line
     } catch (error: any) {
       cleanup();
       enqueue(`data: ${JSON.stringify({
