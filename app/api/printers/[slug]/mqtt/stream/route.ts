@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
 
         createSubscription(host, username, password, serial, subscriberId, controller)
           .then(cleanup => {
-            // cleanup func
             (controller as any).cleanup = cleanup;
           })
           .catch(error => {
@@ -43,7 +42,7 @@ export async function POST(req: NextRequest) {
           });
       },
       
-      cancel() {
+      cancel(controller) {
         console.log('Stream cancelled by client');
         if ((controller as any).cleanup) {
           (controller as any).cleanup();
@@ -60,7 +59,7 @@ export async function POST(req: NextRequest) {
         'Access-Control-Allow-Headers': 'Cache-Control'
       }
     });
-
+    
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500,

@@ -1,6 +1,6 @@
 interface HMSCardProps {
-  message: String,
-  code: String,
+  message: string,
+  code: string,
 }
 
 export default function HMSCard({ message, code }: HMSCardProps) {

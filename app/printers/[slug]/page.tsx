@@ -48,7 +48,6 @@ export default function MainView({ params }: PrinterPageProps) {
   const [error, setError] = useState('');
 
   const [printerState, setPrinterState] = useState<any>({ print: {} });
-  const [isSubscribed, setIsSubscribed] = useState(false);
   const [online, setOnline] = useState(false);
   const subscriberId = useRef(`printer-page-${Date.now()}`);
 
@@ -93,7 +92,6 @@ export default function MainView({ params }: PrinterPageProps) {
             if (done) {
               console.log('Stream ended');
               setOnline(false);
-              setIsSubscribed(false);
               break;
             }
 
@@ -112,11 +110,9 @@ export default function MainView({ params }: PrinterPageProps) {
                     case 'update':
                       setPrinterState(data.data);
                       setOnline(data.connected);
-                      setIsSubscribed(true);
                       break;
                     case 'connected':
                       setOnline(data.connected);
-                      setIsSubscribed(true);
                       console.log('conn')
                       commands.sendCommand(slug, printer.cloud? 'us.mqtt.bambulab.com' : printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
                       break;
@@ -137,7 +133,6 @@ export default function MainView({ params }: PrinterPageProps) {
         } catch (error) {
           console.error('Stream processing error:', error);
           setOnline(false);
-          setIsSubscribed(false);
         } finally {
           reader.releaseLock();
         }
@@ -152,7 +147,6 @@ export default function MainView({ params }: PrinterPageProps) {
     } catch (error) {
       console.error('Failed to connect to stream:', error);
       setOnline(false);
-      setIsSubscribed(false);
       return null;
     }
   };

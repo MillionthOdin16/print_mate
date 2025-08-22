@@ -12,8 +12,8 @@ interface SubscriptionData {
   cleanup?: () => void;
 }
 
-let printersState: { [printerKey: string]: any } = {};
-let activeSubscriptions: { [key: string]: SubscriptionData } = {};
+const printersState: { [printerKey: string]: any } = {};
+const activeSubscriptions: { [key: string]: SubscriptionData } = {};
 
 function getPrinterKey(host: string, serial: string): string {
   return `${host}:${serial}`;
@@ -125,7 +125,7 @@ export function createSubscription(
             data.print
           );
    
-          const { print, ...otherProps } = data;
+          const { ...otherProps } = data;
           if (Object.keys(otherProps).length > 0) {
             printersState[key] = deepMerge(
               printersState[key], 

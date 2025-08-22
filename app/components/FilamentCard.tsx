@@ -23,7 +23,7 @@ interface Filament {
   maxTemp: number;
 }
 
-export default function FilamentCard({ name, model, ip, username, password, serial, printerState }: FilamentCardProps) {
+export default function FilamentCard({ name, ip, username, password, serial, printerState }: FilamentCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [activeView, setActiveView] = useState<'ams' | 'ext'>('ext');
   const [activeAction, setActiveAction] = useState('');
@@ -117,7 +117,7 @@ export default function FilamentCard({ name, model, ip, username, password, seri
         <div className="flex flex-col sm:flex-row w-full">
           <div className="flex flex-col w-full sm:w-auto">
             <div className="flex flex-col items-center">
-              <img src="/filament.png" className="w-[60%] sm:w-[50%]"/>
+              <img src="/filament.png" className="w-[60%] sm:w-[50%]" alt="External Spool"/>
               <div className="flex flex-row items-center">
                 <section className="w-6 h-6 sm:w-8 sm:h-8 m-1 sm:m-2" style={{backgroundColor: `${selectedColour}`}}></section>
                 <label className="text-lg sm:text-3xl">{selectedFilament}</label>
@@ -159,7 +159,7 @@ export default function FilamentCard({ name, model, ip, username, password, seri
             <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 0)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(0)}
             >
-              <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]" alt={`AMS ${selectedAms} Tray ${selectedSlot}`}/>
               <div className="flex flex-row items-center">
                 <section 
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
@@ -174,7 +174,7 @@ export default function FilamentCard({ name, model, ip, username, password, seri
             <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 1)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(1)}
             >              
-            <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]" alt={`AMS ${selectedAms} Tray ${selectedSlot}`}/>
               <div className="flex flex-row items-center">
                 <section 
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
@@ -189,7 +189,7 @@ export default function FilamentCard({ name, model, ip, username, password, seri
             <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 2)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(2)}
             >              
-              <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]" alt={`AMS ${selectedAms} Tray ${selectedSlot}`}/>
               <div className="flex flex-row items-center">
                 <section 
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
@@ -204,7 +204,7 @@ export default function FilamentCard({ name, model, ip, username, password, seri
             <div className={"flex flex-col items-center rounded-lg m-1 sm:m-2 transition " + ((selectedSlot == 3)? "bg-gray-700" : "bg-gray-800")}
               onClick={() => setSelectedSlot(3)}
             >              
-              <img src="/filament.png" className="w-[40%] sm:w-[50%]"/>
+              <img src="/filament.png" className="w-[40%] sm:w-[50%]" alt={`AMS ${selectedAms} Tray ${selectedSlot}`}/>
               <div className="flex flex-row items-center">
                 <section 
                   className="w-4 h-4 sm:w-8 sm:h-8 m-1 sm:m-2" 
@@ -323,7 +323,7 @@ export default function FilamentCard({ name, model, ip, username, password, seri
                     ((activeView == 'ams')? amsColours[((selectedAms + 1) * 4) - (4 - selectedSlot)] : selectedColour)
                   }
                   onChange={() => {
-                    let colour = (document.getElementById("edit-colour") as HTMLInputElement).value;
+                    const colour = (document.getElementById("edit-colour") as HTMLInputElement).value;
                     setInColour(colour)
                   }}
                 />

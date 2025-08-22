@@ -12,7 +12,7 @@ interface Props {
   serial: string;
 }
 
-export default function CameraView({ slug, ip, password, model, online, serial }: Props) {
+export default function CameraView({ slug, ip, password, serial }: Props) {
   return (
     <div className="view" id="camera-page">
       <header className="flex flex-row items-center justify-between">

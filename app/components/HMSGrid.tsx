@@ -8,7 +8,7 @@ interface HMSGridProps {
   printerState: any;
 }
 
-export default function HMSGrid({ name, model, printerState }: HMSGridProps) {  
+export default function HMSGrid({ printerState }: HMSGridProps) {  
   const currentPrinterState = printerState || { print: {} };
   const messages = currentPrinterState.print?.hms || [];
 

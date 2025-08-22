@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import FileCard from './FileCard';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface PrinterFile {
   filename: string;

@@ -1,6 +1,8 @@
 import { Client } from 'basic-ftp';
 import { NextRequest } from 'next/server';
 import { getCachedFile, cacheFile } from '@/lib/fileCache';
+import fs from 'fs'
+import { Writable } from 'stream';
 
 export async function POST(req: NextRequest) {
   const url = new URL(req.url);
@@ -45,7 +47,6 @@ export async function POST(req: NextRequest) {
       const cachedPath = await getCachedFile(printerKey, filename);
       
       if (cachedPath) {
-        const fs = require('fs');
         const fileBuffer = fs.readFileSync(cachedPath);
         
         return new Response(fileBuffer, {
@@ -79,7 +80,9 @@ export async function POST(req: NextRequest) {
           filePath = `/timelapse/${filename}`;
           fileExists = true;
         }
-      } catch (error) {}
+      } catch {
+
+      }
 
       if (!fileExists) {
         try {
@@ -88,7 +91,9 @@ export async function POST(req: NextRequest) {
             filePath = `/${filename}`;
             fileExists = true;
           }
-        } catch (error) {}
+        } catch {
+
+        }
       }
 
       if (!fileExists) {
@@ -98,7 +103,7 @@ export async function POST(req: NextRequest) {
             filePath = `/cache/${filename}`;
             fileExists = true;
           }
-        } catch (error) {
+        } catch {
           console.error('file does not exist in any directory');
         }
       }
@@ -112,7 +117,6 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      const { Writable } = require('stream');
       const chunks: Buffer[] = [];
       
       const writeStream = new Writable({
@@ -243,13 +247,12 @@ async function downloadFileWithProgress(
     const cachedFilePath = await getCachedFile(printerKey, filename);
     
     if (cachedFilePath) {
-      const fs = require('fs');
-      const fileBuffer = fs.readFileSync(cachedFilePath);
+      const buffer = fs.readFileSync(cachedFilePath);
       
       controller.enqueue(`data: ${JSON.stringify({ type: 'progress', progress: 50 })}\n\n`);
       controller.enqueue(`data: ${JSON.stringify({ type: 'progress', progress: 100 })}\n\n`);
       
-      const base64Data = fileBuffer.toString('base64');
+      const base64Data = buffer.toString('base64');
       controller.enqueue(`data: ${JSON.stringify({ 
         type: 'complete', 
         filename: filename,
@@ -283,7 +286,8 @@ async function downloadFileWithProgress(
         filePath = `/timelapse/${filename}`;
         fileExists = true;
       }
-    } catch (error) {
+    } catch {
+    
     }
 
     if (!fileExists) {
@@ -294,7 +298,8 @@ async function downloadFileWithProgress(
           filePath = `/${filename}`;
           fileExists = true;
         }
-      } catch (error2) {
+      } catch {
+      
       }
     }
 
@@ -306,7 +311,7 @@ async function downloadFileWithProgress(
           filePath = `/cache/${filename}`;
           fileExists = true;
         }
-      } catch (error3) {
+      } catch {
         console.error('file does not exist in any directory');
       }
     }
@@ -321,11 +326,10 @@ async function downloadFileWithProgress(
     try {
       const fileStats = await client.size(filePath);
       fileSize = fileStats;
-    } catch (error) {
-      console.warn('Could not get file size, progress will be estimated');
+    } catch {
+      console.warn('failed to obtain file size, progress will be inaccurate');
     }
 
-    const { Writable } = require('stream');
     const chunks: Buffer[] = [];
     let downloadedBytes = 0;
 

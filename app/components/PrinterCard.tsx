@@ -1,7 +1,5 @@
-import { getPrinters } from "@/lib/printers";
 import CameraCard from "./CameraCard";
 import '@/data/printers.json'
-import { useEffect } from "react";
 
 interface PrinterCardProps {
   name: string;
@@ -11,7 +9,7 @@ interface PrinterCardProps {
   status: string;
 }
 
-export default function PrinterCard({ name, model, ip, password, status }: PrinterCardProps) {  
+export default function PrinterCard({ name, model }: PrinterCardProps) {  
   return (
     <div className="bg-gray-900 rounded-lg shadow p-4 hover:shadow-lg transition hover:bg-gray-800">
       <div>

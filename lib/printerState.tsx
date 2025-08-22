@@ -39,7 +39,14 @@ class PrinterStateManager {
       return stateInfo.state;
     }
 
-    const initialState: PrinterState = { print: {} };
+    const initialState: PrinterState = {
+      print: {},
+      event: {
+        event: "",
+        disconnected_at: "",
+        connected_at: ""
+      }
+    };
     this.statePool.set(key, {
       state: initialState,
       lastUpdated: Date.now(),
@@ -59,7 +66,7 @@ class PrinterStateManager {
       stateInfo.lastUpdated = Date.now();
     } else {
       this.statePool.set(key, {
-        state: { print: {}, ...data },
+        state: { print: {}, event: {event: "", disconnected_at: "", connected_at: ""}, ...data,},
         lastUpdated: Date.now(),
         subscribers: new Set()
       });

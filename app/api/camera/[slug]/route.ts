@@ -232,7 +232,7 @@ class CameraManager {
         controller.enqueue(boundaryBuffer);
         controller.enqueue(headersBuffer);
         controller.enqueue(frame);
-      } catch (error) {
+      } catch {
         connection.subscribers.delete(controller);
       }
     });
@@ -316,9 +316,9 @@ function loadPrinters(): Printer[] {
 
 export async function GET(
   request: NextRequest,
-  context: { params: { slug: string } }
+  context: Promise<{ slug: string }>
 ) {
-  const { slug } = await context.params;
+  const { slug } = await context;
   
   const printers = loadPrinters();
   const printer = printers.find(p => p.slug === slug);
@@ -331,14 +331,12 @@ export async function GET(
     start: (controller) => {
       const unsubscribe = cameraManager.subscribe(slug, controller);
 
-      // close stream when client disconnects
       const close = () => {
         try { unsubscribe(); } catch {}
         try { controller.close(); } catch {}
       };
 
-      // Attach to request abort if available
-      const signal = (request as any).signal as AbortSignal | undefined;
+      const signal = request.signal as AbortSignal | undefined;
       if (signal) {
         if (signal.aborted) {
           close();
@@ -352,7 +350,7 @@ export async function GET(
       }
     },
     cancel: () => {
-      // Reader cancelled; subscriber cleanup happens via unsubscribe in start's close
+
     }
   });
 

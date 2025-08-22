@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from "react";
 import ControlCard from "./ControlCard";
 
 interface Props {
@@ -17,7 +16,7 @@ interface Props {
   setOnline: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ControlView({ slug, ip, host, code, username, password, serial, model, printerState, online, setOnline }: Props) {
+export default function ControlView({ slug, ip, host, code, username, password, serial, model, printerState, online }: Props) {
   return (
     <div className="view" id="control-page">
       <header className="flex flex-row items-center justify-between">
