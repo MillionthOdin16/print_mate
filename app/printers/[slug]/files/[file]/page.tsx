@@ -1,16 +1,9 @@
 'use client';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import JSZip from 'jszip';
 import * as commands from "@/lib/commands"
-
-interface FilePageProps {
-  params: {
-    slug: string;
-    file: string;
-  };
-}
 
 interface Printer {
   slug: string;
@@ -24,8 +17,9 @@ interface Printer {
   serial: string;
 }
 
-export default function MainView({ params }: FilePageProps) {
-  const { file, slug } = React.use(params);
+export default function MainView() {
+  const params = useParams();
+  const { slug, file } = params as { slug: string; file: string; };
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const model = searchParams.get('model');

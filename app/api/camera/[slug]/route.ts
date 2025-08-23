@@ -316,9 +316,9 @@ function loadPrinters(): Printer[] {
 
 export async function GET(
   request: NextRequest,
-  context: Promise<{ slug: string }>
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = await context;
+  const { slug } = await params;
   
   const printers = loadPrinters();
   const printer = printers.find(p => p.slug === slug);
