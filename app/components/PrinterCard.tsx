@@ -1,5 +1,4 @@
 import CameraCard from "./CameraCard";
-import '@/data/printers.json'
 
 interface PrinterCardProps {
   name: string;

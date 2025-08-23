@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "package": "pkg . --out-path dist/ --target node18-linux-x64,node18-macos-x64,node18-win-x64",
     "start": "next start",
     "lint": "next lint"
   },
