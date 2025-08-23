@@ -48,11 +48,9 @@ export default function MainView({ params }: PrinterPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const [printerState, setPrinterState] = useState<PrinterState>({ print: {}, event: {
-    event: '',
-    disconnected_at: '',
-    connected_at: ''
-  } });
+  const [printerState, setPrinterState] = useState<PrinterState>({
+    print: {}, info: {}, upgrade: {}, event: {}
+  });
   const [online, setOnline] = useState(false);
   const subscriberId = useRef(`printer-page-${Date.now()}`);
 
@@ -119,7 +117,7 @@ export default function MainView({ params }: PrinterPageProps) {
                     case 'connected':
                       setOnline(data.connected);
                       console.log('conn')
-                      commands.sendCommand(slug, printer.cloud? 'us.mqtt.bambulab.com' : printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState.sequence_id))
+                      commands.sendCommand(slug, printer.cloud? 'us.mqtt.bambulab.com' : printer.ip, printer.username, printer.password, printer.serial, commands.pushall(printerState?.print?.sequence_id || '0'))
                       break;
                     case 'heartbeat':
                       setOnline(data.connected);

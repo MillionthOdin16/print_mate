@@ -1,6 +1,7 @@
 'use client';
 
 import * as commands from '@/lib/commands';
+import { PrinterState } from '@/lib/printerState';
 import { useEffect, useState } from 'react';
 
 interface SettingsCardProps {
@@ -10,7 +11,7 @@ interface SettingsCardProps {
   ip: string;
   username: string;
   password: string;
-  printerState?: any;
+  printerState?: PrinterState;
 }
 
 export default function SettingsCard({ name, model, serial, ip, username, password, printerState }: SettingsCardProps) {
@@ -22,24 +23,24 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
   const [vibrationCompensation, setVibrationCompensation] = useState(true);
   const [bedLevelling, setBedLevelling] = useState(true);
   
-  const network = printerState.print?.wifi_signal;
+  const network = printerState?.print?.wifi_signal;
 
-  const clumpingDetection = printerState.print?.nozzle_blob_detect;
-  const plateDetect = printerState.print?.xcam.buildplate_marker_detector;
-  const soundEnable = printerState.print?.sound_enable;
-  const tangleDetection = printerState.print?.filament_tangle_detect;
-  const autoRecovery = printerState.print?.auto_recovery;
+  const clumpingDetection = printerState?.print?.nozzle_blob_detect;
+  const plateDetect = printerState?.print?.xcam?.buildplate_marker_detector;
+  const soundEnable = printerState?.print?.sound_enable;
+  const tangleDetection = printerState?.print?.filament_tangle_detect;
+  const autoRecovery = printerState?.print?.auto_recovery;
 
-  const amsStartupRead = printerState.print?.ams?.power_on_flag || false;
-  const amsInsertRead = printerState.print?.ams?.insert_flag || false;
-  const airPrintingDetection = printerState.print?.air_print_detect || false;
+  const amsStartupRead = printerState?.print?.ams?.power_on_flag || false;
+  const amsInsertRead = printerState?.print?.ams?.insert_flag || false;
+  const airPrintingDetection = printerState?.print?.air_print_detect || false;
 
-  const nozzleDiameter = printerState.print?.nozzle_diameter;
-  const nozzleType = printerState.print?.nozzle_type;
+  const nozzleDiameter = printerState?.print?.nozzle_diameter;
+  const nozzleType = printerState?.print?.nozzle_type;
 
   useEffect(() => {
-    commands.sendCommand(name, ip, username, password, serial, commands.get_version(printerState.print.sequence_id));
-    commands.sendCommand(name, ip, username, password, serial, commands.get_history(printerState.print.sequence_id));
+    commands.sendCommand(name, ip, username, password, serial, commands.get_version(printerState?.print?.sequence_id || '0'));
+    commands.sendCommand(name, ip, username, password, serial, commands.get_history(printerState?.print?.sequence_id || '0'));
   }, [name])
 
   return (
@@ -202,7 +203,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={clumpingDetection? {border: '1px solid white'} : {}}
               onClick={() => {
-                commands.sendCommand(name, ip, username, password, serial, commands.set_blob_detect(printerState.print?.sequence_id, !clumpingDetection))
+                commands.sendCommand(name, ip, username, password, serial, commands.set_blob_detect(printerState?.print?.sequence_id || '0', !clumpingDetection))
               }}
             >
               Nozzle Clumping Detection
@@ -211,7 +212,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={plateDetect? {border: '1px solid white'} : {}}
               onClick={() => {
-                commands.sendCommand(name, ip, username, password, serial, commands.set_plate_detect(printerState.print?.sequence_id, !plateDetect))
+                commands.sendCommand(name, ip, username, password, serial, commands.set_plate_detect(printerState?.print?.sequence_id || '0', !plateDetect))
               }}
             >
               Build Plate Detection
@@ -220,7 +221,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={soundEnable? {border: '1px solid white'} : {}}
               onClick={() => {
-                commands.sendCommand(name, ip, username, password, serial, commands.set_sound_enable(printerState.print?.sequence_id, !soundEnable))
+                commands.sendCommand(name, ip, username, password, serial, commands.set_sound_enable(printerState?.print?.sequence_id || '0', !soundEnable))
               }}
             >
               Sound
@@ -229,7 +230,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={tangleDetection? {border: '1px solid white'} : {}}
               onClick={() => {
-                commands.sendCommand(name, ip, username, password, serial, commands.set_tangle_detect(printerState.print?.sequence_id, !tangleDetection))
+                commands.sendCommand(name, ip, username, password, serial, commands.set_tangle_detect(printerState?.print?.sequence_id || '0', !tangleDetection))
               }}
             >
               Filament Tangle Detection
@@ -238,7 +239,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={autoRecovery? {border: '1px solid white'} : {}}
               onClick={() => {
-                commands.sendCommand(name, ip, username, password, serial, commands.set_autorecovery_step_loss(printerState.print?.sequence_id, !autoRecovery))
+                commands.sendCommand(name, ip, username, password, serial, commands.set_autorecovery_step_loss(printerState?.print?.sequence_id || '0', !autoRecovery))
               }}
             >
               Auto-Recovery from Step Loss
@@ -267,7 +268,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
             <h2 className="text-xl m-2">Firmware</h2>
           </div>
           <div className="grid grid-cols-1 gap-4">
-            {printerState.info?.module.map((module: {hw_ver: string, sw_ver: string, sn: string}) => {
+            {printerState?.info?.module?.map((module: {hw_ver: string, sw_ver: string, sn: string}) => {
               return (
                 <div className="flex flex-col" key={module.hw_ver}>
                   <label>Module: {module.hw_ver}</label>
@@ -277,12 +278,12 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               )
             })}
           </div>
-          {printerState.print?.upgrade_state?.progress && (
+          {printerState?.print?.upgrade_state?.progress && (
             <div className="flex flex-col mt-4">
               <h2 className="text-2xl font-semibold">Upgrade State</h2>
-              <label>Updating: {printerState.print?.upgrade_state?.progress}%</label>
+              <label>Updating: {printerState?.print?.upgrade_state?.progress}%</label>
               <br/>
-              <label>Module: {printerState.print?.upgrade_state?.module}</label>
+              <label>Module: {printerState?.print?.upgrade_state?.module}</label>
               <br/>
               <label>
                 {printerState.print?.upgrade_state?.status} 
@@ -292,17 +293,17 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               </label>
             </div>
           )}
-          {printerState.upgrade?.firmware_optional && printerState.upgrade.firmware_optional.length > 1 && (
+          {printerState?.upgrade?.firmware_optional && printerState.upgrade.firmware_optional.length > 1 && (
             <div className="flex flex-col my-4">
               <h2 className="text-2xl font-semibold">Firmware (Printer)</h2>
-              {printerState.upgrade.firmware_optional.map((firmware: {firmware: {version: string}}) => {
+              {printerState?.upgrade?.firmware_optional.map((firmware: {firmware: {version: string, url: string}}) => {
                 return (
                   <div className="flex flex-col my-4" key={firmware.firmware.version}>
                     <label>Version: {firmware.firmware.version}</label>
                     <button
                       className="bg-gray-800 rounded-md hover:bg-gray-700 m-2 p-2 w-min"
                       onClick={() => {
-                        commands.sendCommand(name, ip, username, password, serial, commands.firmware_update(printerState.print?.sequence_id, firmware.firmware.url, firmware.firmware.version))
+                        commands.sendCommand(name, ip, username, password, serial, commands.firmware_update(printerState?.print?.sequence_id || '0', firmware.firmware.url, firmware.firmware.version))
                       }}
                     >
                       Install
@@ -340,7 +341,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               style={amsStartupRead? {border: '1px solid white'} : {}}
               onClick={() => {
                 commands.sendCommand(name, ip, username, password, serial, commands.ams_settings(
-                  printerState.print?.sequence_id,
+                  printerState?.print?.sequence_id || '0',
                   0,
                   !amsStartupRead,
                   amsInsertRead
@@ -354,7 +355,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               style={amsInsertRead? {border: '1px solid white'} : {}}
               onClick={() => {
                 commands.sendCommand(name, ip, username, password, serial, commands.ams_settings(
-                  printerState.print?.sequence_id,
+                  printerState?.print?.sequence_id || '0',
                   0,
                   amsStartupRead,
                   !amsInsertRead
@@ -367,7 +368,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
               className="bg-gray-800 hover:bg-gray-700 w-fit p-2 rounded-md m-1 transition"
               style={airPrintingDetection? {border: '1px solid white'} : {}}
               onClick={() => {
-                commands.sendCommand(name, ip, username, password, serial, commands.air_print_detect(printerState.print?.sequence_id, !airPrintingDetection));
+                commands.sendCommand(name, ip, username, password, serial, commands.air_print_detect(printerState?.print?.sequence_id || '0', !airPrintingDetection));
               }}
             >
               Air Printing Detection
@@ -490,7 +491,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
                 if (bedLevelling) bitmask |= 1 << 1;
                 if (vibrationCompensation) bitmask |= 1 << 2;
                 if (motorCancellation) bitmask |= 1 << 3;
-                commands.sendCommand(name, ip, username, password, serial, commands.calibration(printerState.print?.sequence_id, bitmask));
+                commands.sendCommand(name, ip, username, password, serial, commands.calibration(printerState?.print?.sequence_id || '0', bitmask));
                 setCalibrationOpen(false);
               }}/>
             </form>

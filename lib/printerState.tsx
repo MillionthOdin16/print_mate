@@ -41,11 +41,9 @@ class PrinterStateManager {
 
     const initialState: PrinterState = {
       print: {},
-      event: {
-        event: "",
-        disconnected_at: "",
-        connected_at: ""
-      }
+      upgrade: {},
+      info: {},
+      event: {}
     };
     this.statePool.set(key, {
       state: initialState,
@@ -66,7 +64,12 @@ class PrinterStateManager {
       stateInfo.lastUpdated = Date.now();
     } else {
       this.statePool.set(key, {
-        state: { print: {}, event: {event: "", disconnected_at: "", connected_at: ""}, ...data,},
+        state: { 
+          print: {},
+          upgrade: {},
+          info: {},
+          event: {},
+        },
         lastUpdated: Date.now(),
         subscribers: new Set()
       });
@@ -111,7 +114,12 @@ class PrinterStateManager {
     const stateInfo = this.statePool.get(key);
     
     if (stateInfo) {
-      stateInfo.state = { print: {} };
+      stateInfo.state = { 
+        print: {}, 
+        upgrade: {},
+        info: {},
+        event: {} 
+      };
       stateInfo.lastUpdated = Date.now();
       this.notifySubscribers(key);
     }
@@ -289,6 +297,7 @@ export interface PrinterState {
     mc_remaining_time?: number;
     mess_production_state?: string;
     nozzle_diameter?: string;
+    nozzle_type?: string;
     nozzle_target_temper?: number;
     nozzle_temper?: number;
     online?: {
@@ -373,11 +382,45 @@ export interface PrinterState {
       spaghetti_detector: boolean;
     };
     xcam_status?: string;
+    nozzle_blob_detect?: boolean;
+    sound_enable?: boolean;
+    filament_tangle_detect?: boolean;
+    auto_recovery?: boolean;
+    air_print_detect?: boolean;
   };
+  upgrade: {
+    firmware_optional?: {
+      ams: {
+        address: number;
+        dev_model_name: string;
+        device_id: string;
+        firmware: {
+          description: string;
+          force_update: boolean;
+          url: string;
+          version: string;
+        }[]
+      }[],
+      firmware: {
+        description: string;
+        force_update: boolean;
+        url: string;
+        version: string;
+      },
+    }[];
+  }
+  info: {
+    module?: {
+      hw_ver: string,
+      name: string,
+      sn: string,
+      sw_ver: string
+    }[];
+  }
   event: {
-    event: string,
-    disconnected_at: string,
-    connected_at: string,
+    event?: string,
+    disconnected_at?: string,
+    connected_at?: string,
   };
 }
 
