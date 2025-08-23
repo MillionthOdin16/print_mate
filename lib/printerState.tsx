@@ -283,11 +283,10 @@ export interface PrinterState {
     gcode_state?: string;
     heatbreak_fan_speed?: string;
     hms?: {
-      item: {
-        attr: number;
-        code: number;
-      }; 
-      index: number;
+      attr: number;
+      code: number;
+      action: number;
+      timestamp: number;
     }[];
     home_flag?: number;
     hw_switch_state?: number;
