@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import filamentsData from '@/data/filaments.json';
 import * as commands from '@/lib/commands';
+import { PrinterState } from '@/lib/printerState';
 
 interface FilamentCardProps {
   name: string;
@@ -11,7 +12,7 @@ interface FilamentCardProps {
   username: string;
   password: string;
   serial: string;
-  printerState: any;
+  printerState: PrinterState;
 }
 
 interface Filament {
@@ -40,10 +41,10 @@ export default function FilamentCard({ name, ip, username, password, serial, pri
   const [inColour, setInColour] = useState('');
   const [inFilament, setInFilament] = useState<Filament>();
 
-  const selectedColour = `#${(printerState.print.vt_tray.tray_color).substring(0, 6)}`;
-  const selectedFilament = printerState.print.vt_tray.tray_type;
-  const amsUnits = (printerState.print.ams.ams).length;
-  const ams = printerState.print.ams;
+  const selectedColour = `#${(printerState?.print?.vt_tray?.tray_color || '000000').substring(0, 6)}`;
+  const selectedFilament = printerState?.print?.vt_tray?.tray_type;
+  const amsUnits = (printerState?.print?.ams?.ams || {}).length || 0;
+  const ams = printerState?.print?.ams || {ams: []};
 
   const updateAmsFilament = (index: number, newValue: string) => {
     setAmsFilaments(prev => {
@@ -62,10 +63,10 @@ export default function FilamentCard({ name, ip, username, password, serial, pri
   };
 
   useEffect(() => {
-    ams.ams.forEach((element: { tray: any[]; }) => {
+    ams.ams.forEach((element: { tray: {id: string, tray_type?: string, tray_color?: string, cols?: string[]}[]; }) => {
       element.tray.forEach(tray => {
-        updateAmsFilament(tray.id, tray.tray_type || (tray.cols? "?" : "Empty"))
-        updateAmsColour(tray.id, `#${(tray.tray_color?.substring(0, 6) || '')}`)
+        updateAmsFilament(Number.parseInt(tray.id), tray.tray_type || (tray.cols? "?" : "Empty"))
+        updateAmsColour(Number.parseInt(tray.id), `#${(tray.tray_color?.substring(0, 6) || '')}`)
       })
     })
   }, [ams])
@@ -133,7 +134,7 @@ export default function FilamentCard({ name, ip, username, password, serial, pri
             </button>
             <button
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-[100%]" 
-              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState.print.sequence_id))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState?.print?.sequence_id || '0'))}
             >
               Unload
             </button>
@@ -231,7 +232,7 @@ export default function FilamentCard({ name, ip, username, password, serial, pri
             </button>
             <button 
               className="bg-gray-800 hover:bg-gray-700 flex rounded-lg text-lg sm:text-3xl p-4 sm:p-8 m-1 sm:m-2 h-[20%] items-center justify-center w-full sm:w-auto "
-              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState.print?.sequence_id))}
+              onClick={() => commands.sendCommand(name, ip, username, password, serial, commands.filament_unload(printerState?.print?.sequence_id || '0'))}
             >
               Unload
             </button>
@@ -340,7 +341,7 @@ export default function FilamentCard({ name, ip, username, password, serial, pri
                       password,
                       serial,
                       commands.ams_filament(
-                        printerState.print.sequence_id + 1,
+                        printerState?.print?.sequence_id || '0',
                         255,
                         254,
                         inColour.substring(1).toUpperCase() + "FF",
@@ -352,7 +353,7 @@ export default function FilamentCard({ name, ip, username, password, serial, pri
                   }
                   else if (activeView == 'ams') {
                     commands.sendCommand(name, ip, username, password, serial, commands.ams_filament(
-                      printerState.print.sequence_id + 1,
+                      printerState?.print?.sequence_id || '0',
                       selectedAms,
                       ((selectedAms + 1) * 4) - (4 - selectedSlot),
                       inColour.substring(1).toUpperCase() + "FF",

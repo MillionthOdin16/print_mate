@@ -267,7 +267,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
             <h2 className="text-xl m-2">Firmware</h2>
           </div>
           <div className="grid grid-cols-1 gap-4">
-            {printerState.info?.module.map((module: any) => {
+            {printerState.info?.module.map((module: {hw_ver: string, sw_ver: string, sn: string}) => {
               return (
                 <div className="flex flex-col" key={module.hw_ver}>
                   <label>Module: {module.hw_ver}</label>
@@ -295,7 +295,7 @@ export default function SettingsCard({ name, model, serial, ip, username, passwo
           {printerState.upgrade?.firmware_optional && printerState.upgrade.firmware_optional.length > 1 && (
             <div className="flex flex-col my-4">
               <h2 className="text-2xl font-semibold">Firmware (Printer)</h2>
-              {printerState.upgrade.firmware_optional.map((firmware: any) => {
+              {printerState.upgrade.firmware_optional.map((firmware: {firmware: {version: string}}) => {
                 return (
                   <div className="flex flex-col my-4" key={firmware.firmware.version}>
                     <label>Version: {firmware.firmware.version}</label>

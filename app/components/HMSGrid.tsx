@@ -33,7 +33,7 @@ export default function HMSGrid({ printerState }: HMSGridProps) {
       {messages.length === 0 ? (
         <div className="text-center p-4">No messages</div>
       ) : (
-        messages.map((item: any, index: number) => {
+        messages.map((item: {attr: number, code: number}, index: number) => {
           const formattedCode = formatHMSCode(item.attr, item.code);
           return (
             <HMSCard 
