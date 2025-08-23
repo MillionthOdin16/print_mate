@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server';
 import { createSubscription, getCurrentPrinterState } from '@/lib/printerSubscriptions';
 
+interface Controller extends ReadableStreamDefaultController<string> {
+  cleanup?: () => void;
+}
+
 function getPrinterKey(host: string, serial: string): string {
   return `${host}:${serial}`;
 }
@@ -31,7 +35,7 @@ export async function POST(req: NextRequest) {
 
         createSubscription(host, username, password, serial, subscriberId, controller)
           .then(cleanup => {
-            (controller as any).cleanup = cleanup;
+            (controller as Controller).cleanup = cleanup;
           })
           .catch(error => {
             controller.enqueue(`data: ${JSON.stringify({
@@ -44,9 +48,7 @@ export async function POST(req: NextRequest) {
       
       cancel(controller) {
         console.log('Stream cancelled by client');
-        if ((controller as any).cleanup) {
-          (controller as any).cleanup();
-        }
+        (controller as Controller).cleanup?.();
       }
     });
 

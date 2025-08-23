@@ -175,18 +175,25 @@ class PrinterStateManager {
     }
   }
 
-  private deepMerge(target: any, source: any): any {
+  private deepMerge<T>(target: T, source: Partial<T>): T {
     const result = { ...target };
-    
+
     for (const key in source) {
-      if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        result[key] = this.deepMerge(target[key] || {}, source[key]);
+      if (
+        source[key] !== null &&
+        typeof source[key] === 'object' &&
+        !Array.isArray(source[key])
+      ) {
+        result[key] = this.deepMerge(
+          (target as Record<string, unknown>)[key] || {},
+          source[key] as Record<string, unknown>
+        ) as T[Extract<keyof T, string>];
       } else {
-        result[key] = source[key];
+        result[key] = source[key] as T[Extract<keyof T, string>];
       }
     }
-    
-    return result;
+
+    return result as T;
   }
 
   private cleanupInactiveStates(): void {
@@ -267,8 +274,8 @@ export interface PrinterState {
     cooling_fan_speed?: string;
     fail_reason?: string;
     fan_gear?: number;
-    filam_bak?: any[];
-    s_obj?: any[];
+    filam_bak?: number[];
+    s_obj?: number[];
     force_upgrade?: boolean;
     gcode_file?: string;
     gcode_file_prepare_percent?: string;
@@ -323,7 +330,7 @@ export interface PrinterState {
     sequence_id?: string;
     spd_lvl?: number;
     spd_mag?: number;
-    stg?: any[];
+    stg?: number[];
     stg_cur?: number;
     subtask_id?: string;
     subtask_name?: string;
