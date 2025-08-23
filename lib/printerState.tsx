@@ -268,13 +268,20 @@ export interface PrinterState {
     fail_reason?: string;
     fan_gear?: number;
     filam_bak?: any[];
+    s_obj?: any[];
     force_upgrade?: boolean;
     gcode_file?: string;
     gcode_file_prepare_percent?: string;
     gcode_start_time?: string;
     gcode_state?: string;
     heatbreak_fan_speed?: string;
-    hms?: any[];
+    hms?: {
+      item: {
+        attr: number;
+        code: number;
+      }; 
+      index: number;
+    }[];
     home_flag?: number;
     hw_switch_state?: number;
     ipcam?: {

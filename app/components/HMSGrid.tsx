@@ -10,8 +10,10 @@ interface HMSGridProps {
 }
 
 export default function HMSGrid({ printerState }: HMSGridProps) {  
-  const currentPrinterState = printerState || { print: {} };
-  const messages = currentPrinterState.print?.hms || [];
+  const messages: { attr: number; code: number }[] = (printerState.print?.hms || []).map(({ item }: { item: { attr: number; code: number } }) => ({
+    attr: item.attr,
+    code: item.code,
+  }));
 
   const formatHMSCode = (attr: number, code: number): string => {
     // convert to hex (two's complement)

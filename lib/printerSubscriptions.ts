@@ -50,11 +50,12 @@ export function createSubscription(
   const subscriptionKey = `${key}-${subscriberId}`;
 
   if (!printersState[key]) {
-    printersState[key] = { print: {}, event: {
-      event: '',
-      disconnected_at: '',
-      connected_at: ''
-    } };
+    printersState[key] = { 
+      print: {}, 
+      info: {},
+      upgrade: {},
+      event: {} 
+    };
   }
 
   return new Promise(async (resolve, reject) => {
