@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "electron": "electron main.js",
-    "package": "next build && electron-builder"
+    "package": "next build && electron-builder --dir -wl"
   },
   "dependencies": {
     "@types/jszip": "^3.4.0",
@@ -42,7 +42,7 @@
       "public/",
       "node_modules/"
     ],
-    "asar": true,
+    "asar": false,
     "extraResources": [
       {
         "from": ".next",
@@ -51,12 +51,14 @@
       {
         "from": "public",
         "to": "public"
+      },
+      {
+        "from": "data",
+        "to": "../data"
       }
     ],
     "linux": {
-      "target": [
-        "AppImage"
-      ]
+      "target": ["AppImage"]
     },
     "win": {
       "target": ["nsis"]
