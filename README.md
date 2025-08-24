@@ -20,3 +20,10 @@ H2D - Untested, unlikely to function correctly
 
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
+
+## Usage
+### Linux (x64)
+Download the linux-x64.zip from latest release, unzip, and run `print_mate`, no install required.
+
+### Windows (x64)
+Download the win-x64.zip from latest release, unzip, and run `PrintMate.exe`, no install required.
