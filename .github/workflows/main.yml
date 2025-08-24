@@ -51,4 +51,4 @@ jobs:
             dist/linux-unpacked.zip
             dist/win-unpacked.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
