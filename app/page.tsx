@@ -10,6 +10,9 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const [show2FA, setShow2FA] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
   const handleLanSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -86,7 +89,16 @@ export default function Home() {
       }
 
       if (json.loginType === 'verifyCode') {
-        const code = prompt('Please enter the 6-digit 2FA code sent to your email. If the code does not arrive, please request a code by signing in to your Bambu account in a browser window and providing the code from that request.');
+        setSubmitted(false);
+        setShow2FA(true);
+
+        while (!submitted) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        setSubmitted(false);
+        setShow2FA(false);
+        
+        const code = (document.getElementById('in-2fa') as HTMLInputElement).value;
         if (code?.length != 6) {
           setError("Invalid code");
           return;
@@ -341,6 +353,23 @@ export default function Home() {
                   className="m-1 bg-gray-700 rounded-sm p-2"
                   placeholder="Local Access Code (optional)"
                 />
+                {show2FA &&
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      id="in-2fa"
+                      className="m-1 bg-gray-700 rounded-sm p-2"
+                      placeholder="2FA code"
+                    />
+                    <label>If you do not receive a code use the <a href="https://bambulab.com">Bambu Lab website</a> to sign in and get a code</label>
+                    <input 
+                      type="submit"
+                      value="OK"
+                      onClick={() => setSubmitted(true)}
+                      className="m-1 bg-blue-600 hover:bg-blue-500 rounded-sm p-2 w-full"
+                    />
+                  </div>
+                }
               </div>
               {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
               <button 

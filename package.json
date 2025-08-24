@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "electron": "electron main.js",
-    "package": "npm build && electron-builder"
+    "package": "next build && electron-builder"
   },
   "dependencies": {
     "@types/jszip": "^3.4.0",
