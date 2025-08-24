@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "electron": "electron main.js",
+    "package:linux": "next build && electron-builder --linux",
+    "package:win": "next build && electron-builder --windows",
     "package": "next build && electron-builder --dir -wl"
   },
   "dependencies": {
