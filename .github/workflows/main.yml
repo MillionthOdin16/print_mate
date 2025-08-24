@@ -1,0 +1,48 @@
+name: Build and Package on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'  # Matches tags like v1.0.0, v2.3.4 etc.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and Package
+        run: npm run package
+
+      - name: Zip linux-unpacked
+        run: |
+          cd dist
+          zip -r linux-unpacked.zip linux-unpacked
+
+      - name: Zip win-unpacked
+        run: |
+          cd dist
+          zip -r win-unpacked.zip win-unpacked
+
+      - name: Upload linux-unpacked.zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-unpacked
+          path: dist/linux-unpacked.zip
+
+      - name: Upload win-unpacked.zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: win-unpacked
+          path: dist/win-unpacked.zip
