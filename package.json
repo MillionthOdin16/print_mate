@@ -1,6 +1,6 @@
 {
   "name": "print_mate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "electron": "electron main.js",
-    "package:linux": "next build && electron-builder --linux",
-    "package:win": "next build && electron-builder --windows",
+    "package:linux": "next build && electron-builder --dir --linux",
+    "package:win": "next build && electron-builder --dir --windows",
     "package": "next build && electron-builder --dir -wl"
   },
   "dependencies": {

@@ -4,10 +4,8 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// Get the correct path for the .next directory
 const nextDir = path.join(process.resourcesPath, '.next');
 
-// Check if production build exists
 const buildIdPath = path.join(nextDir, 'BUILD_ID');
 if (!fs.existsSync(buildIdPath)) {
   console.error('ERROR: No Next.js production build found.');
@@ -15,33 +13,73 @@ if (!fs.existsSync(buildIdPath)) {
   process.exit(1);
 }
 
-// For AppImage, we need to ensure Node.js can find all dependencies
-// Add the resources path to NODE_PATH
-process.env.NODE_PATH = `${process.resourcesPath}/app/node_modules:${process.resourcesPath}/.next/static/chunks`;
+if (process.platform === 'win32') {
+  const nodeModulesPath = path.join(process.resourcesPath, 'app', 'node_modules');
+  const nextStaticPath = path.join(nextDir, 'static', 'chunks');
+  
+  process.env.NODE_PATH = [
+    nodeModulesPath,
+    nextStaticPath,
+    process.env.NODE_PATH || ''
+  ].join(path.delimiter);
+  
+  require('module').Module._nodeModulePaths(nodeModulesPath);
+  require('module').Module._nodeModulePaths(nextStaticPath);
+} else {
+  process.env.NODE_PATH = `${process.resourcesPath}/app/node_modules:${process.resourcesPath}/.next/static/chunks`;
+}
+
 require('module').Module._initPaths();
+
+if (process.platform === 'win32') {
+  const requiredNextFiles = [
+    path.join(process.resourcesPath, 'app', 'node_modules', 'next', 'dist', 'compiled', 'next-server', 'app-page.runtime.prod.js'),
+    path.join(process.resourcesPath, 'app', 'node_modules', 'react', 'jsx-runtime.js')
+  ];
+  
+  for (const file of requiredNextFiles) {
+    if (!fs.existsSync(file)) {
+      console.warn('Missing file (may be packed in asar):', file);
+      
+      const alternativePaths = [
+        path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules', 'next', 'dist', 'compiled', 'next-server', 'app-page.runtime.prod.js'),
+        path.join(__dirname, 'node_modules', 'next', 'dist', 'compiled', 'next-server', 'app-page.runtime.prod.js'),
+      ];
+      
+      for (const altPath of alternativePaths) {
+        if (fs.existsSync(altPath)) {
+          console.log('Found alternative at:', altPath);
+          break;
+        }
+      }
+    }
+  }
+}
 
 const nextApp = next({ 
   dev: false,
   dir: process.resourcesPath,
   conf: {
     distDir: '.next',
-    // Disable features that require write access
     generateBuildId: () => 'static-build',
-    // Disable webpack watching
     webpack: (config) => {
       config.watch = false;
+      if (process.platform === 'win32') {
+        config.resolve = config.resolve || {};
+        config.resolve.fallback = config.resolve.fallback || {};
+        config.resolve.fallback.path = require.resolve('path-browserify');
+      }
       return config;
     },
     experimental: {
-      // Increase timeout for static generation
-      staticPageGenerationTimeout: 1000
+      staticPageGenerationTimeout: 1000,
+      esmExternals: false
     }
   }
 });
 
 const handle = nextApp.getRequestHandler();
 
-// Ensure single instance
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 }
@@ -57,14 +95,14 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       enableRemoteModule: false,
+      webSecurity: true,
+      allowRunningInsecureContent: false
     },
-    // Disable font warnings
     show: false
   });
 
   mainWindow.setMenuBarVisibility(false);
   
-  // Wait for window to be ready before showing to avoid font warnings
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
@@ -76,7 +114,6 @@ function createWindow() {
   });
 }
 
-// Initialize Next.js and create server
 nextApp.prepare().then(() => {
   server = createServer((req, res) => {
     return handle(req, res);
@@ -90,6 +127,8 @@ nextApp.prepare().then(() => {
     
     console.log('> Production server ready on http://localhost:3000');
     console.log('> Serving from:', nextDir);
+    console.log('> Platform:', process.platform);
+    console.log('> NODE_PATH:', process.env.NODE_PATH);
     app.whenReady().then(createWindow);
   });
 }).catch(err => {
