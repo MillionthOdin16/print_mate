@@ -7,6 +7,11 @@ const config: CapacitorConfig = {
   plugins: {
     Preferences: {
       group: "PrintMateGroup"
+    },
+    StatusBar: {
+      style: 'DARK',
+      backgroundColor: '#1f2937',
+      overlay: false
     }
   },
   android: {

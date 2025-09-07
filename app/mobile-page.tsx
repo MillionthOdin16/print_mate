@@ -175,9 +175,9 @@ export default function MobileApp() {
 
   // Default home view
   return (
-    <main className="min-h-screen bg-gray-1000 p-6">
-      <div className="max-w-6xl mx-auto">
-        <header className="flex flex-row justify-between">
+    <main className="min-h-screen bg-gray-1000 mobile-safe-area">
+      <div className="max-w-6xl mx-auto px-6">
+        <header className="flex flex-row justify-between mobile-header-safe pb-6">
           <h1 className="text-3xl font-bold text-gray-300 mb-2">Printers</h1>
           <div className="relative">
             <button 
