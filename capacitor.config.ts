@@ -11,7 +11,15 @@ const config: CapacitorConfig = {
   },
   android: {
     allowMixedContent: true,
-    captureInput: true
+    captureInput: true,
+    webContentsDebuggingEnabled: true,
+    backgroundColor: '#1f2937' // Dark theme background
+  },
+  server: {
+    cleartext: true,
+    allowNavigation: [
+      "*"
+    ]
   }
 };
 
