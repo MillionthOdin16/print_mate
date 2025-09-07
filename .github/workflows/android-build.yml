@@ -43,6 +43,38 @@ jobs:
             echo "Android platform already exists, skipping add step"
           fi
 
+      - name: Configure Android for Java 17
+        run: |
+          # Set Java 17 compatibility in app build.gradle
+          if ! grep -q "compileOptions" android/app/build.gradle; then
+            sed -i '/buildTypes {/i\    compileOptions {\n        sourceCompatibility JavaVersion.VERSION_17\n        targetCompatibility JavaVersion.VERSION_17\n    }' android/app/build.gradle
+          fi
+          
+          # Set Java 17 compatibility globally in root build.gradle
+          if ! grep -q "afterEvaluate" android/build.gradle; then
+            cat >> android/build.gradle << 'EOF'
+
+// Force Java 17 for all modules
+allprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+}
+EOF
+          fi
+          
+          # Configure gradle.properties with current JAVA_HOME
+          if ! grep -q "org.gradle.java.home" android/gradle.properties; then
+            echo "org.gradle.java.home=$JAVA_HOME" >> android/gradle.properties
+          fi
+
       - name: Sync Capacitor
         run: npx cap sync android
 
