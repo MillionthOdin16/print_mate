@@ -21,9 +21,48 @@ H2D - Untested, unlikely to function correctly
 ## Planned features
 * Camera stream for X1 series/external RTSP camera
 
-## Usage
-### Linux (x64)
+## Platform Support
+
+### Desktop
+#### Linux (x64)
 Download the linux-x64.zip from latest release, unzip, and run `print_mate`, no install required.
 
-### Windows (x64)
+#### Windows (x64)
 Download the win-x64.zip from latest release, unzip, and run `PrintMate.exe`, no install required.
+
+### Mobile
+#### Android
+Download the latest APK from releases or automatic builds. The app provides core functionality optimized for mobile devices.
+
+**Features on Android:**
+- Add and manage printers via local storage
+- Direct Bambu Cloud authentication
+- Optimized mobile interface
+- Network connectivity for local and cloud printers
+
+## Development
+
+### Desktop Development
+```bash
+npm install
+npm run dev
+```
+
+### Mobile Development (Android)
+```bash
+npm install
+npm run build:mobile
+npx cap sync android
+npx cap run android
+```
+
+### Building for Production
+- **Desktop**: `npm run package:linux` or `npm run package:win`
+- **Android**: `npm run android:build` (requires Android SDK)
+
+## Architecture
+- **Frontend**: Next.js with React
+- **Desktop**: Electron wrapper
+- **Mobile**: Capacitor for native Android app
+- **Storage**: File system (desktop) or Capacitor Preferences (mobile)
+- **Communication**: MQTT and FTP protocols

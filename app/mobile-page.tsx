@@ -1,13 +1,34 @@
 'use client';
-import { Capacitor } from '@capacitor/core';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import PrinterGrid from './components/PrinterGrid';
 import { addPrinter } from '@/lib/printers';
 import { cloudAuth, cloudUser } from '@/lib/mobile-api';
-import MobileApp from './mobile-page';
 
-export default function Home() {
-  const [isMobile, setIsMobile] = useState(false);
+// Import the client components we need for mobile routing
+import PrinterPageClient from './components/mobile/PrinterPageClient';
+import FilePageClient from './components/mobile/FilePageClient';
+
+type ViewType = 'home' | 'printer' | 'file';
+
+export default function MobileApp() {
+  const searchParams = useSearchParams();
+  const [currentView, setCurrentView] = useState<ViewType>('home');
+  const [printerSlug, setPrinterSlug] = useState<string>('');
+  const [fileName, setFileName] = useState<string>('');
+  
+  // Handle client-side routing for mobile
+  useEffect(() => {
+    const view = searchParams.get('view') as ViewType;
+    const slug = searchParams.get('printer');
+    const file = searchParams.get('file');
+    
+    if (view) setCurrentView(view);
+    if (slug) setPrinterSlug(slug);
+    if (file) setFileName(file);
+  }, [searchParams]);
+
+  // State for modals (keeping the original page.tsx logic)
   const [lanOpen, setLanOpen] = useState(false);
   const [cloudOpen, setCloudOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,16 +36,6 @@ export default function Home() {
   const [error, setError] = useState('');
   const [show2FA, setShow2FA] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    // Check if we're on mobile after component mounts
-    setIsMobile(Capacitor.isNativePlatform());
-  }, []);
-
-  // If mobile, render mobile app
-  if (isMobile) {
-    return <MobileApp />;
-  }
 
   const handleLanSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,7 +140,6 @@ export default function Home() {
 
       const json1 = await cloudUser(token);
       if (json1.uid) user = json1.uid;
-      if (json1.uid) user = json1.uid;
       else {
         setError("Failed to fetch user id from api");
         return;
@@ -154,6 +164,16 @@ export default function Home() {
     }
   }
 
+  // Render different views based on current state
+  if (currentView === 'printer' && printerSlug) {
+    return <PrinterPageClient slug={printerSlug} />;
+  }
+
+  if (currentView === 'file' && printerSlug && fileName) {
+    return <FilePageClient slug={printerSlug} file={fileName} />;
+  }
+
+  // Default home view
   return (
     <main className="min-h-screen bg-gray-1000 p-6">
       <div className="max-w-6xl mx-auto">
@@ -186,6 +206,7 @@ export default function Home() {
         </header>
         <PrinterGrid />
       </div>
+      {/* Include all the modal dialogs from the original page.tsx */}
       {lanOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md relative border border-gray-700">

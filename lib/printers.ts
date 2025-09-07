@@ -1,4 +1,13 @@
+import { Capacitor } from '@capacitor/core';
+import * as MobileStorage from './mobile-storage';
+
+// Check if we're running on a mobile platform
+const isMobile = Capacitor.isNativePlatform();
+
 export async function getPrinters() {
+  if (isMobile) {
+    return await MobileStorage.getPrinters();
+  }
   const res = await fetch('/api/printers');
   return await res.json();
 }
@@ -14,6 +23,10 @@ export async function addPrinter(printerData: {
   cloud: boolean;
   serial: string;
 }) {
+  if (isMobile) {
+    await MobileStorage.addPrinter(printerData);
+    return { success: true };
+  }
   const res = await fetch('/api/printers', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -23,6 +36,10 @@ export async function addPrinter(printerData: {
 }
 
 export async function removePrinter(slug: string) {
+  if (isMobile) {
+    await MobileStorage.removePrinter(slug);
+    return { success: true };
+  }
   const res = await fetch('/api/printers', {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
@@ -43,6 +60,20 @@ export async function editPrinter(printerData: {
   cloud: boolean;
   serial: string;
 }) {
+  if (isMobile) {
+    await MobileStorage.editPrinter(printerData.oldSlug, {
+      slug: printerData.slug,
+      name: printerData.name,
+      model: printerData.model,
+      ip: printerData.ip,
+      username: printerData.username,
+      password: printerData.password,
+      code: printerData.code,
+      cloud: printerData.cloud,
+      serial: printerData.serial
+    });
+    return { success: true };
+  }
   const res = await fetch('/api/printers', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },

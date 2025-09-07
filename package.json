@@ -5,14 +5,21 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:mobile": "bash scripts/mobile-build.sh pre && BUILD_TARGET=mobile next build && bash scripts/mobile-build.sh post",
     "start": "next start",
     "lint": "next lint",
     "electron": "electron main.js",
     "package:linux": "next build && electron-builder --dir --linux",
     "package:win": "next build && electron-builder --dir --windows",
-    "package": "next build && electron-builder --dir -wl"
+    "package": "next build && electron-builder --dir -wl",
+    "android:build": "npm run build:mobile && npx cap sync android && npx cap build android",
+    "android:dev": "npm run build:mobile && npx cap sync android && npx cap run android"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/preferences": "^7.0.2",
     "@types/jszip": "^3.4.0",
     "basic-ftp": "^5.0.5",
     "jszip": "^3.10.1",
@@ -60,10 +67,14 @@
       }
     ],
     "linux": {
-      "target": ["AppImage"]
+      "target": [
+        "AppImage"
+      ]
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "nsis": {
       "oneClick": false,
