@@ -9,10 +9,7 @@ const nextConfig: NextConfig = {
     images: {
       unoptimized: true
     },
-    experimental: {
-      // Don't fail on missing generateStaticParams for now
-      fallbackNodePolyfills: false
-    }
+    distDir: 'out'
   })
 };
 
