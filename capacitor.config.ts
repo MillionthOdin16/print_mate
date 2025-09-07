@@ -23,7 +23,9 @@ const config: CapacitorConfig = {
   server: {
     cleartext: true,
     allowNavigation: [
-      "*"
+      "*",
+      "https://api.bambulab.com",
+      "https://api.bambulab.com/*"
     ]
   }
 };
