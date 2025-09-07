@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import PrinterGrid from './components/PrinterGrid';
 import { addPrinter } from '@/lib/printers';
+import { cloudAuth, cloudUser } from '@/lib/mobile-api';
 
 export default function Home() {
   const [lanOpen, setLanOpen] = useState(false);
@@ -69,19 +70,12 @@ export default function Home() {
       let token = '';
       let user = '';
 
-      const url = '/api/cloud/auth';
       const body = {
         "account": data.email,
         "password": data.pwd
       };
 
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(body)
-      });
-
-      const json = await res.json();
+      const json = await cloudAuth(body);
 
       if (json.error) {
         setError(json.error);
@@ -109,13 +103,7 @@ export default function Home() {
           "code": code
         }
 
-        const res1 = await fetch(url, {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(body1)
-        });
-
-        const json1 = await res1.json();
+        const json1 = await cloudAuth(body1);
         if (json1.accessToken) token = json1.accessToken;
         else {
           if (json1.error) {
@@ -127,17 +115,8 @@ export default function Home() {
         token = json.accessToken;
       }
 
-      const params = {
-        token: token
-      }
-
-      const res1 = await fetch('/api/cloud/user', {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(params)
-      });
-
-      const json1 = await res1.json();
+      const json1 = await cloudUser(token);
+      if (json1.uid) user = json1.uid;
       if (json1.uid) user = json1.uid;
       else {
         setError("Failed to fetch user id from api");
