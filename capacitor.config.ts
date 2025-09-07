@@ -7,6 +7,11 @@ const config: CapacitorConfig = {
   plugins: {
     Preferences: {
       group: "PrintMateGroup"
+    },
+    StatusBar: {
+      style: 'DARK',
+      backgroundColor: '#1f2937',
+      overlay: false
     }
   },
   android: {
@@ -18,7 +23,9 @@ const config: CapacitorConfig = {
   server: {
     cleartext: true,
     allowNavigation: [
-      "*"
+      "*",
+      "https://api.bambulab.com",
+      "https://api.bambulab.com/*"
     ]
   }
 };
